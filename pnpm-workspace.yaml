@@ -5,7 +5,17 @@ packages:
 allowBuilds:
   sharp: true
   unrs-resolver: true
+  prisma: true
+  '@prisma/engines': true
+  '@prisma/client': true
+  argon2: true
+  '@swc/core': true
 
 onlyBuiltDependencies:
   - sharp
   - unrs-resolver
+  - prisma
+  - '@prisma/engines'
+  - '@prisma/client'
+  - argon2
+  - '@swc/core'
