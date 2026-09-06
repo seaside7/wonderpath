@@ -1,0 +1,472 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  BOY
+  GIRL
+}
+
+enum Grade {
+  GRADE_1
+  GRADE_2
+  GRADE_3
+  GRADE_4
+  GRADE_5
+  GRADE_6
+}
+
+enum Curriculum {
+  IB
+  CAMBRIDGE
+  MERDEKA
+  NASIONAL
+}
+
+enum PreferredLanguage {
+  ENGLISH
+  BAHASA_INDONESIA
+}
+
+enum Subject {
+  MATHEMATICS
+  ENGLISH
+}
+
+enum LearningSessionStatus {
+  STARTED
+  COMPLETED
+  CANCELLED
+}
+
+enum LearningSessionContext {
+  NORMAL_LEARNING
+  EXAM_TOMORROW
+  HOMEWORK_HELP
+  QUICK_SESSION
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+}
+
+enum PerceivedDifficulty {
+  EASY
+  JUST_RIGHT
+  DIFFICULT
+}
+
+enum MisconceptionSignalType {
+  REPEATED_MISTAKE
+  STORY_PROBLEM
+  VISUAL_REPRESENTATION
+  HIGH_LANGUAGE_COMPLEXITY
+  HINTS_OVERUSED
+}
+
+enum MisconceptionSignalStatus {
+  POTENTIAL
+  SUGGESTED
+  CONFIRMED
+  DISMISSED
+}
+
+enum GenerationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum QuestionPerformanceStatus {
+  ACTIVE
+  LOW_PERFORMANCE
+  REVIEW
+  RETIRED
+}
+
+enum ExamPrepPlanStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+}
+
+enum ExamMaterialType {
+  PDF
+  PHOTO
+}
+
+enum ExamMaterialExtractionStatus {
+  PENDING
+  EXTRACTED
+  FAILED
+}
+
+enum ExamTopicStatus {
+  CANDIDATE
+  CONFIRMED
+  REJECTED
+}
+
+model Parent {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  children  Child[]
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Child {
+  id                String            @id @default(cuid())
+  fullName          String
+  nickname          String?
+  dateOfBirth       DateTime          @db.Date
+  gender            Gender
+  grade             Grade
+  curricula         Curriculum[]
+  preferredLanguage PreferredLanguage
+  schoolName        String?
+  parentId          String
+  parent            Parent            @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  learningSessions  LearningSession[]
+  attempts          QuestionAttempt[]
+  masteryRecords    StudentMastery[]
+  misconceptionSignals MisconceptionSignal[]
+  subjectDifficulties  ChildSubjectDifficulty[]
+  learningPatterns  ChildLearningPattern[]
+  personalityPreference ChildPersonalityPreference?
+  examPrepPlans     ExamPrepPlan[]
+
+  @@index([parentId])
+}
+
+model LearningSession {
+  id                     String                @id @default(cuid())
+  childId                String
+  child                  Child                 @relation(fields: [childId], references: [id], onDelete: Cascade)
+  curriculum             Curriculum
+  subject                Subject
+  status                 LearningSessionStatus @default(STARTED)
+  context                LearningSessionContext @default(NORMAL_LEARNING)
+  focusLearningObjectiveId String?
+  focusLearningObjective   LearningObjective?  @relation("SessionFocus", fields: [focusLearningObjectiveId], references: [id], onDelete: SetNull)
+  startedAt              DateTime              @default(now())
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  attempts               QuestionAttempt[]
+
+  @@index([childId, status])
+}
+
+model SubjectArea {
+  id     String  @id @default(cuid())
+  code   Subject @unique
+  name   String
+  topics Topic[]
+}
+
+model Topic {
+  id            String      @id @default(cuid())
+  name          String
+  subjectAreaId String
+  subjectArea   SubjectArea @relation(fields: [subjectAreaId], references: [id], onDelete: Cascade)
+  subtopics     Subtopic[]
+  generations   QuestionGeneration[]
+
+  @@unique([subjectAreaId, name])
+  @@index([subjectAreaId])
+}
+
+model Subtopic {
+  id                 String              @id @default(cuid())
+  name               String
+  topicId            String
+  topic              Topic               @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  learningObjectives LearningObjective[]
+
+  @@unique([topicId, name])
+  @@index([topicId])
+}
+
+model LearningObjective {
+  id                   String     @id @default(cuid())
+  name                 String
+  description          String
+  estimatedMasteryTime Int
+  subtopicId           String
+  subtopic             Subtopic   @relation(fields: [subtopicId], references: [id], onDelete: Cascade)
+  questions            Question[]
+  attempts             QuestionAttempt[]
+  masteryRecords       StudentMastery[]
+  misconceptionSignals MisconceptionSignal[]
+  focusedSessions      LearningSession[]      @relation("SessionFocus")
+  generations          QuestionGeneration[]
+  examTopics           ExamTopic[]
+
+  @@unique([subtopicId, name])
+  @@index([subtopicId])
+}
+
+model Question {
+  id                  String            @id @default(cuid())
+  questionText        String
+  questionType        QuestionType
+  options             Json
+  correctAnswer       String
+  explanation         String
+  curriculum          Curriculum
+  grade               Grade
+  difficulty          Int
+  metadata            Json?
+learningObjectiveId String
+    learningObjective   LearningObjective @relation(fields: [learningObjectiveId], references: [id], onDelete: Cascade)
+    generationId        String?
+    generation          QuestionGeneration? @relation("GeneratedQuestions", fields: [generationId], references: [id], onDelete: SetNull)
+    createdAt           DateTime          @default(now())
+    updatedAt           DateTime          @updatedAt
+    attempts            QuestionAttempt[]
+    performance         QuestionPerformance?
+
+    @@index([learningObjectiveId])
+    @@index([curriculum, grade, difficulty])
+    @@index([generationId])
+}
+
+model QuestionGeneration {
+  id                  String          @id @default(cuid())
+  status              GenerationStatus @default(PENDING)
+  curriculum          Curriculum
+  grade               Grade
+  subject             Subject
+  topicId             String
+  topic               Topic           @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  learningObjectiveId String
+  learningObjective   LearningObjective @relation(fields: [learningObjectiveId], references: [id], onDelete: Cascade)
+  questionType        QuestionType
+  difficulty          Int
+  quantity            Int
+  provider            String
+  model               String
+  generationMetadata  Json?
+  error               String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  questions           Question[]      @relation("GeneratedQuestions")
+
+  @@index([topicId])
+  @@index([learningObjectiveId])
+  @@index([status])
+}
+
+model QuestionAttempt {
+  id                  String             @id @default(cuid())
+  childId             String
+  child               Child              @relation(fields: [childId], references: [id], onDelete: Cascade)
+  learningSessionId   String
+  learningSession     LearningSession    @relation(fields: [learningSessionId], references: [id], onDelete: Cascade)
+  questionId          String
+  question            Question           @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  learningObjectiveId String
+  learningObjective   LearningObjective  @relation(fields: [learningObjectiveId], references: [id], onDelete: Restrict)
+  selectedAnswer      String
+  correct             Boolean
+  timeSpent           Int
+  hintUsed            Boolean
+  perceivedDifficulty PerceivedDifficulty
+  attemptNumber       Int
+  metadata            Json?
+  reasonCodes         Json
+  createdAt           DateTime           @default(now())
+
+  @@index([childId, learningObjectiveId])
+  @@index([childId])
+  @@index([learningSessionId])
+  @@index([questionId])
+}
+
+model StudentMastery {
+  id                  String             @id @default(cuid())
+  childId             String
+  child               Child              @relation(fields: [childId], references: [id], onDelete: Cascade)
+  learningObjectiveId String
+  learningObjective   LearningObjective  @relation(fields: [learningObjectiveId], references: [id], onDelete: Restrict)
+  masteryScore        Int
+  confidenceScore     Int
+  totalAttempts       Int
+  correctAttempts     Int
+  wrongAttempts       Int
+  averageResponseTime Float
+  hintCount           Int
+  lastPracticedAt     DateTime
+  reviewRecommended   Boolean
+  reasonCodes         Json
+  updatedAt           DateTime           @updatedAt
+
+  @@unique([childId, learningObjectiveId])
+  @@index([childId])
+}
+
+model MisconceptionSignal {
+  id                   String                    @id @default(cuid())
+  childId              String
+  child                Child                     @relation(fields: [childId], references: [id], onDelete: Cascade)
+  learningObjectiveId  String
+  learningObjective    LearningObjective         @relation(fields: [learningObjectiveId], references: [id], onDelete: Restrict)
+  signalType           MisconceptionSignalType
+  evidenceCount        Int                       @default(0)
+  confidence           Int                       @default(0)
+  status               MisconceptionSignalStatus @default(POTENTIAL)
+  firstDetectedAt      DateTime                  @default(now())
+  lastDetectedAt       DateTime                  @default(now())
+  supportingAttemptIds Json
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
+
+  @@unique([childId, learningObjectiveId, signalType])
+  @@index([childId])
+  @@index([learningObjectiveId])
+}
+
+model ChildSubjectDifficulty {
+  id                String   @id @default(cuid())
+  childId           String
+  child             Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  subject           Subject
+  currentDifficulty Int      @default(3)
+  updatedAt         DateTime @updatedAt
+
+  @@unique([childId, subject])
+  @@index([childId])
+}
+
+enum LearningPatternKey {
+  RESPONSE_PACE
+  PERCEIVED_DIFFICULTY
+  BEST_STUDY_TIME
+  STORY_PERFORMANCE
+  VISUAL_PERFORMANCE
+}
+
+enum MotivationStyle {
+  CHEERLEADER
+  GENTLE_COACH
+  PLAYFUL_BUDDY
+  QUIET_SUPPORTER
+}
+
+model ChildLearningPattern {
+  id              String           @id @default(cuid())
+  childId         String
+  child           Child            @relation(fields: [childId], references: [id], onDelete: Cascade)
+  patternKey      LearningPatternKey
+  value           String
+  strength        Float            @default(0)
+  evidenceCount   Int              @default(0)
+  firstDetectedAt DateTime         @default(now())
+  lastDetectedAt  DateTime         @updatedAt
+  createdAt       DateTime         @default(now())
+
+  @@unique([childId, patternKey])
+  @@index([childId])
+}
+
+model ChildPersonalityPreference {
+  id             String        @id @default(cuid())
+  childId        String        @unique
+  child          Child         @relation(fields: [childId], references: [id], onDelete: Cascade)
+  favoriteAnimal String?
+  favoriteTheme  String?
+  favoriteColor  String?
+  motivationStyle MotivationStyle?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model QuestionPerformance {
+  id             String                  @id @default(cuid())
+  questionId     String                  @unique
+  question       Question                @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  timesServed    Int                     @default(0)
+  correctCount   Int                     @default(0)
+  wrongCount     Int                     @default(0)
+  avgResponseTimeMs Float               @default(0)
+  hintUsageCount Int                     @default(0)
+  abandonmentCount Int                   @default(0)
+  reportedProblemCount Int               @default(0)
+  status         QuestionPerformanceStatus @default(ACTIVE)
+  firstServedAt  DateTime                @default(now())
+  lastServedAt   DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  @@index([status])
+  @@index([questionId])
+}
+
+model ExamPrepPlan {
+  id        String             @id @default(cuid())
+  childId   String
+  child     Child              @relation(fields: [childId], references: [id], onDelete: Cascade)
+  subject   Subject
+  curriculum Curriculum
+  context   LearningSessionContext @default(EXAM_TOMORROW)
+  examDate  DateTime?          @db.Date
+  status    ExamPrepPlanStatus @default(PLANNING)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  materials ExamMaterial[]
+  topics    ExamTopic[]
+
+  @@index([childId])
+}
+
+model ExamMaterial {
+  id               String                        @id @default(cuid())
+  planId           String
+  plan             ExamPrepPlan                  @relation(fields: [planId], references: [id], onDelete: Cascade)
+  fileName         String
+  mimeType         String
+  fileSize         Int
+  storageKey       String
+  materialType     ExamMaterialType
+  extractionStatus ExamMaterialExtractionStatus  @default(PENDING)
+  extractedText    String?
+  errorMessage     String?
+  createdAt        DateTime                      @default(now())
+
+  @@index([planId])
+}
+
+model ExamTopic {
+  id                  String            @id @default(cuid())
+  planId              String
+  plan                ExamPrepPlan      @relation(fields: [planId], references: [id], onDelete: Cascade)
+  learningObjectiveId String?
+  learningObjective   LearningObjective? @relation(fields: [learningObjectiveId], references: [id], onDelete: SetNull)
+  label               String
+  confidence          Float
+  status              ExamTopicStatus   @default(CANDIDATE)
+  source              String
+  createdAt           DateTime          @default(now())
+
+  @@index([planId])
+}
