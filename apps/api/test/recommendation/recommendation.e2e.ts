@@ -192,6 +192,8 @@ describe('Recommendation (e2e)', () => {
   let prisma: PrismaService;
   let adminToken: string;
   let adminEmail: string;
+  let parentOneEmail: string;
+  let parentTwoEmail: string;
   let parentOneToken: string;
   let parentTwoToken: string;
   let childId: string;
@@ -217,30 +219,19 @@ describe('Recommendation (e2e)', () => {
     });
 
     adminToken = await loginAdmin(app, adminEmail);
-    parentOneToken = await registerParent(
-      app,
-      createTestEmail('e2e-rec-parent-one'),
-    );
-    parentTwoToken = await registerParent(
-      app,
-      createTestEmail('e2e-rec-parent-two'),
-    );
+    parentOneEmail = createTestEmail('e2e-rec-parent-one');
+    parentOneToken = await registerParent(app, parentOneEmail);
+    parentTwoEmail = createTestEmail('e2e-rec-parent-two');
+    parentTwoToken = await registerParent(app, parentTwoEmail);
 
     const child = await createChild(app, parentOneToken);
     childId = child.id;
 
-    let subjectArea = await prisma.subjectArea.findUnique({
+    const subjectArea = await prisma.subjectArea.upsert({
       where: { code: PrismaSubject.MATHEMATICS },
+      create: { code: PrismaSubject.MATHEMATICS, name: 'Mathematics' },
+      update: {},
     });
-
-    if (!subjectArea) {
-      subjectArea = await prisma.subjectArea.create({
-        data: {
-          code: PrismaSubject.MATHEMATICS,
-          name: 'Mathematics',
-        },
-      });
-    }
 
     const topic = await prisma.topic.create({
       data: {
@@ -372,12 +363,9 @@ describe('Recommendation (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.admin.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
-    });
-
+    await prisma.admin.deleteMany({ where: { email: adminEmail } });
     await prisma.parent.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
+      where: { email: { in: [parentOneEmail, parentTwoEmail] } },
     });
 
     if (topicId) {

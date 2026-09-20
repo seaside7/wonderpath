@@ -12,9 +12,11 @@ export interface AdminJwtPayload {
 @Injectable()
 export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
   constructor(private readonly adminService: AdminService) {
-    const jwtSecret = process.env.JWT_SECRET;
+    const jwtSecret = process.env.ADMIN_JWT_SECRET ?? process.env.JWT_SECRET;
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET environment variable is required');
+      throw new Error(
+        'ADMIN_JWT_SECRET (or JWT_SECRET) environment variable is required',
+      );
     }
 
     super({

@@ -100,7 +100,9 @@ describe('AI Exam Assistant (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
   let parentToken: string;
+  let parentEmail: string;
   let secondParentToken: string;
+  let secondParentEmail: string;
   let childId: string;
   let secondChildId: string;
   let fractionsObjectiveId: string;
@@ -113,20 +115,24 @@ describe('AI Exam Assistant (e2e)', () => {
     app = await createTestApp();
     prisma = app.get(PrismaService);
 
-    const registerParent = async (prefix: string) => {
+    const registerParent = async (
+      prefix: string,
+    ): Promise<{ token: string; email: string }> => {
+      const email = createTestEmail(prefix);
       const response = await request(app.getHttpServer())
         .post('/auth/register')
-        .send({
-          email: createTestEmail(prefix),
-          password: TEST_PASSWORD,
-        })
+        .send({ email, password: TEST_PASSWORD })
         .expect(201);
 
-      return (response.body as AuthResponse).accessToken;
+      return { token: (response.body as AuthResponse).accessToken, email };
     };
 
-    parentToken = await registerParent('e2e-exam-parent');
-    secondParentToken = await registerParent('e2e-exam-parent2');
+    const parentOne = await registerParent('e2e-exam-parent');
+    parentToken = parentOne.token;
+    parentEmail = parentOne.email;
+    const parentTwo = await registerParent('e2e-exam-parent2');
+    secondParentToken = parentTwo.token;
+    secondParentEmail = parentTwo.email;
 
     const createChild = async (token: string) => {
       const response = await request(app.getHttpServer())
@@ -143,18 +149,11 @@ describe('AI Exam Assistant (e2e)', () => {
     const secondChild = await createChild(secondParentToken);
     secondChildId = secondChild.id;
 
-    let subjectArea = await prisma.subjectArea.findUnique({
+    const subjectArea = await prisma.subjectArea.upsert({
       where: { code: PrismaSubject.MATHEMATICS },
+      create: { code: PrismaSubject.MATHEMATICS, name: 'Mathematics' },
+      update: {},
     });
-
-    if (!subjectArea) {
-      subjectArea = await prisma.subjectArea.create({
-        data: {
-          code: PrismaSubject.MATHEMATICS,
-          name: 'Mathematics',
-        },
-      });
-    }
 
     const topic = await prisma.topic.create({
       data: {
@@ -228,7 +227,7 @@ describe('AI Exam Assistant (e2e)', () => {
 
   afterAll(async () => {
     await prisma.parent.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
+      where: { email: { in: [parentEmail, secondParentEmail] } },
     });
 
     if (topicId) {

@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { getOwnedChild } from '../common/get-owned-child';
 import {
   mapChildToResponse,
   mapCurriculaToPrisma,
@@ -47,7 +48,7 @@ export class ChildService {
   }
 
   async findOne(parentId: string, childId: string): Promise<ChildResponseDto> {
-    const child = await this.findOwnedChild(parentId, childId);
+    const child = await getOwnedChild(this.prisma, parentId, childId);
     return mapChildToResponse(child);
   }
 
@@ -56,7 +57,7 @@ export class ChildService {
     childId: string,
     dto: UpdateChildDto,
   ): Promise<ChildResponseDto> {
-    await this.findOwnedChild(parentId, childId);
+    await getOwnedChild(this.prisma, parentId, childId);
 
     const child = await this.prisma.child.update({
       where: { id: childId },
@@ -67,20 +68,8 @@ export class ChildService {
   }
 
   async remove(parentId: string, childId: string): Promise<void> {
-    await this.findOwnedChild(parentId, childId);
+    await getOwnedChild(this.prisma, parentId, childId);
     await this.prisma.child.delete({ where: { id: childId } });
-  }
-
-  private async findOwnedChild(parentId: string, childId: string) {
-    const child = await this.prisma.child.findFirst({
-      where: { id: childId, parentId },
-    });
-
-    if (!child) {
-      throw new NotFoundException('Child not found');
-    }
-
-    return child;
   }
 
   private buildUpdateData(dto: UpdateChildDto): Prisma.ChildUpdateInput {

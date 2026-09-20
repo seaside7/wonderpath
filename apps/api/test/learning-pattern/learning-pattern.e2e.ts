@@ -168,6 +168,8 @@ describe('Learning Patterns & Personality (e2e)', () => {
   let plainQuestionId: string;
   let adminToken: string;
   let adminEmail: string;
+  let parentOneEmail: string;
+  let parentTwoEmail: string;
 
   beforeAll(async () => {
     app = await createTestApp();
@@ -182,30 +184,19 @@ describe('Learning Patterns & Personality (e2e)', () => {
     });
 
     adminToken = await loginAdmin(app, adminEmail);
-    parentOneToken = await registerParent(
-      app,
-      createTestEmail('e2e-lp-parent-one'),
-    );
-    parentTwoToken = await registerParent(
-      app,
-      createTestEmail('e2e-lp-parent-two'),
-    );
+    parentOneEmail = createTestEmail('e2e-lp-parent-one');
+    parentOneToken = await registerParent(app, parentOneEmail);
+    parentTwoEmail = createTestEmail('e2e-lp-parent-two');
+    parentTwoToken = await registerParent(app, parentTwoEmail);
 
     const child = await createChild(app, parentOneToken);
     childId = child.id;
 
-    let subjectArea = await prisma.subjectArea.findUnique({
+    const subjectArea = await prisma.subjectArea.upsert({
       where: { code: PrismaSubject.MATHEMATICS },
+      create: { code: PrismaSubject.MATHEMATICS, name: 'Mathematics' },
+      update: {},
     });
-
-    if (!subjectArea) {
-      subjectArea = await prisma.subjectArea.create({
-        data: {
-          code: PrismaSubject.MATHEMATICS,
-          name: 'Mathematics',
-        },
-      });
-    }
 
     const topic = await prisma.topic.create({
       data: {
@@ -281,12 +272,9 @@ describe('Learning Patterns & Personality (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.admin.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
-    });
-
+    await prisma.admin.deleteMany({ where: { email: adminEmail } });
     await prisma.parent.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
+      where: { email: { in: [parentOneEmail, parentTwoEmail] } },
     });
 
     if (topicId) {

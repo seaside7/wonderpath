@@ -144,6 +144,7 @@ describe('Content Generation (e2e)', () => {
   let prisma: PrismaService;
   let adminToken: string;
   let adminEmail: string;
+  let parentEmail: string;
   let parentToken: string;
   let topicId: string;
   let learningObjectiveId: string;
@@ -163,20 +164,14 @@ describe('Content Generation (e2e)', () => {
     });
 
     adminToken = await loginAdmin(app, adminEmail);
-    parentToken = await registerParent(app, createTestEmail('e2e-cg-parent'));
+    parentEmail = createTestEmail('e2e-cg-parent');
+    parentToken = await registerParent(app, parentEmail);
 
-    const existingSubject = await prisma.subjectArea.findUnique({
+    const subjectArea = await prisma.subjectArea.upsert({
       where: { code: PrismaSubject.MATHEMATICS },
+      create: { code: PrismaSubject.MATHEMATICS, name: 'Mathematics' },
+      update: {},
     });
-
-    const subjectArea =
-      existingSubject ??
-      (await prisma.subjectArea.create({
-        data: {
-          code: PrismaSubject.MATHEMATICS,
-          name: 'Mathematics',
-        },
-      }));
 
     const topic = await prisma.topic.create({
       data: {
@@ -209,13 +204,8 @@ describe('Content Generation (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.admin.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
-    });
-
-    await prisma.parent.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
-    });
+    await prisma.admin.deleteMany({ where: { email: adminEmail } });
+    await prisma.parent.deleteMany({ where: { email: parentEmail } });
 
     if (topicId) {
       await prisma.topic.delete({ where: { id: topicId } });

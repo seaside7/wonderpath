@@ -70,25 +70,23 @@ describe('Child Profile (e2e)', () => {
   let prisma: PrismaService;
   let parentOneToken: string;
   let parentTwoToken: string;
+  let parentOneEmail: string;
+  let parentTwoEmail: string;
   let childId: string;
 
   beforeAll(async () => {
     app = await createTestApp();
     prisma = app.get(PrismaService);
 
-    parentOneToken = await registerParent(
-      app,
-      createTestEmail('e2e-child-parent-one'),
-    );
-    parentTwoToken = await registerParent(
-      app,
-      createTestEmail('e2e-child-parent-two'),
-    );
+    parentOneEmail = createTestEmail('e2e-child-parent-one');
+    parentOneToken = await registerParent(app, parentOneEmail);
+    parentTwoEmail = createTestEmail('e2e-child-parent-two');
+    parentTwoToken = await registerParent(app, parentTwoEmail);
   });
 
   afterAll(async () => {
     await prisma.parent.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
+      where: { email: { in: [parentOneEmail, parentTwoEmail] } },
     });
     await app.close();
 

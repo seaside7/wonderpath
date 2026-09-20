@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { LearningSessionStatus as PrismaLearningSessionStatus } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { getOwnedChild } from '../common/get-owned-child';
 import { LearningSessionResponseDto } from './dto/learning-session-response.dto';
 import { StartLearningSessionDto } from './dto/start-learning-session.dto';
 import {
@@ -23,13 +24,7 @@ export class LearningSessionService {
     parentId: string,
     dto: StartLearningSessionDto,
   ): Promise<LearningSessionResponseDto> {
-    const child = await this.prisma.child.findFirst({
-      where: { id: dto.childId, parentId },
-    });
-
-    if (!child) {
-      throw new NotFoundException('Child not found');
-    }
+    const child = await getOwnedChild(this.prisma, parentId, dto.childId);
 
     if (!isCurriculumSupported(child.curricula, dto.curriculum)) {
       throw new BadRequestException(
@@ -71,13 +66,7 @@ export class LearningSessionService {
     parentId: string,
     childId: string,
   ): Promise<LearningSessionResponseDto> {
-    const child = await this.prisma.child.findFirst({
-      where: { id: childId, parentId },
-    });
-
-    if (!child) {
-      throw new NotFoundException('Child not found');
-    }
+    const child = await getOwnedChild(this.prisma, parentId, childId);
 
     const session = await this.prisma.learningSession.findFirst({
       where: {

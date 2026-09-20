@@ -182,6 +182,7 @@ describe('Living Question Bank (e2e)', () => {
   let lowPerformanceQuestionId: string;
   let adminToken: string;
   let adminEmail: string;
+  let parentEmail: string;
 
   beforeAll(async () => {
     app = await createTestApp();
@@ -196,23 +197,17 @@ describe('Living Question Bank (e2e)', () => {
     });
 
     adminToken = await loginAdmin(app, adminEmail);
-    parentToken = await registerParent(app, createTestEmail('e2e-qb-parent'));
+    parentEmail = createTestEmail('e2e-qb-parent');
+    parentToken = await registerParent(app, parentEmail);
 
     const child = await createChild(app, parentToken);
     childId = child.id;
 
-    let subjectArea = await prisma.subjectArea.findUnique({
+    const subjectArea = await prisma.subjectArea.upsert({
       where: { code: PrismaSubject.MATHEMATICS },
+      create: { code: PrismaSubject.MATHEMATICS, name: 'Mathematics' },
+      update: {},
     });
-
-    if (!subjectArea) {
-      subjectArea = await prisma.subjectArea.create({
-        data: {
-          code: PrismaSubject.MATHEMATICS,
-          name: 'Mathematics',
-        },
-      });
-    }
 
     const topic = await prisma.topic.create({
       data: {
@@ -270,13 +265,8 @@ describe('Living Question Bank (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.admin.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
-    });
-
-    await prisma.parent.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
-    });
+    await prisma.admin.deleteMany({ where: { email: adminEmail } });
+    await prisma.parent.deleteMany({ where: { email: parentEmail } });
 
     if (topicId) {
       await prisma.topic.delete({ where: { id: topicId } });

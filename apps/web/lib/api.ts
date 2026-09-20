@@ -12,6 +12,8 @@ export class ApiError extends Error {
   }
 }
 
+export const UNAUTHORIZED_EVENT = "wonderpath:unauthorized";
+
 async function request<T>(
   path: string,
   options: RequestInit = {},
@@ -41,6 +43,11 @@ async function request<T>(
       }
     } catch {
       // Non-JSON error body.
+    }
+
+    if (response.status === 401 && typeof window !== "undefined") {
+      clearStoredToken();
+      window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
     }
 
     throw new ApiError(message, response.status, details);

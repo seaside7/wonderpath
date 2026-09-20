@@ -128,8 +128,11 @@ describe('Question Serving & Session Completion (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
   let adminToken: string;
+  let adminEmail: string;
   let parentToken: string;
+  let parentEmail: string;
   let secondParentToken: string;
+  let secondParentEmail: string;
   let childId: string;
   let secondChildId: string;
   let learningObjectiveId: string;
@@ -142,19 +145,26 @@ describe('Question Serving & Session Completion (e2e)', () => {
     app = await createTestApp();
     prisma = app.get(PrismaService);
 
-    async function registerParent(prefix: string): Promise<string> {
+    async function registerParent(
+      prefix: string,
+    ): Promise<{ token: string; email: string }> {
+      const email = createTestEmail(prefix);
       const response = await request(app.getHttpServer())
         .post('/auth/register')
-        .send({ email: createTestEmail(prefix), password: TEST_PASSWORD })
+        .send({ email, password: TEST_PASSWORD })
         .expect(201);
 
-      return (response.body as AuthResponse).accessToken;
+      return { token: (response.body as AuthResponse).accessToken, email };
     }
 
-    parentToken = await registerParent('e2e-qs-parent');
-    secondParentToken = await registerParent('e2e-qs-parent2');
+    const parentOne = await registerParent('e2e-qs-parent');
+    parentToken = parentOne.token;
+    parentEmail = parentOne.email;
+    const parentTwo = await registerParent('e2e-qs-parent2');
+    secondParentToken = parentTwo.token;
+    secondParentEmail = parentTwo.email;
 
-    const adminEmail = createTestEmail('e2e-qs-admin');
+    adminEmail = createTestEmail('e2e-qs-admin');
     const { hash } = await import('argon2');
     await prisma.admin.create({
       data: {
@@ -185,15 +195,11 @@ describe('Question Serving & Session Completion (e2e)', () => {
     const secondChild = await createChild(secondParentToken);
     secondChildId = secondChild.id;
 
-    let subjectArea = await prisma.subjectArea.findUnique({
+    const subjectArea = await prisma.subjectArea.upsert({
       where: { code: PrismaSubject.MATHEMATICS },
+      create: { code: PrismaSubject.MATHEMATICS, name: 'Mathematics' },
+      update: {},
     });
-
-    if (!subjectArea) {
-      subjectArea = await prisma.subjectArea.create({
-        data: { code: PrismaSubject.MATHEMATICS, name: 'Mathematics' },
-      });
-    }
 
     const topic = await prisma.topic.create({
       data: {
@@ -243,12 +249,9 @@ describe('Question Serving & Session Completion (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.admin.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
-    });
-
+    await prisma.admin.deleteMany({ where: { email: adminEmail } });
     await prisma.parent.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
+      where: { email: { in: [parentEmail, secondParentEmail] } },
     });
 
     if (topicId) {

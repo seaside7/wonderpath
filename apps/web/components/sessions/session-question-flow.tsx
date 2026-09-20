@@ -104,8 +104,15 @@ export default function SessionQuestionFlow({ sessionId }: { sessionId: string }
     setEnding(true);
     try {
       await completeSession(sessionId);
-    } catch {
-      // The session may already be completed; keep the UI end state.
+    } catch (cause) {
+      // 404 means the session was already completed elsewhere - safe to
+      // treat as ended. Any other failure (auth, network, server) must be
+      // surfaced, not silently treated as a successful end.
+      if (!(cause instanceof ApiError && cause.status === 404)) {
+        setError("Could not end the session. Please try again.");
+        setEnding(false);
+        return;
+      }
     }
     router.push("/dashboard");
   }

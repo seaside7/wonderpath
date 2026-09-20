@@ -6,9 +6,14 @@ import { AdminService } from './admin.service';
 import { AdminAuthGuard } from './guards/admin-auth.guard';
 import { AdminJwtStrategy } from './strategies/admin-jwt.strategy';
 
-const jwtSecret = process.env.JWT_SECRET;
+// Admin tokens use their own secret so the parent and admin trust
+// boundaries don't share a signing key. Falls back to JWT_SECRET only
+// for backwards compatibility with existing deployments.
+const jwtSecret = process.env.ADMIN_JWT_SECRET ?? process.env.JWT_SECRET;
 if (!jwtSecret) {
-  throw new Error('JWT_SECRET environment variable is required');
+  throw new Error(
+    'ADMIN_JWT_SECRET (or JWT_SECRET) environment variable is required',
+  );
 }
 
 @Module({

@@ -6,6 +6,7 @@ import {
   getStoredToken,
   ParentProfile,
   storeToken,
+  UNAUTHORIZED_EVENT,
 } from "./api";
 import {
   createContext,
@@ -63,17 +64,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const authenticate = useCallback(async (token: string) => {
-    storeToken(token);
-    const profile = await fetchParentProfile();
-    setUser(profile);
-    setStatus("authenticated");
-  }, []);
-
   const logout = useCallback(() => {
     clearStoredToken();
     setUser(null);
     setStatus("unauthenticated");
+  }, []);
+
+  const authenticate = useCallback(async (token: string) => {
+    storeToken(token);
+    try {
+      const profile = await fetchParentProfile();
+      setUser(profile);
+      setStatus("authenticated");
+    } catch (error) {
+      clearStoredToken();
+      setUser(null);
+      setStatus("unauthenticated");
+      throw error;
+    }
+  }, []);
+
+  useEffect(() => {
+    function handleUnauthorized() {
+      setUser(null);
+      setStatus("unauthenticated");
+    }
+
+    window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
+    return () =>
+      window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
   }, []);
 
   const value = useMemo(

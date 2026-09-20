@@ -62,16 +62,18 @@ describe('Parent Auth (e2e)', () => {
   let prisma: PrismaService;
   let sharedEmail: string;
   let accessToken: string;
+  const createdEmails: string[] = [];
 
   beforeAll(async () => {
     app = await createTestApp();
     prisma = app.get(PrismaService);
     sharedEmail = createTestEmail();
+    createdEmails.push(sharedEmail);
   });
 
   afterAll(async () => {
     await prisma.parent.deleteMany({
-      where: { email: { endsWith: `@${TEST_EMAIL_DOMAIN}` } },
+      where: { email: { in: createdEmails } },
     });
     await app.close();
 
@@ -151,6 +153,7 @@ describe('Parent Auth (e2e)', () => {
     'register duplicate email (409)',
     trackScenario('register duplicate email (409)', async () => {
       const email = createTestEmail();
+      createdEmails.push(email);
 
       await request(app.getHttpServer())
         .post('/auth/register')
