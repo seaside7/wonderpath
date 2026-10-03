@@ -71,10 +71,12 @@ export default function KidQuestionFlow({
       setSummaryName(name);
       if (encouragement.data.sessionsCompared > 0) {
         setSummary(encouragement.message);
-      } else {
+      } else if (answered > 0) {
         setSummary(
           `You answered ${correct} of ${answered} questions correctly. Every question counts!`,
         );
+      } else {
+        setSummary("No questions were available this time - check back soon!");
       }
     } catch {
       setSummaryName("");
@@ -183,7 +185,11 @@ export default function KidQuestionFlow({
     return <p className="text-base text-ink-soft">Loading…</p>;
   }
 
-  if (status === "error" || !question || (status === "feedback" && !attempt)) {
+  if (
+    status === "error" ||
+    (status === "question" && !question) ||
+    (status === "feedback" && !attempt)
+  ) {
     return (
       <div className="flex w-full flex-1 flex-col justify-center">
       <div className="rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
