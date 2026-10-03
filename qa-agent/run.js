@@ -1,5 +1,7 @@
 'use strict';
 
+const crypto = require('crypto');
+const path = require('path');
 const { chromium } = require('playwright');
 const config = require('./config');
 const git = require('./lib/git');
@@ -15,6 +17,7 @@ const { registerParent, loginParent } = require('./lib/flows/register-login');
 const { addChild } = require('./lib/flows/add-child');
 const { startSession } = require('./lib/flows/start-session');
 const { answerQuestions, PERSONAS } = require('./lib/flows/answer-questions');
+const { runKidSession } = require('./lib/flows/kid-session');
 
 const { checkMasteryRange } = require('./lib/expectations/mastery-range');
 const { checkRecommendationReasonCodes } = require('./lib/expectations/recommendation-reason-codes');
@@ -27,6 +30,7 @@ const { checkMisconceptionSignals } = require('./lib/expectations/misconception-
 const { checkAdaptiveDifficulty } = require('./lib/expectations/adaptive-difficulty');
 const { checkLearningPatternsAndPersonality } = require('./lib/expectations/learning-patterns-personality');
 const { checkQuestionPerformanceAdmin } = require('./lib/expectations/question-performance-admin');
+const { checkKidSessionSummary } = require('./lib/expectations/kid-session-summary');
 
 // Evidence thresholds that gate these signals (misconception.config.ts,
 // learning-pattern.config.ts, ADAPTIVE_DIFFICULTY_CONFIG.windowSize) sit
@@ -139,6 +143,36 @@ async function runPersonaFlow(browser, baseUrl, apiBaseUrl, personaKey, prisma) 
 
   await page.getByRole('button', { name: /end session/i }).click().catch(() => {});
 
+  // Drives the Sprint 17-19 kid-facing path (picker -> Today -> question
+  // flow -> end of session) - none of the checks above ever touch this
+  // surface, they only ever drove the older parent/testing session flow.
+  // Reuses this same authenticated page/context (already logged in).
+  let kidSessionFindings = [];
+  try {
+    const kidSessionResult = await runKidSession(page, baseUrl, `Test Child \\(${personaKey}\\)`, {
+      onStep: ({ step, ok, detail }) =>
+        console.log(`[kid-session:${personaKey}] ${ok ? 'OK' : 'FAIL'} ${step}${detail ? ` - ${detail}` : ''}`),
+      screenshotDir: path.join(__dirname, 'debug-screenshots', ledger.todayStr(), personaKey),
+    });
+    kidSessionFindings = checkKidSessionSummary(kidSessionResult);
+  } catch (err) {
+    kidSessionFindings = [
+      {
+        id: `f-${Date.now()}-kidsession`,
+        dedupeKey: crypto.createHash('sha1').update(`kid-session-flow-crashed::${err.message}`).digest('hex').slice(0, 16),
+        severity: 'high',
+        flow: 'kid-session-summary',
+        specRef: 'specs/sprint-17-child-mode.md, specs/sprint-18-child-learning-experience.md',
+        expected: 'The kid-facing flow (picker -> Today -> question -> summary) completes without crashing the driver',
+        actual: `Flow threw: ${err.message}`,
+        errorDetail: err.stack,
+        specExcerpt: null,
+        lockedDecisionsExcerpt: null,
+        touchesLockedDecision: false,
+      },
+    ];
+  }
+
   await context.close();
 
   return {
@@ -150,6 +184,7 @@ async function runPersonaFlow(browser, baseUrl, apiBaseUrl, personaKey, prisma) 
     attemptCountBefore,
     recommendationFindings,
     atlasConceptFindings,
+    kidSessionFindings,
   };
 }
 
@@ -192,7 +227,7 @@ async function main() {
     const apiBaseUrl = `http://localhost:${config.API_PORT}`;
 
     const PrismaClient = require(
-      require('path').join(git.REPO_ROOT, 'apps', 'api', 'dist', 'generated', 'prisma', 'client.js'),
+      path.join(git.REPO_ROOT, 'apps', 'api', 'dist', 'generated', 'prisma', 'client.js'),
     ).PrismaClient;
     const prisma = new PrismaClient({ datasourceUrl: config.QA_DATABASE_URL });
 
@@ -219,6 +254,7 @@ async function main() {
         if (!r.childId || !r.token) continue;
         findings.push(...(r.recommendationFindings || []));
         findings.push(...(r.atlasConceptFindings || []));
+        findings.push(...(r.kidSessionFindings || []));
         findings.push(...(await checkReviewRecommendedRecency({ prisma, apiBaseUrl, childId: r.childId, token: r.token })));
         findings.push(...(await checkNoRepeatQuestion({ answered: r.answered || [] })));
 
@@ -347,6 +383,7 @@ async function main() {
           'personality',
           'encouragement',
           'living-question-bank (admin)',
+          'kid-mode (picker, Today card, question flow, end-of-session summary)',
         ],
         findings,
         outcomes,

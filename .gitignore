@@ -5,3 +5,8 @@ node_modules
 .env
 .env.local
 .env.*.local
+
+# Scratch debugging artifacts from qa-agent's Playwright flows - no lasting
+# value once a failure's root cause is found, findings/daily-summary are
+# the real reports and those stay tracked.
+qa-agent/debug-screenshots/
