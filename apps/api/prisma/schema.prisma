@@ -122,6 +122,7 @@ model Parent {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
+  pinHash   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   children  Child[]

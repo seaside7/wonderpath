@@ -91,6 +91,7 @@ export const ParentScalarFieldEnum = {
   id: 'id',
   email: 'email',
   password: 'password',
+  pinHash: 'pinHash',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

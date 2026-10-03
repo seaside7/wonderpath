@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import ChildrenList from "@/components/children/children-list";
+import ProfilePicker from "@/components/child-mode/profile-picker";
 
 export const metadata: Metadata = {
-  title: "My Children | WonderPath",
+  title: "Who's Learning? | WonderPath",
 };
 
 export default function DashboardPage() {
-  return <ChildrenList />;
+  return <ProfilePicker />;
 }

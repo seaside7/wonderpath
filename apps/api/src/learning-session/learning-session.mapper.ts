@@ -72,6 +72,12 @@ export function mapSubjectFromPrisma(subject: PrismaSubject): Subject {
   return subjectFromPrisma[subject];
 }
 
+export function mapLearningSessionStatusFromPrisma(
+  status: PrismaLearningSessionStatus,
+): LearningSessionStatus {
+  return statusFromPrisma[status];
+}
+
 export function mapLearningSessionContextToPrisma(
   context: LearningSessionContext,
 ): PrismaLearningSessionContext {

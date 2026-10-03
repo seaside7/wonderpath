@@ -120,6 +120,12 @@ export default function ChildrenList() {
                     Start Learning
                   </Link>
                   <Link
+                    href={`/children/${child.id}/recommendations`}
+                    className="btn-tactile rounded-lg border border-line bg-card px-4 py-2 text-sm font-medium text-ink"
+                  >
+                    View Progress
+                  </Link>
+                  <Link
                     href={`/children/${child.id}/edit`}
                     className="btn-tactile rounded-lg border border-line bg-card px-4 py-2 text-sm font-medium text-ink"
                   >

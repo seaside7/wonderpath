@@ -11,10 +11,16 @@ import { StartLearningSessionDto } from './dto/start-learning-session.dto';
 import {
   isCurriculumSupported,
   mapLearningSessionContextToPrisma,
+  mapLearningSessionStatusFromPrisma,
   mapLearningSessionToResponse,
+  mapSubjectFromPrisma,
   mapSubjectToPrisma,
 } from './learning-session.mapper';
-import { mapCurriculumToPrisma } from '../child/child.mapper';
+import {
+  mapCurriculumFromPrisma,
+  mapCurriculumToPrisma,
+} from '../child/child.mapper';
+import { SessionHistoryResponseDto } from './dto/session-history-response.dto';
 
 @Injectable()
 export class LearningSessionService {
@@ -89,6 +95,39 @@ export class LearningSessionService {
     }
 
     return mapLearningSessionToResponse(session);
+  }
+
+  async listForChild(
+    parentId: string,
+    childId: string,
+    limit = 10,
+  ): Promise<SessionHistoryResponseDto> {
+    const child = await getOwnedChild(this.prisma, parentId, childId);
+
+    const sessions = await this.prisma.learningSession.findMany({
+      where: { childId: child.id },
+      orderBy: { startedAt: 'desc' },
+      take: limit,
+      include: {
+        attempts: {
+          select: { correct: true },
+        },
+      },
+    });
+
+    return {
+      childId: child.id,
+      sessions: sessions.map((session) => ({
+        id: session.id,
+        subject: mapSubjectFromPrisma(session.subject),
+        curriculum: mapCurriculumFromPrisma(session.curriculum),
+        status: mapLearningSessionStatusFromPrisma(session.status),
+        startedAt: session.startedAt,
+        questionsAnswered: session.attempts.length,
+        correctCount: session.attempts.filter((attempt) => attempt.correct)
+          .length,
+      })),
+    };
   }
 
   async complete(

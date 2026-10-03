@@ -580,10 +580,6 @@ export type ChildCreatecurriculaInput = {
   set: $Enums.Curriculum[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type EnumGenderFieldUpdateOperationsInput = {
   set?: $Enums.Gender
 }

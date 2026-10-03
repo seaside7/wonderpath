@@ -4,19 +4,29 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   acceptRecommendation,
+  AdaptiveDifficultyDetail,
   ApiError,
   ChildProfile,
+  fetchAdaptiveDifficulty,
+  fetchAdaptiveDifficultyList,
   fetchMastery,
+  fetchMisconceptions,
   fetchRecommendations,
+  fetchSessionHistory,
   getChild,
   MasteryRecord,
+  MisconceptionSignal,
   RecommendationData,
+  SessionHistoryItem,
 } from "@/lib/api";
 import {
   formatEstimatedSession,
   formatRelativeTime,
   reasonBullets,
 } from "@/lib/format";
+import MisconceptionsSection from "./misconceptions-section";
+import AdaptiveDifficultySection from "./adaptive-difficulty-section";
+import RecentSessionsSection from "./recent-sessions-section";
 
 type Status = "loading" | "ready" | "no-session" | "empty" | "error";
 
@@ -31,6 +41,13 @@ export default function RecommendationDashboard({
   const [recommendation, setRecommendation] =
     useState<RecommendationData | null>(null);
   const [mastery, setMastery] = useState<MasteryRecord[]>([]);
+  const [misconceptions, setMisconceptions] = useState<MisconceptionSignal[]>(
+    [],
+  );
+  const [difficultyLevels, setDifficultyLevels] = useState<
+    AdaptiveDifficultyDetail[]
+  >([]);
+  const [sessions, setSessions] = useState<SessionHistoryItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
 
@@ -39,15 +56,34 @@ export default function RecommendationDashboard({
 
     async function load() {
       try {
-        const [profile, recommendations, masteryData] = await Promise.all([
+        const [
+          profile,
+          recommendations,
+          masteryData,
+          misconceptionsData,
+          difficultyList,
+          historyData,
+        ] = await Promise.all([
           getChild(childId),
           fetchRecommendations(childId),
           fetchMastery(childId),
+          fetchMisconceptions(childId),
+          fetchAdaptiveDifficultyList(childId),
+          fetchSessionHistory(childId),
         ]);
+
+        const details = await Promise.all(
+          difficultyList.difficulty.map((entry) =>
+            fetchAdaptiveDifficulty(childId, entry.subject),
+          ),
+        );
 
         if (cancelled) return;
         setChild(profile);
         setMastery(masteryData.mastery);
+        setMisconceptions(misconceptionsData.signals);
+        setDifficultyLevels(details);
+        setSessions(historyData.sessions);
         setStatus(
           recommendations.recommendations.length > 0 ? "ready" : "empty",
         );
@@ -125,6 +161,11 @@ export default function RecommendationDashboard({
 
   const top = recommendation?.recommendations[0] ?? null;
   const subject = recommendation?.session.subject ?? "Mathematics";
+  const firstName = child
+    ? (child.nickname?.trim() ||
+      child.fullName.split(" ")[0] ||
+      child.fullName)
+    : "Your child";
 
   return (
     <div className="flex flex-col gap-6">
@@ -253,6 +294,15 @@ export default function RecommendationDashboard({
           </ul>
         )}
       </section>
+
+      <MisconceptionsSection
+        signals={misconceptions}
+        childFirstName={firstName}
+      />
+
+      <AdaptiveDifficultySection levels={difficultyLevels} />
+
+      <RecentSessionsSection sessions={sessions} />
     </div>
   );
 }

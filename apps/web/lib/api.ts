@@ -86,6 +86,23 @@ export interface ParentProfile {
   id: string;
   email: string;
   createdAt: string;
+  hasPin: boolean;
+}
+
+export function setParentPin(pin: string): Promise<ParentProfile> {
+  return request<ParentProfile>("/me/pin", {
+    method: "POST",
+    headers: authorizedHeaders(),
+    body: JSON.stringify({ pin }),
+  });
+}
+
+export function verifyParentPin(pin: string): Promise<{ valid: boolean }> {
+  return request<{ valid: boolean }>("/me/pin/verify", {
+    method: "POST",
+    headers: authorizedHeaders(),
+    body: JSON.stringify({ pin }),
+  });
 }
 
 export function registerParent(input: {
@@ -348,4 +365,116 @@ export function fetchMastery(childId: string): Promise<MasteryData> {
   return request<MasteryData>(`/children/${childId}/mastery`, {
     headers: authorizedHeaders(),
   });
+}
+
+export interface EncouragementData {
+  sessionsCompared: number;
+  latestSessionCorrect: number;
+  latestSessionTotal: number;
+  correctRate: number;
+  averageResponseTimeMs: number;
+  responseTimeImprovementPct: number | null;
+  correctRateImprovementPct: number | null;
+}
+
+export interface EncouragementResponse {
+  message: string;
+  data: EncouragementData;
+}
+
+export function fetchEncouragement(
+  childId: string,
+): Promise<EncouragementResponse> {
+  return request<EncouragementResponse>(
+    `/children/${childId}/encouragement`,
+    { headers: authorizedHeaders() },
+  );
+}
+
+export interface MisconceptionSignal {
+  id: string;
+  signalType: string;
+  status: string;
+  evidenceCount: number;
+  confidence: number;
+  firstDetectedAt: string;
+  lastDetectedAt: string;
+  supportingAttemptIds: string[];
+  learningObjective: { id: string; name: string };
+}
+
+export interface MisconceptionsData {
+  childId: string;
+  signals: MisconceptionSignal[];
+}
+
+export function fetchMisconceptions(
+  childId: string,
+): Promise<MisconceptionsData> {
+  return request<MisconceptionsData>(
+    `/children/${childId}/misconceptions`,
+    { headers: authorizedHeaders() },
+  );
+}
+
+export interface AdaptiveDifficultyEntry {
+  subject: string;
+  currentDifficulty: number;
+}
+
+export interface AdaptiveDifficultyListData {
+  childId: string;
+  difficulty: AdaptiveDifficultyEntry[];
+}
+
+export function fetchAdaptiveDifficultyList(
+  childId: string,
+): Promise<AdaptiveDifficultyListData> {
+  return request<AdaptiveDifficultyListData>(
+    `/children/${childId}/adaptive-difficulty`,
+    { headers: authorizedHeaders() },
+  );
+}
+
+export interface AdaptiveDifficultyDetail {
+  childId: string;
+  subject: string;
+  currentDifficulty: number;
+  direction: "increase" | "decrease" | "maintain";
+  rationale: string;
+}
+
+export function fetchAdaptiveDifficulty(
+  childId: string,
+  subject: string,
+): Promise<AdaptiveDifficultyDetail> {
+  return request<AdaptiveDifficultyDetail>(
+    `/children/${childId}/adaptive-difficulty?subject=${encodeURIComponent(subject)}`,
+    { headers: authorizedHeaders() },
+  );
+}
+
+export interface SessionHistoryItem {
+  id: string;
+  subject: string;
+  curriculum: string;
+  status: string;
+  startedAt: string;
+  questionsAnswered: number;
+  correctCount: number;
+}
+
+export interface SessionHistoryData {
+  childId: string;
+  sessions: SessionHistoryItem[];
+}
+
+export function fetchSessionHistory(
+  childId: string,
+  limit = 10,
+): Promise<SessionHistoryData> {
+  return request<SessionHistoryData>(
+    `/children/${childId}/learning-sessions?limit=${limit}`,
+    { headers: authorizedHeaders() },
+  );
 }

@@ -28,6 +28,7 @@ export type ParentMinAggregateOutputType = {
   id: string | null
   email: string | null
   password: string | null
+  pinHash: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +37,7 @@ export type ParentMaxAggregateOutputType = {
   id: string | null
   email: string | null
   password: string | null
+  pinHash: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +46,7 @@ export type ParentCountAggregateOutputType = {
   id: number
   email: number
   password: number
+  pinHash: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -54,6 +57,7 @@ export type ParentMinAggregateInputType = {
   id?: true
   email?: true
   password?: true
+  pinHash?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +66,7 @@ export type ParentMaxAggregateInputType = {
   id?: true
   email?: true
   password?: true
+  pinHash?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +75,7 @@ export type ParentCountAggregateInputType = {
   id?: true
   email?: true
   password?: true
+  pinHash?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type ParentGroupByOutputType = {
   id: string
   email: string
   password: string
+  pinHash: string | null
   createdAt: Date
   updatedAt: Date
   _count: ParentCountAggregateOutputType | null
@@ -180,6 +187,7 @@ export type ParentWhereInput = {
   id?: Prisma.StringFilter<"Parent"> | string
   email?: Prisma.StringFilter<"Parent"> | string
   password?: Prisma.StringFilter<"Parent"> | string
+  pinHash?: Prisma.StringNullableFilter<"Parent"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Parent"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Parent"> | Date | string
   children?: Prisma.ChildListRelationFilter
@@ -189,6 +197,7 @@ export type ParentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  pinHash?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   children?: Prisma.ChildOrderByRelationAggregateInput
@@ -201,6 +210,7 @@ export type ParentWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ParentWhereInput[]
   NOT?: Prisma.ParentWhereInput | Prisma.ParentWhereInput[]
   password?: Prisma.StringFilter<"Parent"> | string
+  pinHash?: Prisma.StringNullableFilter<"Parent"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Parent"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Parent"> | Date | string
   children?: Prisma.ChildListRelationFilter
@@ -210,6 +220,7 @@ export type ParentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  pinHash?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ParentCountOrderByAggregateInput
@@ -224,6 +235,7 @@ export type ParentScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Parent"> | string
   email?: Prisma.StringWithAggregatesFilter<"Parent"> | string
   password?: Prisma.StringWithAggregatesFilter<"Parent"> | string
+  pinHash?: Prisma.StringNullableWithAggregatesFilter<"Parent"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Parent"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Parent"> | Date | string
 }
@@ -232,6 +244,7 @@ export type ParentCreateInput = {
   id?: string
   email: string
   password: string
+  pinHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ChildCreateNestedManyWithoutParentInput
@@ -241,6 +254,7 @@ export type ParentUncheckedCreateInput = {
   id?: string
   email: string
   password: string
+  pinHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ChildUncheckedCreateNestedManyWithoutParentInput
@@ -250,6 +264,7 @@ export type ParentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  pinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ChildUpdateManyWithoutParentNestedInput
@@ -259,6 +274,7 @@ export type ParentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  pinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ChildUncheckedUpdateManyWithoutParentNestedInput
@@ -268,6 +284,7 @@ export type ParentCreateManyInput = {
   id?: string
   email: string
   password: string
+  pinHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -276,6 +293,7 @@ export type ParentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  pinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -284,6 +302,7 @@ export type ParentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  pinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -292,6 +311,7 @@ export type ParentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  pinHash?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -300,6 +320,7 @@ export type ParentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  pinHash?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -308,6 +329,7 @@ export type ParentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  pinHash?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -319,6 +341,10 @@ export type ParentScalarRelationFilter = {
 
 export type StringFieldUpdateOperationsInput = {
   set?: string
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -343,6 +369,7 @@ export type ParentCreateWithoutChildrenInput = {
   id?: string
   email: string
   password: string
+  pinHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -351,6 +378,7 @@ export type ParentUncheckedCreateWithoutChildrenInput = {
   id?: string
   email: string
   password: string
+  pinHash?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -375,6 +403,7 @@ export type ParentUpdateWithoutChildrenInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  pinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -383,6 +412,7 @@ export type ParentUncheckedUpdateWithoutChildrenInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  pinHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -422,6 +452,7 @@ export type ParentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   id?: boolean
   email?: boolean
   password?: boolean
+  pinHash?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   children?: boolean | Prisma.Parent$childrenArgs<ExtArgs>
@@ -432,6 +463,7 @@ export type ParentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   email?: boolean
   password?: boolean
+  pinHash?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["parent"]>
@@ -440,6 +472,7 @@ export type ParentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   email?: boolean
   password?: boolean
+  pinHash?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["parent"]>
@@ -448,11 +481,12 @@ export type ParentSelectScalar = {
   id?: boolean
   email?: boolean
   password?: boolean
+  pinHash?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ParentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["parent"]>
+export type ParentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password" | "pinHash" | "createdAt" | "updatedAt", ExtArgs["result"]["parent"]>
 export type ParentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   children?: boolean | Prisma.Parent$childrenArgs<ExtArgs>
   _count?: boolean | Prisma.ParentCountOutputTypeDefaultArgs<ExtArgs>
@@ -469,6 +503,7 @@ export type $ParentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: string
     email: string
     password: string
+    pinHash: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["parent"]>
@@ -898,6 +933,7 @@ export interface ParentFieldRefs {
   readonly id: Prisma.FieldRef<"Parent", 'String'>
   readonly email: Prisma.FieldRef<"Parent", 'String'>
   readonly password: Prisma.FieldRef<"Parent", 'String'>
+  readonly pinHash: Prisma.FieldRef<"Parent", 'String'>
   readonly createdAt: Prisma.FieldRef<"Parent", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Parent", 'DateTime'>
 }

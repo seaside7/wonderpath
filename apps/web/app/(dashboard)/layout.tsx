@@ -1,10 +1,11 @@
 "use client";
 
 import { ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "../../lib/auth-context";
+import { getChildModeChildId } from "../../lib/child-mode";
 
 function DashboardHeader() {
   const { user, logout } = useAuth();
@@ -49,12 +50,29 @@ function DashboardHeader() {
 function AuthGate({ children }: { children: ReactNode }) {
   const { status } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");
+      return;
     }
-  }, [status, router]);
+    // The PIN prompt on the profile picker and the kid-mode lock icon are
+    // only entry points into this route group - they are not what actually
+    // keeps a child out of it. Without this check, typing /dashboard/manage
+    // directly (browser history, an autocompleted URL, a bookmark) renders
+    // the parent-only children list with zero PIN check, while still
+    // "in child mode" by the sessionStorage flag. Any successful PIN check
+    // clears that flag (see profile-picker.tsx and the (kid) layout), so
+    // this only blocks a skipped/bypassed check, not the legitimate flow.
+    if (
+      status === "authenticated" &&
+      pathname !== "/dashboard" &&
+      getChildModeChildId()
+    ) {
+      router.replace("/dashboard");
+    }
+  }, [status, pathname, router]);
 
   if (status === "loading") {
     return (
@@ -65,6 +83,13 @@ function AuthGate({ children }: { children: ReactNode }) {
   }
 
   if (status === "unauthenticated") {
+    return null;
+  }
+
+  // Checked synchronously during render (not just in the effect above) so a
+  // bypassed route never paints, even for a single frame, before the
+  // redirect takes effect.
+  if (pathname !== "/dashboard" && getChildModeChildId()) {
     return null;
   }
 
