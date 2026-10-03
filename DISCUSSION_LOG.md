@@ -6,6 +6,13 @@ This is distinct from `daily-update.md` (a diary of what was *done*) and `QA_NOT
 
 ---
 
+## 2026-10-03 (later)
+
+**Found: the built question flow's ordering contradicts its own written spec.**
+Checked `specs/sprint-15-web-question-answering-flow.md` directly: it explicitly says submit → show correct/incorrect first → *then* ask "how did that feel?" afterward. What's actually built (both the original parent-facing flow and the kid-facing one from Sprint 18) does it backwards — asks perceived difficulty *before* revealing correctness. No documented reason found for why it was built the opposite way; looks like a deviation that happened during implementation, not a decision anyone wrote down.
+
+Worth noting: there's a real argument the as-built order is actually *better* than the original spec — revealing correctness first could bias the child's self-report (calling something "Easy" in hindsight just because they got it right, or "Difficult" out of frustration after a careless wrong answer rather than genuine difficulty), which would quietly corrupt the exact signal the misconception/difficulty logic depends on. But that's a reasoned guess, not a documented decision. Founder said to just log this for now — needs an actual decision (keep as-built and update the spec to match reality, or "fix" it back to the original written order) before it's worth anyone touching the code.
+
 ## 2026-10-03
 
 **Idea → spec: a "level up" moment when adaptive difficulty increases, plus sound/animation for every correct/wrong answer.**
