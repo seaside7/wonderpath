@@ -1848,36 +1848,32 @@ When implementing a sprint:
 
 # 46. Current State at Handoff
 
-Current status:
+Current status (last updated 2026-09-20):
 
 ```text
 Sprint 01  ✅ Complete
 Sprint 02  ✅ Complete
 Sprint 03  ✅ Complete
 Sprint 04  ✅ Complete
-Sprint 05  🟡 Planned
+Sprint 05  ✅ Complete
+Sprint 06  ✅ Complete
+Sprint 07  ✅ Complete
+Sprint 08  ✅ Complete
+Sprint 09  ✅ Complete
+Sprint 10  ✅ Complete
+Sprint 11  ✅ Complete
+Sprint 12  ✅ Complete (Web Foundation & Auth)
+Sprint 13  ✅ Complete (Web Child Profile)
+Sprint 14  ✅ Complete (Web Learning Session Setup)
+Sprint 15  ✅ Built (Web Question Flow — not yet independently reviewed)
+Sprint 16  ✅ Built (Web Recommendation Dashboard — not yet independently reviewed)
 ```
 
-Latest confirmed Sprint 04 test:
+All of Sprints 5-11 (backend, `apps/api/src/atlas/`) and Sprints 12-16 (frontend, `apps/web`) exist in code. Sprints 5-11 have been through a full code review pass (correctness, security, architecture-convention checks) with fixes applied and verified — see Section 33 for detail if it's added there later, otherwise trust `apps/api/test/` (79/79 passing as of this update) over this doc if they conflict. Sprints 12-14 have been through a design/scope review with fixes applied (see the sprint-12/13/14 web specs). Sprints 15-16 exist and compile/build cleanly but have not had the same dedicated review pass the earlier sprints got — treat their correctness as less certain until reviewed.
 
-```text
-PASS test/question-bank/question-bank.e2e.ts
+Latest full backend regression: `apps/api/test/` — 79/79 passing (13 suites), verified after every change in this session.
 
-Question Bank (e2e)
-
-✓ Create Question
-✓ Update Question
-✓ Get Question
-✓ Search Question
-✓ Unauthorized Access
-✓ Delete Question
-
-Test Suites: 1 passed
-Tests: 6 passed
-Failures: 0
-```
-
-The next engineering task is Sprint 05, but only begin when explicitly instructed.
+QA seed content (Section 51) is done. `qa-agent/` (Section 50) has its full Atlas-concept coverage built and verified as of 2026-09-20; remaining before it can run unattended are a live real fix-cycle test and Task Scheduler registration. Do not start a new numbered sprint without explicit instruction.
 
 ---
 
@@ -1941,4 +1937,60 @@ WonderPath
 
 This could eventually go as far as separate repositories: `wonderpath-api`, `wonderpath-web`, `wonderpath-atlas`, `wonderpath-ai`.
 
-**This "Later" diagram is aspirational only — it describes a possible future, not a target to build toward right now.** Do not scaffold services, packages, message queues, or multi-repo tooling in anticipation of it. The only thing it should influence today is keeping Atlas's module boundary reasonably clean (no tangled cross-imports into `attempts`/`questions`/`sessions` internals) so that *if* the "Later" state is ever warranted, extraction isn't a rewrite. Nothing more.
+**This "Later" diagram is aspirational only — it describes a possible future, not a target to build toward right now.** Do not scaffold services, packages, message queues, or multi-repo tooling in anticipation of it. The only thing it should influence today is keeping Atlas's module boundary reasonably clean (no tangled cross-imports into `attempts`/`questions`/`sessions` internals) so that _if_ the "Later" state is ever warranted, extraction isn't a rewrite. Nothing more.
+
+---
+
+# 49. Node v24 / Prisma Module Format Note
+
+`apps/api` would not boot outside of Jest on this machine (Node v24) — `nest start`/`start:dev` crashed immediately with `ReferenceError: exports is not defined` inside the generated Prisma client. Two real, separate causes, both fixed:
+
+1. `apps/api/package.json` had no `"type"` field. Node v24's module-auto-detection heuristic was misdetecting the compiled (genuinely CommonJS) output as ESM. Fixed by adding `"type": "commonjs"` to `apps/api/package.json`.
+2. That exposed a second, real issue: Prisma's `generator client { provider = "prisma-client" }` (the newer ESM/CJS-hybrid generator) unconditionally emits `import.meta.url` in `generated/prisma/client.ts` to polyfill `__dirname` — genuine ESM-only syntax, not a detection false-positive. Fixed by adding `moduleFormat = "cjs"` to the generator block in `schema.prisma` and regenerating (`npx prisma generate`).
+
+Both are now permanent parts of the schema/config — do not remove `"type": "commonjs"` or `moduleFormat = "cjs"` without re-verifying the app actually boots on whatever Node version is in use, not just that `tsc`/Jest pass (Jest's module transform sidesteps this class of bug entirely, which is why it stayed hidden through every prior test run).
+
+If a `ts-node`/`tsx` script needs to run standalone (e.g. a seed script), plain `ts-node` conflicts with this project's `"module": "nodenext"` tsconfig in ways that are hard to override cleanly via `TS_NODE_COMPILER_OPTIONS`. The reliable path is: compile with the project's real `tsconfig.json` (`npx tsc -p tsconfig.json`, which includes everything under `apps/api/`, not just `src/`) and run the compiled output with plain `node dist/<path>.js`, the same way the app itself boots.
+
+---
+
+# 50. QA/Self-Improvement Agent (Built, Coverage Verified 2026-09-20)
+
+A local, unattended daily QA agent lives at `qa-agent/`. It drives the running app end-to-end (Playwright), checks behavior against `specs/sprint-01..16` and this document, logs findings, and attempts fixes for some findings via headless `claude -p` invocations — gated by the full `apps/api/test/` suite, on an isolated daily branch (`qa-agent/auto-fix-YYYY-MM-DD`) that is **never auto-merged or auto-pushed to `main`/`origin`**.
+
+**Run it yourself:** `cd qa-agent && npm run check` (dry-run, no git side effects) or `npm run fix` (real fix cycle, findings-gated, daily-capped) — equivalent to `node run.js --dry-run=true` / `--dry-run=false`.
+
+**Coverage (verified against real database rows, not just console output):** register → login → add child → start session → answer questions (3 personas × 8 questions) → end session, plus the full Atlas concept surface: recommendations (reason codes), misconceptions, adaptive difficulty ("this question is hard" / level changes), learning patterns, personality, encouragement, review-recommended recency, cross-parent isolation, no-repeat-question, attempt immutability, session status transitions, and the Living Question Bank admin view (via a dedicated `qa-agent-admin@qa-agent.test` account, `lib/db.js#ensureQaAdmin`). Confirmed by a 2026-09-20 run producing real rows in `wonderpath_qa`: 3 parents/children, 3 completed sessions, 24 attempts, 3 misconception signals, 3 adaptive-difficulty records, 9 learning-pattern records — a genuine exercise of the app, not an empty pass.
+
+**Two real bugs found and fixed while building this out (both in the agent itself, not the app):**
+1. Boot-timeout races on a cold start: `nest start`'s build and Next's first Turbopack compile of a page can each take well over the original 30s window on this machine's disk, and a timeout mid-build meant the cleanup swept the port before the slow process had bound to it, leaving an orphan that also hung the whole `qa-agent` process (its piped stdout/stderr listeners kept Node's event loop alive). Fixed in `qa-agent/lib/app-runner.js`: the web dev server is checked at the TCP level (fast, doesn't trigger a page compile as a side effect), each route is explicitly warmed with a generous timeout before Playwright ever touches it, and `stop()` now kills the process handles directly (not just by port) plus does a delayed re-sweep.
+2. Several of the new Atlas-concept checks assumed Title-Case display strings (`"Confirmed"`, `"Increase"`) where the real API returns raw, unmapped Prisma enum values or service-literal lowercase strings (`"CONFIRMED"`, `"increase"`) — always read the actual controller/service/DTO before writing an expectation check's valid-value list; the first run "found" 7 findings that were entirely this mistake, not app bugs.
+
+Hard guardrails (do not weaken these without the founder's explicit sign-off):
+- Never touches `schema.prisma`, `apps/api/src/auth/**`, or any payment/billing code (none exists yet, denylisted defensively anyway).
+- Never changes anything in Section 44 or the "Now vs. Later" section (48) — a finding that suggests one of these is wrong gets logged as a flagged recommendation, never auto-applied.
+- Runs against `wonderpath_qa` only (Section 51) — never the real dev database.
+- Fix commits land only on the daily branch; merging to `main` is always a separate, human-gated step.
+- Capped at 5 kept fixes/day; any regression in the full test suite reverts that specific commit immediately via `git reset --hard` (safe here specifically because the daily branch is never pushed/shared).
+
+**Not yet done:** a live real fix-cycle run (branch/commit/test/keep-or-revert mechanics untested against an actual finding), Windows Task Scheduler registration (`qa-agent/scheduler/install-task.ps1`), and `POST /admin/inventory/replenish` isn't exercised by any check yet (read-only admin checks only).
+
+---
+
+# 51. QA Test Database & Seed Data Convention
+
+A separate Postgres database, `wonderpath_qa`, exists on the same local container as the real `wonderpath` dev database (same `docker-compose.yml` service, different database name) — used for QA-agent runs and seed/test content only. **Never point `apps/api`'s own `DATABASE_URL` at it, and never run QA/seed scripts against the real `wonderpath` database.**
+
+Root-level `.env` (repo root, not `apps/api/.env`) holds QA-specific config, gitignored:
+```text
+OPENAI_API_KEY / DEEPSEEK_API_KEY   — for QA/seed content generation only
+QA_OPENAI_MODEL / QA_DEEPSEEK_MODEL / QA_OPENAI_REASONING_EFFORT
+QA_DATABASE_URL                      — must contain "wonderpath_qa"; scripts refuse to run otherwise
+```
+These are distinct from `apps/api/.env`'s `ATLAS_*` keys, which are the running app's own Sprint 07 content-generation config — different purpose, different database, never conflate the two.
+
+Seed/QA question generation lives at `apps/api/prisma/seed-qa-test-questions.ts` + `apps/api/prisma/qa-seed/` (`config.ts`, `llmGateway.ts`, `generate.ts`). All LLM calls go through one gateway module (`llmGateway.generate(provider, prompt)`) — nothing else calls OpenAI/DeepSeek directly. Every seeded question is tagged in `Question.metadata`: `{ isSeedData: true, seedProvider, seedModel, seedBatch }` — this is how seed data gets found and removed later once real content replaces it; there is no separate schema column for this (deliberately — no schema change was needed).
+
+**Confirmed decision (2026-09-20):** `Topic`/`Subtopic`/`LearningObjective` are not grade-scoped in the schema and stay that way for QA seed content — Grade 5 and Grade 6 share the same LearningObjective (e.g. one "Place Value" objective holds both grades' questions, differentiated only by `Question.grade` and question complexity). This matches the schema's actual design (mastery tracks per `(child, learningObjective)`, not per grade) and was an explicit founder decision, not an assumption.
+
+**Open concern flagged by the founder, not yet acted on:** because mastery aggregates across grades under this shared-objective model, Sprint 06's recommendation logic needs to eventually account for grade-appropriate difficulty exposure, not just aggregate mastery — otherwise a child who has mastered a topic at an easier grade's question difficulty could get skipped past harder, grade-appropriate practice at the same nominal mastery score. This is a real future consideration for the recommendation engine, not a bug in what exists today — do not "fix" this without it being explicitly scoped as its own piece of work.
