@@ -2017,3 +2017,23 @@ Seed/QA question generation lives at `apps/api/prisma/seed-qa-test-questions.ts`
 **Confirmed decision (2026-09-20):** `Topic`/`Subtopic`/`LearningObjective` are not grade-scoped in the schema and stay that way for QA seed content — Grade 5 and Grade 6 share the same LearningObjective (e.g. one "Place Value" objective holds both grades' questions, differentiated only by `Question.grade` and question complexity). This matches the schema's actual design (mastery tracks per `(child, learningObjective)`, not per grade) and was an explicit founder decision, not an assumption.
 
 **Open concern flagged by the founder, not yet acted on:** because mastery aggregates across grades under this shared-objective model, Sprint 06's recommendation logic needs to eventually account for grade-appropriate difficulty exposure, not just aggregate mastery — otherwise a child who has mastered a topic at an easier grade's question difficulty could get skipped past harder, grade-appropriate practice at the same nominal mastery score. This is a real future consideration for the recommendation engine, not a bug in what exists today — do not "fix" this without it being explicitly scoped as its own piece of work.
+
+---
+
+# 52. Staging Deployment (VPS, 2026-10-03) — Not Production
+
+A working deployment exists at **https://wonderpath.itsmesaid.id**, on the founder's existing shared VPS (`43.157.241.209`, see Section 50's qa-agent deployment for the same box). **This is explicitly a dev/staging environment, not the family-beta production release described in Sprint 20** — the founder said a dedicated domain for WonderPath will be used for the real production launch later. Do not treat this URL or setup as the final Sprint 20 target; it's a convenience environment to look at and test work in progress on a real, shareable URL instead of localhost.
+
+Setup:
+- `~/projects/wonderpath` on the VPS, `main` branch, pulled from `git@github.com:seaside7/wonderpath.git`.
+- Real `wonderpath` Postgres database (not `wonderpath_qa`) — migrated with all 12 migrations including `20261003092745_add_parent_pin`. This was the first time any migration was ever applied to this database; it had zero tables before.
+- `apps/api` built (`nest build`, serves from `dist/src/main.js`) and run via `pm2` as `wonderpath-api` on port **4001**. `apps/api/.env` on the VPS holds its own freshly-generated (not copied) `JWT_SECRET`/`ADMIN_JWT_SECRET`, `ATLAS_CONTENT_PROVIDER=mock` (no real OpenAI/DeepSeek key wired for live generation here), and `CORS_ORIGIN=https://wonderpath.itsmesaid.id`.
+- `apps/web` built (`next build`, reads `apps/web/.env.production` for `NEXT_PUBLIC_API_URL=https://wonderpath.itsmesaid.id/api`, baked in at build time) and run via `pm2` as `wonderpath-web` on port **4000**.
+- These ports are deliberately distinct from the qa-agent's 3098/3099 and local dev's 3000/3001, so all three can run on this VPS/machine without colliding.
+- nginx (`/etc/nginx/sites-available/wonderpath`) reverse-proxies `/` to port 4000 and `/api/` to port 4001 (trailing slash on `proxy_pass` strips the `/api/` prefix — the Nest app itself has no `/api` prefix). HTTPS via certbot/Let's Encrypt, same pattern as the existing `second-brain` subdomain on this box (both behind Cloudflare's proxy).
+- `pm2 save` + `pm2 startup systemd` registered, so both processes survive a VPS reboot.
+
+**Known limitations of this staging environment, by design (not bugs to silently fix):**
+- No content is seeded — a fresh session will hit "no questions available" until Sprint 20's actual content-seeding step happens (reusing `apps/api/prisma/seed-qa-test-questions.ts` against this database).
+- The `Child` hard-delete issue (Section 44/the DB audit) is **not fixed here** — this environment is fine for throwaway test data, but per Sprint 20's own spec, real/precious data should wait for the soft-delete fix regardless of which environment it's in.
+- No rate-limiting on `/auth/*` — acceptable for a not-publicly-announced staging URL, would need revisiting before any real production/public launch.
