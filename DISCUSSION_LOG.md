@@ -6,6 +6,11 @@ This is distinct from `daily-update.md` (a diary of what was *done*) and `QA_NOT
 
 ---
 
+## 2026-10-03 (even later)
+
+**Found while verifying Sprint 21: 3 of 1080 questions in the bank have leaked LLM reasoning text inside `explanation`, and at least one has a wrong `correctAnswer`.**
+While live-testing the level-up feature (driving a real browser through the kid question flow), one question's "explanation" shown to the child after answering read: *"...Perimeter = 2 × (17 + 12) = 2 × 29 = 58 m. Wait, check: 17+12=29, 29×2=58. But correct answer is 58? ...So I need to set correctAnswer to '58 m'. But I wrote '54 m' initially. I'll fix."* — the content generator's internal self-correction monologue, never cleaned up, shipped straight into the explanation field. Worse: the stored `correctAnswer` for that question is "54 m", but the model's own leaked reasoning concludes the real answer is "58 m" — meaning this question is currently marking a wrong answer as correct. Found 2 more with the same leaked-reasoning pattern (one also self-contradicts on true/false). Question IDs: `cmu9aelzp0093w2mgtstnjar9`, `cmu9bpc6s005ow2j0ns7qqsg1`, `cmu9bpw40006ow2j0nko1f8xe` (all in the local `wonderpath_qa` bank — this is the same 1080-question set that was copied onto the staging VPS, so it likely exists there too; checking staging now). Scale is small (0.3% of the bank) but worth a cleanup pass on the content-generation pipeline's post-processing (should have stripped/rejected any explanation containing self-referential phrases like "wait", "let me", "I'll fix") and a manual fix for these 3 specific rows (at minimum the "54 m" one, since a real child could get a correct answer marked wrong).
+
 ## 2026-10-03 (later)
 
 **Found: the built question flow's ordering contradicts its own written spec.**
