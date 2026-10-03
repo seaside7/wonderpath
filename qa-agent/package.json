@@ -1,0 +1,16 @@
+{
+  "name": "qa-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "Local unattended daily QA/self-improvement agent for WonderPath. Own folder, own deps - never modifies apps/api or apps/web dependencies.",
+  "scripts": {
+    "start": "node run.js",
+    "check": "node run.js --dry-run=true",
+    "fix": "node run.js --dry-run=false"
+  },
+  "dependencies": {
+    "playwright": "^1.63.0",
+    "argon2": "^0.43.0"
+  }
+}

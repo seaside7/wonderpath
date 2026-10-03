@@ -1,0 +1,33 @@
+{
+  "allowedRoots": [
+    "apps/api/src",
+    "apps/api/test",
+    "apps/web/app",
+    "apps/web/components",
+    "apps/web/lib"
+  ],
+  "deniedPatterns": [
+    "apps/api/prisma/schema.prisma",
+    "apps/api/prisma/migrations/**",
+    "apps/api/src/auth/**",
+    "apps/api/src/admin/**",
+    "apps/web/**/auth/**",
+    "apps/web/app/login/**",
+    "apps/web/app/register/**",
+    "apps/web/lib/auth-context.tsx",
+    "**/*payment*/**",
+    "**/*billing*/**",
+    "**/*stripe*/**",
+    "**/package.json",
+    "**/pnpm-lock.yaml",
+    "**/*.env*",
+    ".github/**",
+    "qa-agent/**",
+    "WonderPath_CLAUDE_CONTEXT.md"
+  ],
+  "dailyFixCap": 5,
+  "maxFindingsPerRun": 15,
+  "guardrailViolationWarnThreshold": 3,
+  "claudeTimeoutMs": 600000,
+  "processWatchdogMs": 7200000
+}
