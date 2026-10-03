@@ -311,7 +311,7 @@ export default function KidQuestionFlow({
             {question.options.map((option) => (
               <label
                 key={option}
-                className={`btn-tactile flex min-h-16 cursor-pointer items-center justify-center rounded-2xl border-2 px-4 py-4 text-center font-display text-xl ${
+                className={`btn-tactile flex min-h-16 cursor-pointer items-center justify-center rounded-2xl border-2 px-4 py-4 text-center text-lg font-semibold tabular-nums ${
                   selectedAnswer === option
                     ? "border-coral bg-coral/10 text-ink"
                     : "border-line bg-card text-ink"
