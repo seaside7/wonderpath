@@ -282,6 +282,15 @@ export default function KidQuestionFlow({
     );
   }
 
+  if (!question) {
+    // Unreachable in practice (every status that can land here always has
+    // a question set - "submitting" only follows a loaded question, and
+    // "question" with no question already returned above) - satisfies
+    // TypeScript's strict-null check for the access below without masking
+    // a real state bug behind a non-null assertion.
+    return null;
+  }
+
   return (
     <div className="flex w-full flex-1 flex-col justify-center">
     <div className="rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
