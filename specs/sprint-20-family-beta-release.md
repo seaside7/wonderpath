@@ -25,7 +25,7 @@ Flagged in `docs/05-database-design.md` and still true: `ChildService.remove()` 
 
 - Deploy `apps/api` + `apps/web` to the VPS, as **real production processes** (e.g. `pm2`, not `nest start`/`next dev`) — separate from the `qa-agent` setup, which stays dev-mode on its own ports against `wonderpath_qa`.
 - Production uses its own real database (the `wonderpath` database already defined in `docker-compose.yml`, distinct from `wonderpath_qa`) — never point production at the QA database or vice versa.
-- nginx reverse proxy + HTTPS (Let's Encrypt/certbot) on a subdomain — confirm the exact subdomain with the founder before provisioning (e.g. `wonderpath.itsmesaid.id`, matching the existing `second-brain` project's pattern on this same VPS).
+- nginx reverse proxy + HTTPS (Let's Encrypt/certbot) on **`wonderpath.itsmesaid.id`** (confirmed — a temporary choice for now, matching the existing `second-brain` project's pattern on this same VPS; revisit if the founder wants a different domain later).
 - **VPS resource check:** this VPS is shared with several other projects and currently sits at 2GB RAM. Confirm actual headroom with production API + web + Postgres + the existing other projects running together before going live — upgrade to the 4GB plan (already identified, cheap: ~Rp 90k/month, ~Rp 4k to switch) if it's tight. Do this check, don't assume either way.
 - Daily automated database backup (`pg_dump` on a cron, retained for some rolling window, e.g. 14 days) for the **production** `wonderpath` database. Once real attempt history exists, this is the actual safety net — soft delete (above) protects against one mistaken action, backups protect against everything else (bad migration, disk failure, etc.).
 
