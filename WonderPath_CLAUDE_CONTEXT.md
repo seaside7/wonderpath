@@ -1694,9 +1694,14 @@ Family Beta Release — production deploy, the Child soft-delete fix (hard
 prerequisite before real data exists), real content, and feedback paths
 (question-report + general feedback-to-Linear) — see specs/sprint-20-family-beta-release.md
 This is the family-beta milestone: the founder's daughter and wife using it for real.
+
+Sprint 21
+Feedback Moments — sound + animation for correct/wrong answers, and
+making the adaptive-difficulty level-up an actual celebrated moment
+for the child instead of a silent database field — see specs/sprint-21-feedback-moments.md
 ```
 
-Sprints 12-16 are a frontend track for `apps/web`, added to reach a demoable parent-facing product on top of the Sprint 1-6 backend. They deliberately stop at Sprint 6-level backend depth (Student Model + Recommendation Engine) — they do not wait for Sprints 07-11. Sprints 17-20 (added 2026-10-03) extend that track from "demoable to a friend" to "usable daily by the founder's own family" — child mode, a real kid-facing experience, a real parent dashboard, and a hardened deploy. `apps/cms` (internal admin tooling) is a separate, not-yet-scoped track.
+Sprints 12-16 are a frontend track for `apps/web`, added to reach a demoable parent-facing product on top of the Sprint 1-6 backend. They deliberately stop at Sprint 6-level backend depth (Student Model + Recommendation Engine) — they do not wait for Sprints 07-11. Sprints 17-20 (added 2026-10-03) extend that track from "demoable to a friend" to "usable daily by the founder's own family" — child mode, a real kid-facing experience, a real parent dashboard, and a hardened deploy. Sprint 21 (added 2026-10-03, prompted by testing the staging deploy with the founder's real daughter) adds the sound/animation/celebration layer the first pass of Sprint 18 didn't include. `apps/cms` (internal admin tooling) is a separate, not-yet-scoped track.
 
 A "product manager agent" (judging UX quality/child experience, not just spec-conformance — distinct from the QA agent in Section 50) was discussed 2026-10-03 and intentionally deferred until after Sprints 17-20 ship, so there's a real product to form opinions about.
 
