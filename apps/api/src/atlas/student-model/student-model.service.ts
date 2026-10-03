@@ -6,7 +6,10 @@ import {
 } from '../../../generated/prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { getOwnedChild } from '../../common/get-owned-child';
-import { MisconceptionService } from '../misconception/misconception.service';
+import {
+  LevelUpSignal,
+  MisconceptionService,
+} from '../misconception/misconception.service';
 import { LearningPatternService } from '../learning-pattern/learning-pattern.service';
 import { QuestionPerformanceService } from '../question-performance/question-performance.service';
 import { CreateAttemptDto } from './dto/create-attempt.dto';
@@ -112,7 +115,9 @@ export class StudentModelService {
     // derivations must not turn a successful write into a 500 for the
     // caller (which would also invite a client retry that creates a
     // duplicate attempt) - run independently and log, don't throw.
-    const sideEffects: Array<[string, Promise<void>]> = [
+    const sideEffects: Array<
+      [string, Promise<{ levelUp: LevelUpSignal | null } | void>]
+    > = [
       ['misconception', this.misconceptionService.recordAttempt(response.id)],
       [
         'learning-pattern',
@@ -125,6 +130,7 @@ export class StudentModelService {
     ];
 
     const results = await Promise.allSettled(sideEffects.map(([, p]) => p));
+    let levelUp: LevelUpSignal | null = null;
     results.forEach((result, index) => {
       if (result.status === 'rejected') {
         this.logger.error(
@@ -133,10 +139,15 @@ export class StudentModelService {
             ? result.reason.stack
             : result.reason,
         );
+      } else if (sideEffects[index][0] === 'misconception') {
+        const value = result.value;
+        if (value && typeof value === 'object') {
+          levelUp = value.levelUp;
+        }
       }
     });
 
-    return { ...response, explanation };
+    return { ...response, explanation, levelUp };
   }
 
   async getMastery(

@@ -18,5 +18,6 @@ export class AttemptResponseDto {
   reasonCodes: ReasonCodeValue[];
   metadata: Record<string, unknown> | null;
   explanation: string;
+  levelUp: { subject: string; newLevel: number } | null;
   createdAt: Date;
 }

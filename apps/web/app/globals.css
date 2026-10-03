@@ -129,7 +129,45 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .route-draw-path,
   .waypoint-pop,
-  .animate-pulse {
+  .animate-pulse,
+  .feedback-pop,
+  .feedback-settle,
+  .levelup-pop {
     animation-duration: 0.01s;
   }
+}
+
+/* Feedback moments: answer pop, gentle settle, level-up entrance */
+@keyframes feedback-pop {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.6;
+  }
+  60% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.feedback-pop {
+  animation: feedback-pop 0.28s ease-out both;
+}
+@keyframes feedback-settle {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.feedback-settle {
+  animation: feedback-settle 0.3s ease-out both;
+}
+.levelup-pop {
+  animation: waypoint-pop 0.5s ease-out both;
 }

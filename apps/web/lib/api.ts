@@ -244,6 +244,11 @@ export function fetchNextQuestion(sessionId: string): Promise<NextQuestionData> 
 
 export type PerceivedDifficulty = "Easy" | "Just Right" | "Difficult";
 
+export interface LevelUpSignal {
+  subject: string;
+  newLevel: number;
+}
+
 export interface AttemptResult {
   id: string;
   questionId: string;
@@ -254,6 +259,7 @@ export interface AttemptResult {
   perceivedDifficulty: PerceivedDifficulty;
   attemptNumber: number;
   explanation: string;
+  levelUp: LevelUpSignal | null;
 }
 
 export function submitAttempt(input: {

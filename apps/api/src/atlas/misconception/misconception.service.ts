@@ -43,6 +43,11 @@ interface WindowAnalysis {
   struggleCount: number;
 }
 
+export interface LevelUpSignal {
+  subject: string;
+  newLevel: number;
+}
+
 const statusToPrisma: Record<
   MisconceptionSignalStatus,
   PrismaMisconceptionStatus
@@ -69,7 +74,9 @@ const typeToPrisma: Record<MisconceptionSignalType, PrismaMisconceptionType> = {
 export class MisconceptionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async recordAttempt(attemptId: string): Promise<void> {
+  async recordAttempt(
+    attemptId: string,
+  ): Promise<{ levelUp: LevelUpSignal | null }> {
     const attempt = await this.prisma.questionAttempt.findUnique({
       where: { id: attemptId },
       select: {
@@ -86,7 +93,7 @@ export class MisconceptionService {
     });
 
     if (!attempt) {
-      return;
+      return { levelUp: null };
     }
 
     const metadata = attempt.question.metadata as Record<
@@ -120,7 +127,8 @@ export class MisconceptionService {
       await this.applySignal(attempt, signalType);
     }
 
-    await this.evaluateSubjectDifficulty(attempt);
+    const levelUp = await this.evaluateSubjectDifficulty(attempt);
+    return { levelUp };
   }
 
   async getMisconceptions(
@@ -259,7 +267,7 @@ export class MisconceptionService {
 
   private async evaluateSubjectDifficulty(
     attempt: AttemptEvidence,
-  ): Promise<void> {
+  ): Promise<LevelUpSignal | null> {
     const subject = mapSubjectFromPrisma(
       attempt.learningSession.subject as PrismaSubject,
     );
@@ -269,7 +277,7 @@ export class MisconceptionService {
     const direction = directionFromAnalysis(analysis);
 
     if (direction === 'maintain') {
-      return;
+      return null;
     }
 
     const existing = await this.prisma.childSubjectDifficulty.findUnique({
@@ -293,7 +301,7 @@ export class MisconceptionService {
     );
 
     if (next === current) {
-      return;
+      return null;
     }
 
     if (existing) {
@@ -310,6 +318,15 @@ export class MisconceptionService {
         },
       });
     }
+
+    // Only an increase is ever surfaced as a moment. Decreases are still
+    // persisted above (the engine keeps adapting) but stay invisible -
+    // this product does not narrate setbacks to the child.
+    if (direction !== 'increase') {
+      return null;
+    }
+
+    return { subject, newLevel: next };
   }
 
   private async recentSubjectAttempts(childId: string, subject: BankSubject) {

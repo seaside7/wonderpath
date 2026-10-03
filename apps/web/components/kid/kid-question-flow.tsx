@@ -13,6 +13,12 @@ import {
   ServedQuestion,
   submitAttempt,
 } from "@/lib/api";
+import {
+  ensureAudioReady,
+  playCorrect,
+  playLevelUp,
+  playWrong,
+} from "@/lib/sound";
 
 type Status =
   | "loading"
@@ -137,6 +143,9 @@ export default function KidQuestionFlow({
       return;
     }
 
+    // Start audio synchronously inside the tap gesture - browsers only allow
+    // AudioContext startup from a real user interaction.
+    ensureAudioReady();
     setStatus("submitting");
     setError(null);
 
@@ -159,6 +168,13 @@ export default function KidQuestionFlow({
       setAnsweredCount((count) => count + 1);
       setCorrectCount((count) => count + (result.correct ? 1 : 0));
       setStatus("feedback");
+      if (result.levelUp) {
+        playLevelUp();
+      } else if (result.correct) {
+        playCorrect();
+      } else {
+        playWrong();
+      }
     } catch {
       setError("Could not send your answer. Please try again.");
       setStatus("question");
@@ -243,11 +259,27 @@ export default function KidQuestionFlow({
     return (
       <div className="flex w-full flex-1 flex-col justify-center">
         <div className="rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+          {attempt.levelUp ? (
+            <div className="levelup-pop mb-3 rounded-2xl border-2 border-waypoint bg-waypoint/25 px-4 py-4 text-center">
+              <p className="font-display text-2xl font-semibold text-ink">
+                🎉 Level Up!
+              </p>
+              <p className="mt-1 text-base text-ink-soft">
+                {attempt.levelUp.subject} is now Level{" "}
+                {attempt.levelUp.newLevel}
+              </p>
+              <p aria-hidden="true" className="mt-2 flex justify-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-ink/20" />
+                <span className="h-2 w-2 rounded-full bg-ink/20" />
+                <span className="h-2.5 w-2.5 rounded-full bg-waypoint" />
+              </p>
+            </div>
+          ) : null}
           <p
             className={`rounded-2xl px-4 py-4 text-center font-display text-2xl font-semibold ${
               attempt.correct
-                ? "bg-trail/15 text-trail-deep"
-                : "bg-waypoint/25 text-ink"
+                ? "feedback-pop bg-trail/15 text-trail-deep"
+                : "feedback-settle bg-waypoint/25 text-ink"
             }`}
           >
             {attempt.correct ? "🎉 Correct!" : "Not quite."}
