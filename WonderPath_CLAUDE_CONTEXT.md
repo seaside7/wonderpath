@@ -1675,9 +1675,30 @@ Note: requires a new backend "serve next question" endpoint not covered by any S
 Sprint 16
 Web Recommendation & Mastery Dashboard (apps/web)
 This is the friend-demo milestone — see specs/sprint-16-web-recommendation-dashboard.md
+
+Sprint 17
+Child Mode ("Who's Learning?") — a profile picker + parent-PIN screen lock,
+NOT a second login/account system — see specs/sprint-17-child-mode.md
+
+Sprint 18
+The Child's Learning Experience — kid-friendly rework of the Today card and
+question flow, real encouragement on session end — see specs/sprint-18-child-learning-experience.md
+
+Sprint 19
+Parent Dashboard — links Sprint 16's orphaned recommendation/mastery view,
+adds misconceptions (CONFIRMED only) and adaptive difficulty, adds a new
+GET /children/:childId/learning-sessions endpoint — see specs/sprint-19-parent-dashboard.md
+
+Sprint 20
+Family Beta Release — production deploy, the Child soft-delete fix (hard
+prerequisite before real data exists), real content, and feedback paths
+(question-report + general feedback-to-Linear) — see specs/sprint-20-family-beta-release.md
+This is the family-beta milestone: the founder's daughter and wife using it for real.
 ```
 
-Sprints 12-16 are a frontend track for `apps/web`, added to reach a demoable parent-facing product on top of the Sprint 1-6 backend. They deliberately stop at Sprint 6-level backend depth (Student Model + Recommendation Engine) — they do not wait for Sprints 07-11. `apps/cms` (internal admin tooling) is a separate, not-yet-scoped track.
+Sprints 12-16 are a frontend track for `apps/web`, added to reach a demoable parent-facing product on top of the Sprint 1-6 backend. They deliberately stop at Sprint 6-level backend depth (Student Model + Recommendation Engine) — they do not wait for Sprints 07-11. Sprints 17-20 (added 2026-10-03) extend that track from "demoable to a friend" to "usable daily by the founder's own family" — child mode, a real kid-facing experience, a real parent dashboard, and a hardened deploy. `apps/cms` (internal admin tooling) is a separate, not-yet-scoped track.
+
+A "product manager agent" (judging UX quality/child experience, not just spec-conformance — distinct from the QA agent in Section 50) was discussed 2026-10-03 and intentionally deferred until after Sprints 17-20 ship, so there's a real product to form opinions about.
 
 Do not implement future features just because they are mentioned here.
 
@@ -1974,6 +1995,8 @@ Hard guardrails (do not weaken these without the founder's explicit sign-off):
 - Capped at 5 kept fixes/day; any regression in the full test suite reverts that specific commit immediately via `git reset --hard` (safe here specifically because the daily branch is never pushed/shared).
 
 **Not yet done:** a live real fix-cycle run (branch/commit/test/keep-or-revert mechanics untested against an actual finding), Windows Task Scheduler registration (`qa-agent/scheduler/install-task.ps1`), and `POST /admin/inventory/replenish` isn't exercised by any check yet (read-only admin checks only).
+
+**Linear sync (2026-10-03):** every finding (regardless of `--dry-run`) is opened as a Linear issue via `qa-agent/lib/linear.js`, so the founder and his wife can monitor findings from Linear directly instead of reading `qa-agent/daily-summary/`. Best-effort and silently skipped (not a run failure) if `LINEAR_API_KEY`/`LINEAR_TEAM_ID` aren't set. Dedup is tracked in a local state file outside the repo (same `STATE_DIR` convention as the run lock/ledger) keyed by a stable hash of `flow + expected` — deliberately not by Linear's own filter/search API, since its exact field names for filtering by description content aren't documented without live-introspecting the schema. This is a QA-agent feature only; a separate "product manager agent" that triages/prioritizes across both QA findings and human-reported feedback has been discussed but not scoped or built.
 
 ---
 
