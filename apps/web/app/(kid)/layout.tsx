@@ -9,6 +9,7 @@ import {
   getChildModeChildId,
 } from "@/lib/child-mode";
 import PinEntry from "@/components/child-mode/pin-entry";
+import TrailBackdrop from "@/components/ui/trail-backdrop";
 
 function KidHeader({ onLock }: { onLock: () => void }) {
   return (
@@ -136,9 +137,10 @@ export default function KidLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-fog">
+    <div className="relative isolate flex min-h-dvh flex-col bg-fog">
+      <TrailBackdrop variant="playful" />
       <KidHeader onLock={handleLockTap} />
-      <div className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-10">
         {children}
       </div>
       {showPin ? (

@@ -24,19 +24,19 @@ export default function MisconceptionsSection({
   }
 
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-zinc-900">Things to Watch</h2>
-      <ul className="mt-4 flex flex-col divide-y divide-zinc-100">
+    <section className="rounded-3xl bg-card p-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+      <h2 className="font-display text-xl text-ink">Things to Watch</h2>
+      <ul className="mt-4 flex flex-col divide-y divide-line">
         {confirmed.map((signal) => (
-          <li key={signal.id} className="py-3">
-            <p className="text-sm font-medium text-zinc-900">
+          <li key={signal.id} className="py-3.5">
+            <p className="text-sm font-medium text-ink">
               {signal.learningObjective.name}
             </p>
-            <p className="mt-0.5 text-sm text-zinc-600">
+            <p className="mt-0.5 text-sm text-ink-soft">
               {childFirstName} {misconceptionSentence(signal.signalType)}
             </p>
-            <p className="mt-1 text-xs text-zinc-500">
-              Confirmed · {evidenceLabel(signal.evidenceCount)}
+            <p className="mt-1.5 text-xs text-ink-soft">
+              Confirmed, based on {evidenceLabel(signal.evidenceCount)}
             </p>
           </li>
         ))}

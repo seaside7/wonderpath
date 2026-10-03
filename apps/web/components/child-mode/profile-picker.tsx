@@ -108,55 +108,72 @@ export default function ProfilePicker() {
   }
 
   return (
-    <section>
-      <h1 className="font-display text-4xl text-ink">Who&apos;s learning?</h1>
-      <p className="mt-2 text-sm text-ink-soft">
-        Pick a profile to continue.
+    <section className="flex flex-1 flex-col items-center justify-center text-center">
+      <h1 className="font-display text-5xl text-ink">
+        Who&apos;s learning today?
+      </h1>
+      <p className="mt-3 max-w-md text-base text-ink-soft">
+        Pick a stop on the path to begin.
       </p>
 
-      <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {children.map((child) => (
-          <li key={child.id}>
-            <button
-              type="button"
-              onClick={() => handleSelectChild(child)}
-              className="btn-tactile flex w-full flex-col items-center gap-3 border-l-2 border-waypoint bg-card px-6 py-8"
-            >
-              <span
-                aria-hidden="true"
-                className={`flex h-16 w-16 items-center justify-center rounded-full font-display text-2xl font-bold text-white ${avatarColor(child.fullName)}`}
+      <ul className="mt-12 flex flex-wrap items-start justify-center gap-6">
+        {children.map((child) => {
+          const label = child.nickname?.trim() ? child.nickname : child.fullName;
+          return (
+            <li key={child.id}>
+              <button
+                type="button"
+                onClick={() => handleSelectChild(child)}
+                className="btn-tactile group flex w-52 flex-col items-center gap-4 rounded-2xl bg-card px-6 py-9 shadow-[0_1px_2px_rgba(46,42,92,0.06)] transition-shadow hover:shadow-[0_8px_24px_rgba(46,42,92,0.12)]"
               >
-                {child.fullName.charAt(0).toUpperCase()}
-              </span>
-              <span className="font-display text-2xl text-ink">
-                {child.nickname?.trim() ? child.nickname : child.fullName}
-              </span>
-              <span className="text-sm text-ink-soft">{child.grade}</span>
-            </button>
-          </li>
-        ))}
-        <li>
-          <button
-            type="button"
-            onClick={handleParentCard}
-            className="btn-tactile flex w-full flex-col items-center gap-3 border-l-2 border-line bg-card px-6 py-8"
-          >
-            <span
-              aria-hidden="true"
-              className="flex h-16 w-16 items-center justify-center rounded-full bg-ink font-display text-2xl font-bold text-white"
-            >
-              P
-            </span>
-            <span className="font-display text-2xl text-ink">Parent</span>
-            <span className="text-sm text-ink-soft">
-              {hasPin ? "Enter PIN to manage" : "Manage profiles"}
-            </span>
-          </button>
-        </li>
+                <span
+                  aria-hidden="true"
+                  className={`flex h-20 w-20 items-center justify-center rounded-full font-display text-3xl font-bold text-white ${avatarColor(child.fullName)}`}
+                >
+                  {label.charAt(0).toUpperCase()}
+                </span>
+                <span className="flex flex-col items-center gap-1">
+                  <span className="font-display text-2xl text-ink">
+                    {label}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-sm text-ink-soft">
+                    <span
+                      aria-hidden="true"
+                      className="h-1.5 w-1.5 rounded-full bg-waypoint"
+                    />
+                    {child.grade}
+                  </span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
 
+      <button
+        type="button"
+        onClick={handleParentCard}
+        className="btn-tactile group mt-14 inline-flex items-center gap-2.5 rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:border-ink-soft hover:text-ink"
+      >
+        <svg
+          aria-hidden="true"
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        {hasPin ? "Parent · enter PIN" : "Parent"}
+      </button>
+
       {showPin ? (
-        <div className="mt-8 border-l-2 border-waypoint bg-card px-6 py-6">
+        <div className="mt-6 w-full max-w-sm rounded-2xl bg-card px-6 py-6 text-left shadow-[0_8px_24px_rgba(46,42,92,0.12)]">
           <PinEntry
             key={pinAttempt}
             onComplete={(pin) => void handlePinComplete(pin)}

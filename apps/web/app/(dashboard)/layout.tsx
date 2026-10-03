@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "../../lib/auth-context";
 import { getChildModeChildId } from "../../lib/child-mode";
+import TrailBackdrop from "../../components/ui/trail-backdrop";
 
 function DashboardHeader() {
   const { user, logout } = useAuth();
@@ -94,9 +95,10 @@ function AuthGate({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-fog">
+    <div className="relative isolate flex min-h-screen flex-col bg-fog">
+      <TrailBackdrop variant="calm" />
       <DashboardHeader />
-      <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
+      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-10">
         {children}
       </div>
     </div>

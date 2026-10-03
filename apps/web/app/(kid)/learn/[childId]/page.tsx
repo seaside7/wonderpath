@@ -12,7 +12,7 @@ interface KidTodayPageProps {
 export default async function KidTodayPage({ params }: KidTodayPageProps) {
   const { childId } = await params;
   return (
-    <main>
+    <main className="flex flex-1 flex-col">
       <KidTodayCard childId={childId} />
     </main>
   );

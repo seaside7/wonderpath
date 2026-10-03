@@ -104,9 +104,9 @@ export default function KidTodayCard({ childId }: { childId: string }) {
 
   if (status === "fallback" || showPicker) {
     return (
-      <div>
-        <h1 className="font-display text-4xl text-ink">Hi {name}! 👋</h1>
-        <p className="mb-6 mt-2 text-base text-ink-soft">
+      <div className="flex w-full flex-1 flex-col justify-center">
+        <h1 className="font-display text-4xl text-ink">Hi {name}</h1>
+        <p className="mb-7 mt-2 text-base text-ink-soft">
           {showPicker
             ? "No problem — pick what sounds fun."
             : "Let's pick what to practice today."}
@@ -116,7 +116,7 @@ export default function KidTodayCard({ childId }: { childId: string }) {
           <button
             type="button"
             onClick={() => setShowPicker(false)}
-            className="btn-tactile mt-4 rounded-xl px-4 py-2.5 text-sm font-medium text-ink-soft"
+            className="btn-tactile mt-4 self-start rounded-xl px-4 py-2.5 text-sm font-medium text-ink-soft"
           >
             Back to today&apos;s pick
           </button>
@@ -126,53 +126,56 @@ export default function KidTodayCard({ childId }: { childId: string }) {
   }
 
   return (
-    <div>
-      <h1 className="font-display text-4xl text-ink">Hi {name}! 👋</h1>
+    <div className="flex w-full flex-1 flex-col justify-center">
+      <h1 className="font-display text-4xl text-ink">Hi {name}</h1>
 
-      <div className="mt-6 border-l-2 border-waypoint bg-card px-6 py-6">
-        <p className="text-sm font-medium text-ink-soft">Today let&apos;s practice</p>
-        <p className="mt-1 font-display text-3xl text-ink">
-          {top?.learningObjective.name}
-        </p>
-        {top ? (
-          <p className="mt-3 text-base leading-7 text-ink-soft">
-            {kidReasonLine(top.reasonCodes)}
-            {top.learningObjective.estimatedMasteryTime > 0 ? (
-              <>
-                {" "}
-                About{" "}
-                {formatEstimatedSession(
-                  top.learningObjective.estimatedMasteryTime,
-                )}
-                .
-              </>
-            ) : null}
+      <div className="mt-7 rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+          <p className="flex items-center gap-2.5 font-display text-3xl text-ink">
+            <span
+              aria-hidden="true"
+              className="h-2.5 w-2.5 shrink-0 rounded-full bg-waypoint"
+            />
+            {top?.learningObjective.name}
           </p>
-        ) : null}
+          {top ? (
+            <p className="mt-3 text-base leading-7 text-ink-soft">
+              {kidReasonLine(top.reasonCodes)}
+              {top.learningObjective.estimatedMasteryTime > 0 ? (
+                <>
+                  {" "}
+                  About{" "}
+                  {formatEstimatedSession(
+                    top.learningObjective.estimatedMasteryTime,
+                  )}
+                  .
+                </>
+              ) : null}
+            </p>
+          ) : null}
 
-        {error ? (
-          <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
-            {error}
-          </p>
-        ) : null}
+          {error ? (
+            <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
+              {error}
+            </p>
+          ) : null}
 
-        <div className="mt-6 flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={() => void handleStart()}
-            disabled={starting}
-            className="btn-tactile btn-primary w-full rounded-2xl px-4 py-4 font-display text-xl font-semibold disabled:opacity-60"
-          >
-            {starting ? "Starting…" : "Start Learning"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowPicker(true)}
-            className="btn-tactile w-full rounded-2xl border border-line bg-card px-4 py-3.5 text-base font-medium text-ink"
-          >
-            Choose Something Else
-          </button>
-        </div>
+          <div className="mt-7 flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={() => void handleStart()}
+              disabled={starting}
+              className="btn-tactile btn-primary w-full rounded-2xl px-4 py-4 font-display text-xl font-semibold disabled:opacity-60"
+            >
+              {starting ? "Starting…" : "Start Learning"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowPicker(true)}
+              className="btn-tactile w-full rounded-2xl border border-line bg-card px-4 py-3.5 text-base font-medium text-ink"
+            >
+              Choose Something Else
+            </button>
+          </div>
       </div>
     </div>
   );

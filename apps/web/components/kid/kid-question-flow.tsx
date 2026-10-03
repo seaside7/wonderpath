@@ -185,7 +185,8 @@ export default function KidQuestionFlow({
 
   if (status === "error" || !question || (status === "feedback" && !attempt)) {
     return (
-      <div className="border-l-2 border-waypoint bg-card px-6 py-6">
+      <div className="flex w-full flex-1 flex-col justify-center">
+      <div className="rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
         <p className="rounded-xl bg-coral/10 px-3.5 py-2.5 text-base text-coral-deep">
           {error ?? "Something went wrong."}
         </p>
@@ -206,76 +207,85 @@ export default function KidQuestionFlow({
           </button>
         </div>
       </div>
+      </div>
     );
   }
 
   if (status === "summary") {
     return (
-      <div className="border-l-2 border-waypoint bg-card px-6 py-8 text-center">
-        <p className="font-display text-3xl text-ink">
-          Awesome work{summaryName ? `, ${summaryName}` : ""}! 🎉
-        </p>
-        <p className="mx-auto mt-3 max-w-md text-base leading-7 text-ink-soft">
-          {summary}
-        </p>
-        <button
-          type="button"
-          onClick={() => router.push(`/learn/${childId}`)}
-          className="btn-tactile btn-primary mt-6 rounded-2xl px-6 py-3.5 font-display text-lg font-semibold"
-        >
-          Back to Today
-        </button>
-      </div>
-    );
-  }
-
-  if (status === "feedback" && attempt) {
-    return (
-      <div className="border-l-2 border-waypoint bg-card px-6 py-6">
-        <p
-          className={`rounded-2xl px-4 py-4 text-center font-display text-2xl font-semibold ${
-            attempt.correct
-              ? "bg-trail/15 text-trail-deep"
-              : "bg-waypoint/25 text-ink"
-          }`}
-        >
-          {attempt.correct ? "🎉 Correct!" : "Not quite."}
-        </p>
-        <p className="mt-4 text-base leading-7 text-ink-soft">
-          {attempt.explanation}
-        </p>
-        {error ? (
-          <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
-            {error}
+      <div className="flex w-full flex-1 flex-col justify-center text-center">
+        <div className="rounded-3xl bg-card px-7 py-9 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+          <p className="font-display text-3xl text-ink">
+            Awesome work{summaryName ? `, ${summaryName}` : ""}! 🎉
           </p>
-        ) : null}
-        <div className="mt-6 flex flex-col gap-3">
+          <p className="mx-auto mt-3 max-w-md text-base leading-7 text-ink-soft">
+            {summary}
+          </p>
           <button
             type="button"
-            onClick={reload}
-            className="btn-tactile btn-primary w-full rounded-2xl px-4 py-3.5 font-display text-lg font-semibold"
+            onClick={() => router.push(`/learn/${childId}`)}
+            className="btn-tactile btn-primary mt-6 rounded-2xl px-6 py-3.5 font-display text-lg font-semibold"
           >
-            Next →
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleFinish()}
-            disabled={finishing}
-            className="btn-tactile w-full rounded-2xl border border-line bg-card px-4 py-3 text-base font-medium text-ink disabled:opacity-60"
-          >
-            {finishing ? "Finishing…" : "Finish for today"}
+            Back to Today
           </button>
         </div>
       </div>
     );
   }
 
+  if (status === "feedback" && attempt) {
+    return (
+      <div className="flex w-full flex-1 flex-col justify-center">
+        <div className="rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+          <p
+            className={`rounded-2xl px-4 py-4 text-center font-display text-2xl font-semibold ${
+              attempt.correct
+                ? "bg-trail/15 text-trail-deep"
+                : "bg-waypoint/25 text-ink"
+            }`}
+          >
+            {attempt.correct ? "🎉 Correct!" : "Not quite."}
+          </p>
+          <p className="mt-4 text-base leading-7 text-ink-soft">
+            {attempt.explanation}
+          </p>
+          {error ? (
+            <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
+              {error}
+            </p>
+          ) : null}
+          <div className="mt-6 flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={reload}
+              className="btn-tactile btn-primary w-full rounded-2xl px-4 py-3.5 font-display text-lg font-semibold"
+            >
+              Next Question
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleFinish()}
+              disabled={finishing}
+              className="btn-tactile w-full rounded-2xl border border-line bg-card px-4 py-3 text-base font-medium text-ink disabled:opacity-60"
+            >
+              {finishing ? "Finishing…" : "Finish for today"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="border-l-2 border-waypoint bg-card px-6 py-6">
-      <p className="text-sm font-medium text-ink-soft">
-        Question {answeredCount + 1}
-      </p>
-      <h2 className="mt-2 font-display text-3xl leading-snug text-ink">
+    <div className="flex w-full flex-1 flex-col justify-center">
+    <div className="rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+      <div className="flex items-center gap-2">
+        <span aria-hidden="true" className="h-2 w-2 rounded-full bg-waypoint" />
+        <span className="text-sm font-medium text-ink-soft">
+          Question {answeredCount + 1}
+        </span>
+      </div>
+      <h2 className="mt-4 font-display text-3xl leading-snug text-ink">
         {question.questionText}
       </h2>
 
@@ -310,7 +320,7 @@ export default function KidQuestionFlow({
             disabled={!selectedAnswer}
             className="btn-tactile btn-primary mt-6 w-full rounded-2xl px-4 py-3.5 font-display text-lg font-semibold disabled:opacity-60"
           >
-            Next →
+            Continue
           </button>
         </fieldset>
       ) : (
@@ -370,6 +380,7 @@ export default function KidQuestionFlow({
           </div>
         </fieldset>
       )}
+    </div>
     </div>
   );
 }

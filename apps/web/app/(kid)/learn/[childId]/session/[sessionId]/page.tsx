@@ -14,7 +14,7 @@ export default async function KidSessionPage({
 }: KidSessionPageProps) {
   const { childId, sessionId } = await params;
   return (
-    <main>
+    <main className="flex flex-1 flex-col">
       <KidQuestionFlow childId={childId} sessionId={sessionId} />
     </main>
   );
