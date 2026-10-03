@@ -34,4 +34,7 @@ module.exports = {
   QA_DATABASE_URL,
   API_PORT: Number(process.env.QA_API_PORT || 3099),
   WEB_PORT: Number(process.env.QA_WEB_PORT || 3098),
+  // Optional - Linear issue sync is skipped (not a failure) when unset.
+  LINEAR_API_KEY: process.env.LINEAR_API_KEY || null,
+  LINEAR_TEAM_ID: process.env.LINEAR_TEAM_ID || null,
 };

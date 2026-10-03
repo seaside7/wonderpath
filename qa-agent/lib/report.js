@@ -49,6 +49,7 @@ function writeDailySummary(summaryData, qaAgentDir) {
     guardrailViolations,
     unmergedBranches,
     errors,
+    linearSync,
   } = summaryData;
 
   const bySeverity = { critical: 0, high: 0, medium: 0, low: 0 };
@@ -106,6 +107,25 @@ function writeDailySummary(summaryData, qaAgentDir) {
     lines.push('- Nothing needs a decision today.');
   }
   lines.push('');
+
+  if (linearSync && !linearSync.skipped) {
+    lines.push('## Linear', '');
+    if (linearSync.created.length) {
+      for (const { issue } of linearSync.created) {
+        lines.push(`- Opened [${issue.identifier}](${issue.url})`);
+      }
+    }
+    if (linearSync.alreadyTracked.length) {
+      lines.push(`- ${linearSync.alreadyTracked.length} finding(s) already have an open Linear issue from a previous run.`);
+    }
+    if (linearSync.failed.length) {
+      lines.push(`- ⚠️ ${linearSync.failed.length} finding(s) failed to sync to Linear: ${linearSync.failed.map((f) => f.error).join('; ')}`);
+    }
+    if (!linearSync.created.length && !linearSync.alreadyTracked.length && !linearSync.failed.length) {
+      lines.push('- Nothing to sync today.');
+    }
+    lines.push('');
+  }
 
   if (errors.length) {
     lines.push('## Run errors', '');

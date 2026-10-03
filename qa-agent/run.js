@@ -9,6 +9,7 @@ const { startApps } = require('./lib/app-runner');
 const ledger = require('./lib/ledger');
 const { attemptFix } = require('./lib/fixer');
 const { writeFindingsLog, writeDailySummary } = require('./lib/report');
+const { syncFindingsToLinear } = require('./lib/linear');
 
 const { registerParent, loginParent } = require('./lib/flows/register-login');
 const { addChild } = require('./lib/flows/add-child');
@@ -277,6 +278,21 @@ async function main() {
     appHandle.stop();
     appHandle = null;
 
+    // Best-effort, independent of --dry-run: the founder and his wife watch
+    // Linear directly, so findings should show up there whether or not a
+    // fix is attempted this run.
+    const linearSync = await syncFindingsToLinear(findings, {
+      apiKey: config.LINEAR_API_KEY,
+      teamId: config.LINEAR_TEAM_ID,
+    });
+    if (linearSync.skipped) {
+      console.log(`Linear sync skipped: ${linearSync.reason}`);
+    } else {
+      console.log(
+        `Linear sync: ${linearSync.created.length} opened, ${linearSync.alreadyTracked.length} already tracked, ${linearSync.failed.length} failed.`,
+      );
+    }
+
     const outcomes = new Map();
     const guardrailViolations = [];
     const keptCommits = [];
@@ -339,6 +355,7 @@ async function main() {
         guardrailViolations,
         unmergedBranches: [], // TODO: enumerate qa-agent/auto-fix-* branches without a merged PR
         errors,
+        linearSync,
       },
       __dirname,
     );
