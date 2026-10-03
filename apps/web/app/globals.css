@@ -128,7 +128,8 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .route-draw-path,
-  .waypoint-pop {
+  .waypoint-pop,
+  .animate-pulse {
     animation-duration: 0.01s;
   }
 }

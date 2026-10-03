@@ -28,6 +28,45 @@ import MisconceptionsSection from "./misconceptions-section";
 import AdaptiveDifficultySection from "./adaptive-difficulty-section";
 import RecentSessionsSection from "./recent-sessions-section";
 
+// This screen makes several network calls before it has anything real to
+// show (child profile, recommendations, mastery, misconceptions, adaptive
+// difficulty per subject, session history) - on a first/cold load that's
+// long enough to be noticeable. A skeleton matching the real card layout
+// tells the parent "this is loading, here's roughly what's coming" instead
+// of a near-empty page that reads as broken.
+function DashboardSkeleton() {
+  return (
+    <div className="flex animate-pulse flex-col gap-5" aria-busy="true" aria-live="polite">
+      <span className="sr-only">Loading your child&apos;s progress…</span>
+      <div className="rounded-3xl bg-card p-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+        <div className="h-3 w-24 rounded-full bg-line" />
+        <div className="mt-4 h-7 w-2/3 rounded-full bg-line" />
+        <div className="mt-3 h-4 w-full rounded-full bg-line" />
+        <div className="mt-2 h-4 w-4/5 rounded-full bg-line" />
+        <div className="mt-6 flex gap-3">
+          <div className="h-10 w-36 rounded-xl bg-line" />
+          <div className="h-10 w-40 rounded-xl bg-line" />
+        </div>
+      </div>
+      <div className="rounded-3xl bg-card p-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+        <div className="h-5 w-28 rounded-full bg-line" />
+        <div className="mt-5 flex flex-col gap-4">
+          {[0, 1].map((i) => (
+            <div key={i} className="flex items-center justify-between gap-3">
+              <div className="h-4 w-1/2 rounded-full bg-line" />
+              <div className="h-4 w-12 rounded-full bg-line" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="rounded-3xl bg-card p-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+        <div className="h-5 w-32 rounded-full bg-line" />
+        <div className="mt-5 h-4 w-3/4 rounded-full bg-line" />
+      </div>
+    </div>
+  );
+}
+
 type Status = "loading" | "ready" | "no-session" | "empty" | "error";
 
 export default function RecommendationDashboard({
@@ -126,7 +165,7 @@ export default function RecommendationDashboard({
   }
 
   if (status === "loading") {
-    return <p className="text-sm text-ink-soft">Loading…</p>;
+    return <DashboardSkeleton />;
   }
 
   if (status === "error") {
