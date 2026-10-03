@@ -1,26 +1,134 @@
 @import "tailwindcss";
 
+@theme {
+  --color-ink: #2e2a5c;
+  --color-ink-soft: #4a457e;
+  --color-fog: #f5f7ff;
+  --color-coral: #ff6b4a;
+  --color-coral-deep: #e55736;
+  --color-trail: #3ddc97;
+  --color-trail-deep: #1e9e6a;
+  --color-waypoint: #ffc857;
+  --color-card: #ffffff;
+  --color-line: #e3e8f5;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f7ff;
+  --foreground: #2e2a5c;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
+
+/* Tactile buttons: subtle press feedback, not just color swap */
+.btn-tactile {
+  transition:
+    transform 120ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.btn-tactile:active {
+  transform: scale(0.97);
+}
+.btn-primary {
+  background-color: var(--color-coral);
+  color: #fff;
+  box-shadow: 0 1px 0 rgba(46, 42, 92, 0.18);
+}
+.btn-primary:hover {
+  background-color: var(--color-coral-deep);
+}
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Form fields glow with accent on focus */
+.field-glow {
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 0.625rem;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.field-glow:focus {
+  outline: none;
+  border-color: var(--color-coral);
+  box-shadow: 0 0 0 3px rgba(255, 107, 74, 0.22);
+}
+
+/* Resume button gentle pulse — the one card meant to feel alive */
+@keyframes resume-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 74, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 107, 74, 0);
+  }
+}
+.resume-pulse {
+  animation: resume-pulse 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .resume-pulse {
+    animation: none;
+  }
+}
+
+/* Register wow moment: route path draws itself */
+@keyframes route-draw {
+  from {
+    stroke-dashoffset: 320;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.route-draw-path {
+  stroke-dasharray: 320;
+  stroke-dashoffset: 320;
+  animation: route-draw 1.1s ease-out forwards;
+}
+@keyframes waypoint-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.waypoint-pop {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: waypoint-pop 0.5s ease-out 0.85s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-draw-path,
+  .waypoint-pop {
+    animation-duration: 0.01s;
+  }
 }

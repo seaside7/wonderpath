@@ -7,12 +7,12 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <main className="flex flex-1 items-center justify-center px-4 py-16">
-      <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
-        <h1 className="mb-1 text-2xl font-semibold text-zinc-900">
+    <main className="flex flex-1 items-center justify-center bg-fog px-4 py-16">
+      <div className="w-full max-w-sm rounded-2xl border border-line bg-card p-8">
+        <h1 className="font-display mb-1 text-3xl text-ink">
           Create an account
         </h1>
-        <p className="mb-6 text-sm text-zinc-600">
+        <p className="mb-6 text-sm text-ink-soft">
           Start guiding your child&apos;s learning journey.
         </p>
         <RegisterForm />

@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Link from "next/link";
 import { useAuth } from "../../lib/auth-context";
 
 function DashboardHeader() {
@@ -15,17 +16,27 @@ function DashboardHeader() {
   }
 
   return (
-    <header className="border-b border-zinc-200 bg-white">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <span className="text-lg font-semibold text-zinc-900">WonderPath</span>
+    <header className="border-b border-line bg-ink text-white">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5">
+        <Link href="/dashboard" className="flex items-center gap-2.5">
+          <span
+            aria-hidden="true"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-waypoint font-display text-sm font-bold text-ink"
+          >
+            W
+          </span>
+          <span className="font-display text-lg font-semibold tracking-tight">
+            WonderPath
+          </span>
+        </Link>
         <div className="flex items-center gap-4">
           {user ? (
-            <span className="text-sm text-zinc-500">{user.email}</span>
+            <span className="text-sm text-white/70">{user.email}</span>
           ) : null}
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400"
+            className="btn-tactile rounded-lg border border-white/25 px-3 py-1.5 text-sm font-medium text-white"
           >
             Log out
           </button>
@@ -47,8 +58,8 @@ function AuthGate({ children }: { children: ReactNode }) {
 
   if (status === "loading") {
     return (
-      <main className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-500">Loading…</p>
+      <main className="flex flex-1 items-center justify-center bg-fog">
+        <p className="text-sm text-ink-soft">Loading…</p>
       </main>
     );
   }
@@ -58,9 +69,9 @@ function AuthGate({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-zinc-50">
+    <div className="flex min-h-dvh flex-col bg-fog">
       <DashboardHeader />
-      <div className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+      <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
         {children}
       </div>
     </div>

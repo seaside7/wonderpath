@@ -15,10 +15,8 @@ export default async function StartLearningPage({
   const { id } = await params;
   return (
     <main className="mx-auto max-w-lg">
-      <h1 className="text-2xl font-semibold text-zinc-900">
-        Start Learning
-      </h1>
-      <p className="mb-6 mt-1 text-sm text-zinc-600">
+      <h1 className="font-display text-4xl text-ink">Start learning</h1>
+      <p className="mb-6 mt-2 text-sm text-ink-soft">
         Choose what to study today.
       </p>
       <SessionSetup childId={id} />

@@ -41,8 +41,17 @@ export default function ChildForm({ child }: ChildFormProps) {
     child?.preferredLanguage ?? "English",
   );
   const [schoolName, setSchoolName] = useState(child?.schoolName ?? "");
+  const [touchedName, setTouchedName] = useState(false);
+  const [touchedDob, setTouchedDob] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const nameHint =
+    touchedName && !fullName.trim() ? "Add your child's full name." : null;
+  const dobHint =
+    touchedDob && !dateOfBirth ? "Add your child's date of birth." : null;
+  const curriculaHint =
+    curricula.length === 0 ? "Choose at least one curriculum." : null;
 
   function toggleCurriculum(curriculum: string) {
     setCurricula((current) =>
@@ -54,7 +63,14 @@ export default function ChildForm({ child }: ChildFormProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setTouchedName(true);
+    setTouchedDob(true);
     setError(null);
+
+    if (!fullName.trim() || !dateOfBirth || curricula.length === 0) {
+      return;
+    }
+
     setSubmitting(true);
 
     const input: ChildInput = {
@@ -84,63 +100,76 @@ export default function ChildForm({ child }: ChildFormProps) {
       } else {
         setError("Something went wrong. Please try again.");
       }
-    } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Full Name
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+      <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+        Full name
         <input
           value={fullName}
           onChange={(event) => setFullName(event.target.value)}
+          onBlur={() => setTouchedName(true)}
           required
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none"
+          aria-invalid={nameHint ? true : undefined}
+          className="field-glow px-3.5 py-2.5 text-sm"
         />
+        {nameHint ? (
+          <span className="text-xs font-normal text-coral-deep">
+            {nameHint}
+          </span>
+        ) : null}
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Nickname
+      <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+        Nickname <span className="font-normal text-ink-soft">(optional)</span>
         <input
           value={nickname}
           onChange={(event) => setNickname(event.target.value)}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none"
+          className="field-glow px-3.5 py-2.5 text-sm"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Date of Birth
+      <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+        Date of birth
         <input
           type="date"
           value={dateOfBirth}
           onChange={(event) => setDateOfBirth(event.target.value)}
+          onBlur={() => setTouchedDob(true)}
           required
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none"
+          aria-invalid={dobHint ? true : undefined}
+          className="field-glow px-3.5 py-2.5 text-sm"
         />
+        {dobHint ? (
+          <span className="text-xs font-normal text-coral-deep">
+            {dobHint}
+          </span>
+        ) : null}
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
+      <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
         Gender
         <select
           value={gender}
           onChange={(event) =>
             setGender(event.target.value as ChildInput["gender"])
           }
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none"
+          className="field-glow px-3.5 py-2.5 text-sm"
         >
           <option value="Boy">Boy</option>
           <option value="Girl">Girl</option>
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
+      <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
         Grade
         <select
           value={grade}
           onChange={(event) => setGrade(event.target.value)}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none"
+          className="field-glow px-3.5 py-2.5 text-sm"
         >
           {GRADE_OPTIONS.map((option) => (
             <option key={option} value={option}>
@@ -151,31 +180,40 @@ export default function ChildForm({ child }: ChildFormProps) {
       </label>
 
       <fieldset>
-        <legend className="text-sm font-medium">Supported Curricula</legend>
-        <div className="mt-2 flex flex-wrap gap-3">
-          {CURRICULA_OPTIONS.map((curriculum) => (
-            <label
-              key={curriculum}
-              className="flex items-center gap-2 text-sm text-zinc-800"
-            >
-              <input
-                type="checkbox"
-                checked={curricula.includes(curriculum)}
-                onChange={() => toggleCurriculum(curriculum)}
-                className="rounded border-zinc-300"
-              />
-              {curriculum}
-            </label>
-          ))}
+        <legend className="text-sm font-medium text-ink">
+          Supported curricula
+        </legend>
+        <div className="mt-2 flex flex-wrap gap-2.5">
+          {CURRICULA_OPTIONS.map((curriculum) => {
+            const active = curricula.includes(curriculum);
+            return (
+              <button
+                key={curriculum}
+                type="button"
+                onClick={() => toggleCurriculum(curriculum)}
+                aria-pressed={active}
+                className={
+                  active
+                    ? "btn-tactile rounded-full bg-ink px-4 py-2 text-sm font-medium text-white"
+                    : "btn-tactile rounded-full border border-line bg-card px-4 py-2 text-sm font-medium text-ink"
+                }
+              >
+                {curriculum}
+              </button>
+            );
+          })}
         </div>
+        {curriculaHint ? (
+          <p className="mt-1.5 text-xs text-ink-soft">{curriculaHint}</p>
+        ) : null}
       </fieldset>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Preferred Language
+      <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+        Preferred language
         <select
           value={preferredLanguage}
           onChange={(event) => setPreferredLanguage(event.target.value)}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none"
+          className="field-glow px-3.5 py-2.5 text-sm"
         >
           {LANGUAGE_OPTIONS.map((option) => (
             <option key={option} value={option}>
@@ -185,17 +223,18 @@ export default function ChildForm({ child }: ChildFormProps) {
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        School Name
+      <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+        School name{" "}
+        <span className="font-normal text-ink-soft">(optional)</span>
         <input
           value={schoolName}
           onChange={(event) => setSchoolName(event.target.value)}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none"
+          className="field-glow px-3.5 py-2.5 text-sm"
         />
       </label>
 
       {error ? (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-lg bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
           {error}
         </p>
       ) : null}
@@ -204,14 +243,14 @@ export default function ChildForm({ child }: ChildFormProps) {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+          className="btn-tactile btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold"
         >
           {submitting ? "Saving…" : child ? "Save changes" : "Add child"}
         </button>
         <button
           type="button"
           onClick={() => router.push("/dashboard")}
-          className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400"
+          className="btn-tactile rounded-xl border border-line bg-card px-5 py-2.5 text-sm font-medium text-ink"
         >
           Cancel
         </button>

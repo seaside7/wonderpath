@@ -34,7 +34,7 @@ export default function EditChildForm({ childId }: { childId: string }) {
   if (failed) {
     return (
       <main className="mx-auto max-w-lg">
-        <p className="text-sm text-zinc-500">Could not load this child.</p>
+        <p className="text-sm text-ink-soft">Could not load this child.</p>
       </main>
     );
   }
@@ -42,18 +42,18 @@ export default function EditChildForm({ childId }: { childId: string }) {
   if (!child) {
     return (
       <main className="mx-auto max-w-lg">
-        <p className="text-sm text-zinc-500">Loading…</p>
+        <p className="text-sm text-ink-soft">Loading…</p>
       </main>
     );
   }
 
   return (
     <main className="mx-auto max-w-lg">
-      <h1 className="text-2xl font-semibold text-zinc-900">Edit {child.fullName}</h1>
-      <p className="mb-6 mt-1 text-sm text-zinc-600">
+      <h1 className="font-display text-4xl text-ink">Edit {child.fullName}</h1>
+      <p className="mb-6 mt-2 text-sm text-ink-soft">
         Update your child&apos;s profile.
       </p>
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+      <div className="border-l-2 border-waypoint bg-card px-6 py-6">
         <ChildForm child={child} />
       </div>
     </main>

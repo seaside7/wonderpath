@@ -94,12 +94,12 @@ export default function SessionSetup({ childId }: { childId: string }) {
   }
 
   if (status === "loading") {
-    return <p className="text-sm text-zinc-500">Loading…</p>;
+    return <p className="text-sm text-ink-soft">Loading…</p>;
   }
 
   if (status === "error" || !child) {
     return (
-      <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+      <p className="rounded-lg bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
         {error ?? "Something went wrong."}
       </p>
     );
@@ -107,17 +107,17 @@ export default function SessionSetup({ childId }: { childId: string }) {
 
   if (currentSession) {
     return (
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900">Current Session</h2>
-        <p className="mt-1 text-sm text-zinc-600">
+      <div className="border-l-2 border-trail bg-card px-6 py-6">
+        <h2 className="font-display text-2xl text-ink">Current session</h2>
+        <p className="mt-1.5 text-sm text-ink">
           {currentSession.child.fullName} — {currentSession.curriculum}{" "}
           {currentSession.subject}
         </p>
-        <p className="mt-1 text-sm text-zinc-500">{startedLabel}</p>
+        <p className="mt-1 text-sm text-ink-soft">{startedLabel}</p>
         <button
           type="button"
           onClick={() => router.push(`/sessions/${currentSession.id}`)}
-          className="mt-5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+          className="btn-tactile btn-primary resume-pulse mt-6 rounded-xl px-5 py-2.5 text-sm font-semibold"
         >
           Resume
         </button>
@@ -126,59 +126,64 @@ export default function SessionSetup({ childId }: { childId: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-zinc-900">
+    <div className="border-l-2 border-waypoint bg-card px-6 py-6">
+      <h2 className="font-display text-2xl text-ink">
         Set up a session for {child.fullName}
       </h2>
+      <p className="mt-1.5 text-sm text-ink-soft">
+        Only {child.fullName}&apos;s own curricula are shown.
+      </p>
 
-      <fieldset className="mt-5">
-        <legend className="text-sm font-medium text-zinc-800">
-          Curriculum
-        </legend>
-        <div className="mt-2 flex flex-col gap-2">
-          {child.curricula.map((option) => (
-            <label
-              key={option}
-              className="flex items-center gap-2 text-sm text-zinc-800"
-            >
-              <input
-                type="radio"
-                name="curriculum"
-                value={option}
-                checked={curriculum === option}
-                onChange={() => setCurriculum(option)}
-                className="text-indigo-600"
-              />
-              {option}
-            </label>
-          ))}
+      <fieldset className="mt-6">
+        <legend className="text-sm font-medium text-ink">Curriculum</legend>
+        <div className="mt-2.5 flex flex-wrap gap-2.5">
+          {child.curricula.map((option) => {
+            const active = curriculum === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setCurriculum(option)}
+                aria-pressed={active}
+                className={
+                  active
+                    ? "btn-tactile rounded-full bg-ink px-4 py-2 text-sm font-medium text-white"
+                    : "btn-tactile rounded-full border border-line bg-card px-4 py-2 text-sm font-medium text-ink"
+                }
+              >
+                {option}
+              </button>
+            );
+          })}
         </div>
       </fieldset>
 
-      <fieldset className="mt-5">
-        <legend className="text-sm font-medium text-zinc-800">Subject</legend>
-        <div className="mt-2 flex flex-col gap-2">
-          {SUBJECT_OPTIONS.map((option) => (
-            <label
-              key={option}
-              className="flex items-center gap-2 text-sm text-zinc-800"
-            >
-              <input
-                type="radio"
-                name="subject"
-                value={option}
-                checked={subject === option}
-                onChange={() => setSubject(option)}
-                className="text-indigo-600"
-              />
-              {option}
-            </label>
-          ))}
+      <fieldset className="mt-6">
+        <legend className="text-sm font-medium text-ink">Subject</legend>
+        <div className="mt-2.5 flex flex-wrap gap-2.5">
+          {SUBJECT_OPTIONS.map((option) => {
+            const active = subject === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setSubject(option)}
+                aria-pressed={active}
+                className={
+                  active
+                    ? "btn-tactile rounded-full bg-ink px-4 py-2 text-sm font-medium text-white"
+                    : "btn-tactile rounded-full border border-line bg-card px-4 py-2 text-sm font-medium text-ink"
+                }
+              >
+                {option}
+              </button>
+            );
+          })}
         </div>
       </fieldset>
 
       {error ? (
-        <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mt-4 rounded-lg bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
           {error}
         </p>
       ) : null}
@@ -187,9 +192,9 @@ export default function SessionSetup({ childId }: { childId: string }) {
         type="button"
         onClick={handleStart}
         disabled={!curriculum || !subject || submitting}
-        className="mt-6 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+        className="btn-tactile btn-primary mt-7 rounded-xl px-5 py-2.5 text-sm font-semibold"
       >
-        {submitting ? "Starting…" : "Start Learning"}
+        {submitting ? "Starting…" : "Start learning"}
       </button>
     </div>
   );

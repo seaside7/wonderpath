@@ -3,11 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  ChildProfile,
-  deleteChild,
-  listChildren,
-} from "@/lib/api";
+import { ChildProfile, deleteChild, listChildren } from "@/lib/api";
 
 export default function ChildrenList() {
   const router = useRouter();
@@ -54,77 +50,89 @@ export default function ChildrenList() {
   }
 
   if (loading) {
-    return <p className="text-sm text-zinc-500">Loading…</p>;
+    return <p className="text-sm text-ink-soft">Loading…</p>;
   }
 
   return (
     <section>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-zinc-900">My Children</h1>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-4xl text-ink">My Children</h1>
+          <p className="mt-2 text-sm text-ink-soft">
+            Choose a child to set up today&apos;s learning.
+          </p>
+        </div>
         <Link
           href="/children/new"
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+          className="btn-tactile btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold"
         >
-          Add Child
+          Add your child
         </Link>
       </div>
 
       {error ? (
-        <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mt-4 rounded-lg bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
           {error}
         </p>
       ) : null}
 
       {children.length === 0 ? (
-        <div className="mt-8 rounded-xl border border-dashed border-zinc-300 bg-white p-12 text-center">
-          <p className="text-zinc-600">No children yet.</p>
-          <p className="mt-1 text-sm text-zinc-500">
-            Add your first child to start a learning journey.
+        <div className="mt-8 border-l-2 border-waypoint bg-card px-6 py-10">
+          <p className="font-display text-2xl text-ink">
+            No children yet — add your first child to get started
           </p>
+          <p className="mt-2 text-sm text-ink-soft">
+            It takes about a minute, and you can add more children later.
+          </p>
+          <Link
+            href="/children/new"
+            className="btn-tactile btn-primary mt-6 inline-block rounded-xl px-5 py-2.5 text-sm font-semibold"
+          >
+            Add your child
+          </Link>
         </div>
       ) : (
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-8 space-y-3">
           {children.map((child) => (
             <li
               key={child.id}
-              className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm"
+              className="border-l-2 border-waypoint bg-card px-6 py-5"
             >
-              <div className="flex items-start justify-between">
+              <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-lg font-semibold text-zinc-900">
+                  <h2 className="font-display text-2xl text-ink">
                     {child.fullName}
                     {child.nickname ? (
-                      <span className="ml-2 text-sm font-normal text-zinc-500">
+                      <span className="ml-2 align-middle font-body text-sm font-normal text-ink-soft">
                         &ldquo;{child.nickname}&rdquo;
                       </span>
                     ) : null}
                   </h2>
-                  <p className="mt-1 text-sm text-zinc-600">{child.grade}</p>
-                  <p className="mt-1 text-sm text-zinc-600">
-                    {child.curricula.join(" + ")}
+                  <p className="mt-1 text-sm text-ink-soft">
+                    {child.grade} · {child.curricula.join(" + ")}
                   </p>
                 </div>
-              </div>
-              <div className="mt-5 flex items-center gap-3">
-                <Link
-                  href={`/children/${child.id}/recommendations`}
-                  className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
-                >
-                  Start Learning
-                </Link>
-                <Link
-                  href={`/children/${child.id}/edit`}
-                  className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400"
-                >
-                  Edit
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(child)}
-                  className="rounded-md px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
-                >
-                  Delete
-                </button>
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <Link
+                    href={`/children/${child.id}/start`}
+                    className="btn-tactile btn-primary rounded-lg px-4 py-2 text-sm font-semibold"
+                  >
+                    Start Learning
+                  </Link>
+                  <Link
+                    href={`/children/${child.id}/edit`}
+                    className="btn-tactile rounded-lg border border-line bg-card px-4 py-2 text-sm font-medium text-ink"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(child)}
+                    className="btn-tactile rounded-lg px-3 py-2 text-sm font-medium text-coral-deep"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </li>
           ))}

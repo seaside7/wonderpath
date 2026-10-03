@@ -8,11 +8,11 @@ export const metadata: Metadata = {
 export default function NewChildPage() {
   return (
     <main className="mx-auto max-w-lg">
-      <h1 className="text-2xl font-semibold text-zinc-900">Add a Child</h1>
-      <p className="mb-6 mt-1 text-sm text-zinc-600">
-        Tell WonderPath about your child to personalize learning.
+      <h1 className="font-display text-4xl text-ink">Add your child</h1>
+      <p className="mb-6 mt-2 text-sm text-ink-soft">
+        Tell WonderPath who you&apos;re setting up learning for.
       </p>
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+      <div className="border-l-2 border-waypoint bg-card px-6 py-6">
         <ChildForm />
       </div>
     </main>
