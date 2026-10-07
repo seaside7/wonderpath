@@ -6,6 +6,13 @@ This is distinct from `daily-update.md` (a diary of what was *done*) and `QA_NOT
 
 ---
 
+## 2026-10-07
+
+**Marketing brainstorm: recruiting the first 20 beta-test parents, and what grade range the product needs to cover for that.**
+Plan agreed: find ~20 parents (starting with friends, since that's the warm/trusted channel available right now) → get real feedback → then push a marketing campaign, in that order. Surfaced a real constraint: friends' kids span Grade 1-6, not just the Grade 5-6 the product currently supports. Agreed phasing: extend to Grade 4 soon (cheap — mostly reuses the existing Grade 5-6 scope-and-sequence, no new UX risk), defer Grade 1-3 (flagged as a bigger, riskier piece of work — young kids likely need read-aloud support, shorter sessions, and simpler interactions, which is a product/UX decision, not just "generate easier content" — shouldn't be built blind before validating with the Grade 4-6 cohort first).
+
+**Also decided the same day: build Kurikulum Nasional content (Grade 5-6, Math + English) to widen the beta pool beyond IB/Cambridge families** — done: 600 questions generated (half the IB bank's scale), Math in Bahasa Indonesia, reviewed/fixed (5 genuine content errors caught by the QA cross-check, corrected by hand), transferred to staging. A separate `friends-demo@wonderpath.local` account with 4 fake child profiles (IB Grade 5/6, Nasional Grade 5/6) was created for showing friends — see `TEST_ACCOUNTS.md`. Grade 4 extension and the Grade 1-3 UX decision are still open, not yet started.
+
 ## 2026-10-03 (even later)
 
 **Found while verifying Sprint 21: 3 of 1080 questions in the bank have leaked LLM reasoning text inside `explanation`, and at least one has a wrong `correctAnswer`.**
