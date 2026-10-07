@@ -31,7 +31,7 @@ import type {
   ContentGenerator,
   GenerationRequest,
 } from './providers/content-generator.interface';
-import type { Curriculum, Grade } from '../../child/enums/child.enums';
+import type { Curriculum, Grade, PreferredLanguage } from '../../child/enums/child.enums';
 import type { QuestionType } from '../../question-bank/enums/question-bank.enums';
 
 type LearningObjectiveWithGraph = LearningObjective & {
@@ -53,6 +53,7 @@ type GenerationFields = {
   difficulty: number;
   quantity: number;
   providerOptions?: Record<string, unknown>;
+  language?: PreferredLanguage;
 };
 
 const learningObjectiveGraphInclude = {
@@ -155,6 +156,10 @@ export class ContentGenerationService {
       dto.providerOptions ??
       (storedMetadata?.providerOptions as Record<string, unknown> | undefined);
 
+    const language =
+      dto.language ??
+      (storedMetadata?.language as PreferredLanguage | undefined);
+
     await this.prisma.questionGeneration.update({
       where: { id: generation.id },
       data: {
@@ -165,6 +170,7 @@ export class ContentGenerationService {
         generationMetadata: {
           ...(storedMetadata ?? {}),
           providerOptions: providerOptions ?? {},
+          language,
           retriedAt: new Date().toISOString(),
         } as Prisma.InputJsonValue,
       },
@@ -177,6 +183,7 @@ export class ContentGenerationService {
       difficulty: generation.difficulty,
       quantity: generation.quantity,
       providerOptions,
+      language,
     });
   }
 
@@ -216,6 +223,7 @@ export class ContentGenerationService {
       difficulty: fields.difficulty,
       quantity: fields.quantity,
       providerOptions: fields.providerOptions,
+      language: fields.language,
     };
 
     try {
@@ -276,5 +284,6 @@ function buildGenerationMetadata(dto: CreateGenerationDto) {
   return {
     requestedAt: new Date().toISOString(),
     ...(dto.providerOptions ? { providerOptions: dto.providerOptions } : {}),
+    ...(dto.language ? { language: dto.language } : {}),
   };
 }

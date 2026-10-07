@@ -86,4 +86,38 @@ describe('validateGeneratedSeeds', () => {
       validateGeneratedSeeds([validSeed], 1),
     ).not.toThrow();
   });
+
+  // Indonesian reasoning markers (Bahasa Indonesia)
+  it('rejects a seed whose explanation contains "tunggu," (Indonesian)', () => {
+    const seed: GeneratedQuestionSeed = {
+      ...validSeed,
+      explanation:
+        'Jawabannya adalah 58 m. Tunggu, saya perlu hitung ulang.',
+    };
+    expect(() => validateGeneratedSeeds([seed], 1)).toThrow(
+      BadRequestException,
+    );
+  });
+
+  it('rejects a seed whose explanation contains "biar saya hitung ulang" (Indonesian)', () => {
+    const seed: GeneratedQuestionSeed = {
+      ...validSeed,
+      explanation:
+        'Luas lingkaran = 154 cm². Biar saya hitung ulang: 154 / 3.14 ≈ 49 cm.',
+    };
+    expect(() => validateGeneratedSeeds([seed], 1)).toThrow(
+      BadRequestException,
+    );
+  });
+
+  it('rejects a seed whose explanation contains "jadi jawabannya harusnya" (Indonesian)', () => {
+    const seed: GeneratedQuestionSeed = {
+      ...validSeed,
+      explanation:
+        'Jadi jawabannya harusnya "True" karena pernyataan tersebut benar.',
+    };
+    expect(() => validateGeneratedSeeds([seed], 1)).toThrow(
+      BadRequestException,
+    );
+  });
 });

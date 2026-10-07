@@ -2,7 +2,17 @@ import { BadRequestException } from '@nestjs/common';
 import { validateQuestionPayload } from '../../question-bank/question.validator';
 import { GeneratedQuestionSeed } from './providers/content-generator.interface';
 
+/**
+ * Reasoning markers that indicate leaked LLM self-correction monologue.
+ * Both English and Bahasa Indonesia variants are included so that the
+ * guard fires regardless of which language the generation used.
+ *
+ * Note: this is a best-effort heuristic. It may miss patterns in other
+ * languages or edge cases. A more robust solution would use an LLM-based
+ * classifier or a multilingual model, but that is out of scope for now.
+ */
 const REASONING_MARKERS = [
+  // English
   'wait,',
   'wait -',
   'let me recalculate',
@@ -14,6 +24,16 @@ const REASONING_MARKERS = [
   'but correct answer is',
   'so correct answer should be',
   "let's recalculate",
+  // Bahasa Indonesia
+  'tunggu,',
+  'tunggu -',
+  'biar saya hitung ulang',
+  'saya perlu hitung ulang',
+  'jadi saya perlu',
+  'sebenarnya jawabannya',
+  'tapi jawabannya adalah',
+  'jadi jawabannya harusnya',
+  'mari kita hitung ulang',
 ] as const;
 
 function explanationContainsReasoning(explanation: string): boolean {

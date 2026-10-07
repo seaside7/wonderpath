@@ -1,4 +1,4 @@
-import { Curriculum, Grade } from '../../../child/enums/child.enums';
+import { Curriculum, Grade, PreferredLanguage } from '../../../child/enums/child.enums';
 import { QuestionType } from '../../../question-bank/enums/question-bank.enums';
 
 export interface GeneratedQuestionSeed {
@@ -26,6 +26,7 @@ export interface GenerationRequest {
   difficulty: number;
   quantity: number;
   providerOptions?: Record<string, unknown>;
+  language?: PreferredLanguage;
 }
 
 export interface ContentGenerator {

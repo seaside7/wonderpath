@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { PreferredLanguage } from '../../../child/enums/child.enums';
 import { QuestionType } from '../../../question-bank/enums/question-bank.enums';
 import {
   ContentGenerator,
@@ -103,8 +104,14 @@ export class LlmContentGenerator implements ContentGenerator {
         ? 'a true/false question with exactly the two options "True" and "False"'
         : 'a multiple choice question with at least two options';
 
+    const languageInstruction =
+      request.language === PreferredLanguage.BahasaIndonesia
+        ? 'Write the question text, options, and explanation entirely in Bahasa Indonesia (not English).'
+        : '';
+
     return [
       `Generate ${request.quantity} ${questionTypePrompt}.`,
+      languageInstruction,
       `Curriculum: ${request.curriculum}`,
       `Grade: ${request.grade}`,
       `Subject: ${request.subject}`,
@@ -116,6 +123,8 @@ export class LlmContentGenerator implements ContentGenerator {
       'For each question include: questionText, questionType ("Multiple Choice" or "True / False"), options (array of strings, must include correctAnswer), correctAnswer, explanation, difficulty (1-5), metadata (object).',
       '',
       'Return JSON in the shape: { "questions": [ ... ] }',
-    ].join('\n');
+    ]
+      .filter((line) => line !== '')
+      .join('\n');
   }
 }
