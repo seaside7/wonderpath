@@ -25,6 +25,9 @@ export const SUBJECT_STRUCTURE: Record<'Mathematics' | 'English', SubtopicDef[]>
     { topic: 'Geometry', subtopic: '2D Shapes', learningObjective: 'Classify and describe properties of 2D shapes', description: 'Identify and classify 2D shapes by their properties (sides, angles, symmetry).', estimatedMasteryTime: 25 },
     { topic: 'Geometry', subtopic: '3D Shapes', learningObjective: 'Classify and describe properties of 3D shapes', description: 'Identify 3D shapes and describe their faces, edges, and vertices.', estimatedMasteryTime: 25 },
     { topic: 'Geometry', subtopic: 'Angles', learningObjective: 'Measure and classify angles', description: 'Identify, measure, and classify angles as acute, right, obtuse, or straight.', estimatedMasteryTime: 25 },
+    { topic: 'Data & Probability', subtopic: 'Reading & Interpreting Data', learningObjective: 'Read and interpret data from tables and bar charts', description: 'Students read and interpret data presented in tables and bar charts, identifying trends and drawing simple conclusions.', estimatedMasteryTime: 30 },
+    { topic: 'Data & Probability', subtopic: 'Reading & Interpreting Data', learningObjective: 'Find the mean (average) of a simple data set', description: 'Students calculate the mean of a small set of whole numbers by summing the values and dividing by the count.', estimatedMasteryTime: 20 },
+    { topic: 'Data & Probability', subtopic: 'Basic Probability', learningObjective: 'Describe the likelihood of simple events (certain, likely, unlikely, impossible)', description: 'Students use everyday language (certain, likely, unlikely, impossible) to describe the chance of simple events happening.', estimatedMasteryTime: 25 },
   ],
   English: [
     { topic: 'Vocabulary', subtopic: 'Synonyms & Antonyms', learningObjective: 'Identify synonyms and antonyms in context', description: 'Recognize words with similar and opposite meanings and use them appropriately.', estimatedMasteryTime: 20 },
@@ -43,6 +46,11 @@ export const SUBJECT_STRUCTURE: Record<'Mathematics' | 'English', SubtopicDef[]>
 export const GRADES = ['Grade 5', 'Grade 6'] as const;
 export const DIFFICULTIES = [1, 2, 3, 4, 5] as const;
 export const QUESTIONS_PER_DIFFICULTY = 4;
+
+/** Half of QUESTIONS_PER_DIFFICULTY - the Nasional bank is deliberately
+ * built at half scale (~540 questions) for initial demo/feedback use,
+ * not full production parity with the IB bank yet. */
+export const QUESTIONS_PER_DIFFICULTY_NASIONAL = 2;
 
 /**
  * Provider routing — kept as one config object so difficulty boundaries

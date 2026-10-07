@@ -19,26 +19,42 @@ export interface GenerationOutcome {
   usage: { promptTokens: number; completionTokens: number; totalTokens: number };
 }
 
-const SYSTEM_PROMPT = [
-  'You write ORIGINAL practice questions for an EdTech app, in the general style and',
-  'difficulty level of the IB curriculum for the stated grade. You have NOT seen and',
-  'must NOT reproduce any real IB exam paper, textbook, or copyrighted question -',
-  'write new questions from scratch, using only the general public knowledge of what',
-  'topics IB covers at this grade level as a style/coverage guide.',
-  'Never claim these are official IB questions.',
-  'Always respond with a single JSON object: { "questions": [ ... ] }.',
-].join(' ');
+/**
+ * curriculumLabel defaults to 'IB' so every existing call site (the
+ * original seed-qa-test-questions.ts script) behaves exactly as before
+ * without passing anything new.
+ */
+function systemPromptFor(curriculumLabel: string): string {
+  return [
+    'You write ORIGINAL practice questions for an EdTech app, in the general style and',
+    `difficulty level of the ${curriculumLabel} curriculum for the stated grade. You have NOT seen and`,
+    `must NOT reproduce any real ${curriculumLabel} exam paper, textbook, or copyrighted question -`,
+    'write new questions from scratch, using only the general public knowledge of what',
+    `topics ${curriculumLabel} covers at this grade level as a style/coverage guide.`,
+    `Never claim these are official ${curriculumLabel} questions.`,
+    'Always respond with a single JSON object: { "questions": [ ... ] }.',
+  ].join(' ');
+}
+
+interface BuildPromptOptions {
+  curriculumLabel?: string;
+  languageInstruction?: string;
+  questionsPerDifficulty?: number;
+}
 
 function buildPrompt(
   def: SubtopicDef,
   grade: 'Grade 5' | 'Grade 6',
   difficulties: readonly number[],
+  options: BuildPromptOptions = {},
 ): string {
-  const perDifficulty = QUESTIONS_PER_DIFFICULTY;
+  const curriculumLabel = options.curriculumLabel ?? 'IB';
+  const perDifficulty = options.questionsPerDifficulty ?? QUESTIONS_PER_DIFFICULTY;
   const total = perDifficulty * difficulties.length;
 
   return [
-    `Generate ${total} original practice questions for ${grade} students, IB curriculum style,`,
+    ...(options.languageInstruction ? [options.languageInstruction] : []),
+    `Generate ${total} original practice questions for ${grade} students, ${curriculumLabel} curriculum style,`,
     `on the topic "${def.topic}" / subtopic "${def.subtopic}".`,
     `Learning objective: ${def.learningObjective} — ${def.description}`,
     '',
@@ -60,6 +76,7 @@ function buildPrompt(
 function parseAndValidate(
   raw: string,
   difficulties: readonly number[],
+  questionsPerDifficulty: number = QUESTIONS_PER_DIFFICULTY,
 ): GeneratedQuestion[] {
   let parsed: { questions?: unknown };
   try {
@@ -73,7 +90,7 @@ function parseAndValidate(
   }
 
   const questions = parsed.questions as GeneratedQuestion[];
-  const expectedTotal = QUESTIONS_PER_DIFFICULTY * difficulties.length;
+  const expectedTotal = questionsPerDifficulty * difficulties.length;
 
   if (questions.length !== expectedTotal) {
     throw new Error(
@@ -103,9 +120,9 @@ function parseAndValidate(
     countByDifficulty.set(q.difficulty, (countByDifficulty.get(q.difficulty) ?? 0) + 1);
   }
   for (const d of difficulties) {
-    if (countByDifficulty.get(d) !== QUESTIONS_PER_DIFFICULTY) {
+    if (countByDifficulty.get(d) !== questionsPerDifficulty) {
       throw new Error(
-        `Expected ${QUESTIONS_PER_DIFFICULTY} questions at difficulty ${d}, got ${countByDifficulty.get(d) ?? 0}`,
+        `Expected ${questionsPerDifficulty} questions at difficulty ${d}, got ${countByDifficulty.get(d) ?? 0}`,
       );
     }
   }
@@ -118,10 +135,11 @@ export async function generateQuestionBatch(
   grade: 'Grade 5' | 'Grade 6',
   difficulties: readonly number[],
   provider: Provider,
+  options: BuildPromptOptions = {},
 ): Promise<GenerationOutcome> {
-  const prompt = buildPrompt(def, grade, difficulties);
-  const result = await generate(provider, prompt, SYSTEM_PROMPT);
-  const questions = parseAndValidate(result.content, difficulties);
+  const prompt = buildPrompt(def, grade, difficulties, options);
+  const result = await generate(provider, prompt, systemPromptFor(options.curriculumLabel ?? 'IB'));
+  const questions = parseAndValidate(result.content, difficulties, options.questionsPerDifficulty);
 
   return { questions, provider: result.provider, model: result.model, usage: result.usage };
 }
