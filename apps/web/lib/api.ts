@@ -1,6 +1,13 @@
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
+export function resolveAudioUrl(audioUrl: string | null): string | null {
+  if (!audioUrl) return null;
+  // audioUrl is stored as /tts/filename.mp3 (NestJS static file path).
+  // Proxy through Next.js /api/tts/ to avoid CORS.
+  return `/api/tts/${audioUrl.replace(/^\/tts\//, "")}`;
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -229,6 +236,7 @@ export interface ServedQuestion {
   questionType: "Multiple Choice" | "True / False";
   options: string[];
   difficulty: number;
+  audioUrl: string | null;
 }
 
 export interface NextQuestionData {

@@ -40,6 +40,7 @@ export type QuestionMinAggregateOutputType = {
   questionType: $Enums.QuestionType | null
   correctAnswer: string | null
   explanation: string | null
+  audioUrl: string | null
   curriculum: $Enums.Curriculum | null
   grade: $Enums.Grade | null
   difficulty: number | null
@@ -55,6 +56,7 @@ export type QuestionMaxAggregateOutputType = {
   questionType: $Enums.QuestionType | null
   correctAnswer: string | null
   explanation: string | null
+  audioUrl: string | null
   curriculum: $Enums.Curriculum | null
   grade: $Enums.Grade | null
   difficulty: number | null
@@ -71,6 +73,7 @@ export type QuestionCountAggregateOutputType = {
   options: number
   correctAnswer: number
   explanation: number
+  audioUrl: number
   curriculum: number
   grade: number
   difficulty: number
@@ -97,6 +100,7 @@ export type QuestionMinAggregateInputType = {
   questionType?: true
   correctAnswer?: true
   explanation?: true
+  audioUrl?: true
   curriculum?: true
   grade?: true
   difficulty?: true
@@ -112,6 +116,7 @@ export type QuestionMaxAggregateInputType = {
   questionType?: true
   correctAnswer?: true
   explanation?: true
+  audioUrl?: true
   curriculum?: true
   grade?: true
   difficulty?: true
@@ -128,6 +133,7 @@ export type QuestionCountAggregateInputType = {
   options?: true
   correctAnswer?: true
   explanation?: true
+  audioUrl?: true
   curriculum?: true
   grade?: true
   difficulty?: true
@@ -232,6 +238,7 @@ export type QuestionGroupByOutputType = {
   options: runtime.JsonValue
   correctAnswer: string
   explanation: string
+  audioUrl: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -272,6 +279,7 @@ export type QuestionWhereInput = {
   options?: Prisma.JsonFilter<"Question">
   correctAnswer?: Prisma.StringFilter<"Question"> | string
   explanation?: Prisma.StringFilter<"Question"> | string
+  audioUrl?: Prisma.StringNullableFilter<"Question"> | string | null
   curriculum?: Prisma.EnumCurriculumFilter<"Question"> | $Enums.Curriculum
   grade?: Prisma.EnumGradeFilter<"Question"> | $Enums.Grade
   difficulty?: Prisma.IntFilter<"Question"> | number
@@ -293,6 +301,7 @@ export type QuestionOrderByWithRelationInput = {
   options?: Prisma.SortOrder
   correctAnswer?: Prisma.SortOrder
   explanation?: Prisma.SortOrder
+  audioUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   curriculum?: Prisma.SortOrder
   grade?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
@@ -317,6 +326,7 @@ export type QuestionWhereUniqueInput = Prisma.AtLeast<{
   options?: Prisma.JsonFilter<"Question">
   correctAnswer?: Prisma.StringFilter<"Question"> | string
   explanation?: Prisma.StringFilter<"Question"> | string
+  audioUrl?: Prisma.StringNullableFilter<"Question"> | string | null
   curriculum?: Prisma.EnumCurriculumFilter<"Question"> | $Enums.Curriculum
   grade?: Prisma.EnumGradeFilter<"Question"> | $Enums.Grade
   difficulty?: Prisma.IntFilter<"Question"> | number
@@ -338,6 +348,7 @@ export type QuestionOrderByWithAggregationInput = {
   options?: Prisma.SortOrder
   correctAnswer?: Prisma.SortOrder
   explanation?: Prisma.SortOrder
+  audioUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   curriculum?: Prisma.SortOrder
   grade?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
@@ -363,6 +374,7 @@ export type QuestionScalarWhereWithAggregatesInput = {
   options?: Prisma.JsonWithAggregatesFilter<"Question">
   correctAnswer?: Prisma.StringWithAggregatesFilter<"Question"> | string
   explanation?: Prisma.StringWithAggregatesFilter<"Question"> | string
+  audioUrl?: Prisma.StringNullableWithAggregatesFilter<"Question"> | string | null
   curriculum?: Prisma.EnumCurriculumWithAggregatesFilter<"Question"> | $Enums.Curriculum
   grade?: Prisma.EnumGradeWithAggregatesFilter<"Question"> | $Enums.Grade
   difficulty?: Prisma.IntWithAggregatesFilter<"Question"> | number
@@ -380,6 +392,7 @@ export type QuestionCreateInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -399,6 +412,7 @@ export type QuestionUncheckedCreateInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -418,6 +432,7 @@ export type QuestionUpdateInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -437,6 +452,7 @@ export type QuestionUncheckedUpdateInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -456,6 +472,7 @@ export type QuestionCreateManyInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -473,6 +490,7 @@ export type QuestionUpdateManyMutationInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -488,6 +506,7 @@ export type QuestionUncheckedUpdateManyInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -515,6 +534,7 @@ export type QuestionCountOrderByAggregateInput = {
   options?: Prisma.SortOrder
   correctAnswer?: Prisma.SortOrder
   explanation?: Prisma.SortOrder
+  audioUrl?: Prisma.SortOrder
   curriculum?: Prisma.SortOrder
   grade?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
@@ -535,6 +555,7 @@ export type QuestionMaxOrderByAggregateInput = {
   questionType?: Prisma.SortOrder
   correctAnswer?: Prisma.SortOrder
   explanation?: Prisma.SortOrder
+  audioUrl?: Prisma.SortOrder
   curriculum?: Prisma.SortOrder
   grade?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
@@ -550,6 +571,7 @@ export type QuestionMinOrderByAggregateInput = {
   questionType?: Prisma.SortOrder
   correctAnswer?: Prisma.SortOrder
   explanation?: Prisma.SortOrder
+  audioUrl?: Prisma.SortOrder
   curriculum?: Prisma.SortOrder
   grade?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
@@ -691,6 +713,7 @@ export type QuestionCreateWithoutLearningObjectiveInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -709,6 +732,7 @@ export type QuestionUncheckedCreateWithoutLearningObjectiveInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -756,6 +780,7 @@ export type QuestionScalarWhereInput = {
   options?: Prisma.JsonFilter<"Question">
   correctAnswer?: Prisma.StringFilter<"Question"> | string
   explanation?: Prisma.StringFilter<"Question"> | string
+  audioUrl?: Prisma.StringNullableFilter<"Question"> | string | null
   curriculum?: Prisma.EnumCurriculumFilter<"Question"> | $Enums.Curriculum
   grade?: Prisma.EnumGradeFilter<"Question"> | $Enums.Grade
   difficulty?: Prisma.IntFilter<"Question"> | number
@@ -773,6 +798,7 @@ export type QuestionCreateWithoutGenerationInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -791,6 +817,7 @@ export type QuestionUncheckedCreateWithoutGenerationInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -835,6 +862,7 @@ export type QuestionCreateWithoutAttemptsInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -853,6 +881,7 @@ export type QuestionUncheckedCreateWithoutAttemptsInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -887,6 +916,7 @@ export type QuestionUpdateWithoutAttemptsInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -905,6 +935,7 @@ export type QuestionUncheckedUpdateWithoutAttemptsInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -923,6 +954,7 @@ export type QuestionCreateWithoutPerformanceInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -941,6 +973,7 @@ export type QuestionUncheckedCreateWithoutPerformanceInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -975,6 +1008,7 @@ export type QuestionUpdateWithoutPerformanceInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -993,6 +1027,7 @@ export type QuestionUncheckedUpdateWithoutPerformanceInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1011,6 +1046,7 @@ export type QuestionCreateManyLearningObjectiveInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -1027,6 +1063,7 @@ export type QuestionUpdateWithoutLearningObjectiveInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1045,6 +1082,7 @@ export type QuestionUncheckedUpdateWithoutLearningObjectiveInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1063,6 +1101,7 @@ export type QuestionUncheckedUpdateManyWithoutLearningObjectiveInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1079,6 +1118,7 @@ export type QuestionCreateManyGenerationInput = {
   options: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer: string
   explanation: string
+  audioUrl?: string | null
   curriculum: $Enums.Curriculum
   grade: $Enums.Grade
   difficulty: number
@@ -1095,6 +1135,7 @@ export type QuestionUpdateWithoutGenerationInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1113,6 +1154,7 @@ export type QuestionUncheckedUpdateWithoutGenerationInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1131,6 +1173,7 @@ export type QuestionUncheckedUpdateManyWithoutGenerationInput = {
   options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   correctAnswer?: Prisma.StringFieldUpdateOperationsInput | string
   explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  audioUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   curriculum?: Prisma.EnumCurriculumFieldUpdateOperationsInput | $Enums.Curriculum
   grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
   difficulty?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1178,6 +1221,7 @@ export type QuestionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   options?: boolean
   correctAnswer?: boolean
   explanation?: boolean
+  audioUrl?: boolean
   curriculum?: boolean
   grade?: boolean
   difficulty?: boolean
@@ -1200,6 +1244,7 @@ export type QuestionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   options?: boolean
   correctAnswer?: boolean
   explanation?: boolean
+  audioUrl?: boolean
   curriculum?: boolean
   grade?: boolean
   difficulty?: boolean
@@ -1219,6 +1264,7 @@ export type QuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   options?: boolean
   correctAnswer?: boolean
   explanation?: boolean
+  audioUrl?: boolean
   curriculum?: boolean
   grade?: boolean
   difficulty?: boolean
@@ -1238,6 +1284,7 @@ export type QuestionSelectScalar = {
   options?: boolean
   correctAnswer?: boolean
   explanation?: boolean
+  audioUrl?: boolean
   curriculum?: boolean
   grade?: boolean
   difficulty?: boolean
@@ -1248,7 +1295,7 @@ export type QuestionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type QuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "questionText" | "questionType" | "options" | "correctAnswer" | "explanation" | "curriculum" | "grade" | "difficulty" | "metadata" | "learningObjectiveId" | "generationId" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
+export type QuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "questionText" | "questionType" | "options" | "correctAnswer" | "explanation" | "audioUrl" | "curriculum" | "grade" | "difficulty" | "metadata" | "learningObjectiveId" | "generationId" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
 export type QuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   learningObjective?: boolean | Prisma.LearningObjectiveDefaultArgs<ExtArgs>
   generation?: boolean | Prisma.Question$generationArgs<ExtArgs>
@@ -1280,6 +1327,7 @@ export type $QuestionPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     options: runtime.JsonValue
     correctAnswer: string
     explanation: string
+    audioUrl: string | null
     curriculum: $Enums.Curriculum
     grade: $Enums.Grade
     difficulty: number
@@ -1721,6 +1769,7 @@ export interface QuestionFieldRefs {
   readonly options: Prisma.FieldRef<"Question", 'Json'>
   readonly correctAnswer: Prisma.FieldRef<"Question", 'String'>
   readonly explanation: Prisma.FieldRef<"Question", 'String'>
+  readonly audioUrl: Prisma.FieldRef<"Question", 'String'>
   readonly curriculum: Prisma.FieldRef<"Question", 'Curriculum'>
   readonly grade: Prisma.FieldRef<"Question", 'Grade'>
   readonly difficulty: Prisma.FieldRef<"Question", 'Int'>

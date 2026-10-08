@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import {
   GenerationStatus as PrismaGenerationStatus,
@@ -10,6 +11,7 @@ import {
   Prisma,
 } from '../../../generated/prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { TtsService } from '../tts/tts.service';
 import {
   mapCurriculumFromPrisma,
   mapCurriculumToPrisma,
@@ -84,10 +86,13 @@ const generationInclude = {
 
 @Injectable()
 export class ContentGenerationService {
+  private readonly logger = new Logger(ContentGenerationService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(ContentGenerationServiceToken)
     private readonly generator: ContentGenerator,
+    private readonly tts: TtsService,
   ) {}
 
   async create(dto: CreateGenerationDto): Promise<GenerationResponseDto> {
@@ -232,7 +237,7 @@ export class ContentGenerationService {
 
       await this.prisma.$transaction(async (tx) => {
         for (const seed of seeds) {
-          await tx.question.create({
+          const question = await tx.question.create({
             data: {
               questionText: seed.questionText,
               questionType: mapQuestionTypeToPrisma(seed.questionType),
@@ -246,6 +251,25 @@ export class ContentGenerationService {
               generationId,
             },
           });
+
+          // Synthesize TTS audio for the explanation — stored as /uploads/tts/{questionId}.mp3
+          try {
+            const audioFilename = await this.tts.synthesizeAndSave(
+              question.id,
+              seed.explanation,
+            );
+            if (audioFilename) {
+              await tx.question.update({
+                where: { id: question.id },
+                data: { audioUrl: `/tts/${audioFilename}` },
+              });
+            }
+          } catch (err) {
+            // TTS failure is non-fatal — question still usable, audio absent
+            this.logger.warn(
+              `TTS failed for question ${question.id}: ${err instanceof Error ? err.message : String(err)}`,
+            );
+          }
         }
 
         await tx.questionGeneration.update({

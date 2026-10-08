@@ -9,6 +9,7 @@ export interface ServedQuestion {
   questionType: 'Multiple Choice' | 'True / False';
   options: string[];
   difficulty: number;
+  audioUrl: string | null;
 }
 
 export interface NextQuestionResult {
@@ -122,6 +123,7 @@ export class QuestionServingService {
         questionType: mapQuestionTypeFromPrisma(chosen.questionType),
         options: chosen.options as string[],
         difficulty: chosen.difficulty,
+        audioUrl: chosen.audioUrl,
       },
     };
   }

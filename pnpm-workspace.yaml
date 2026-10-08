@@ -16,6 +16,7 @@ allowBuilds:
   '@prisma/client': true
   argon2: true
   '@swc/core': true
+  protobufjs: true
 
 onlyBuiltDependencies:
   - sharp

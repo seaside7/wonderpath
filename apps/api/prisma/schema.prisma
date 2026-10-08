@@ -237,6 +237,7 @@ model Question {
   options             Json
   correctAnswer       String
   explanation         String
+  audioUrl           String?
   curriculum          Curriculum
   grade               Grade
   difficulty          Int

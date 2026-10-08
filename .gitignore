@@ -10,3 +10,16 @@ node_modules
 # value once a failure's root cause is found, findings/daily-summary are
 # the real reports and those stay tracked.
 qa-agent/debug-screenshots/
+
+# Google Cloud service account key files - real credentials, never commit.
+# Google's downloaded key filenames always follow <project-id>-<hash>.json.
+*-service-account*.json
+google-tts-credentials.json
+wonderpath-*-*.json
+
+# TTS voice-audition sample clips - scratch artifacts for picking a voice,
+# no lasting value once decided. The actual decision (voice name, pitch,
+# speaking rate) is captured in apps/api/.env and tts.service.ts, not here.
+apps/api/test-clips/
+apps/api/test-clips-v2/
+

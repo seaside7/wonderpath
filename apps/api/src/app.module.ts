@@ -15,6 +15,7 @@ import { QuestionBankModule } from './question-bank/question-bank.module';
 import { QuestionServingModule } from './atlas/question-serving/question-serving.module';
 import { RecommendationModule } from './atlas/recommendation/recommendation.module';
 import { StudentModelModule } from './atlas/student-model/student-model.module';
+import { TtsModule } from './atlas/tts/tts.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { StudentModelModule } from './atlas/student-model/student-model.module';
     QuestionPerformanceModule,
     ExamPrepModule,
     QuestionServingModule,
+    TtsModule,
   ],
 })
 export class AppModule {}

@@ -2050,6 +2050,7 @@ export const QuestionScalarFieldEnum = {
   options: 'options',
   correctAnswer: 'correctAnswer',
   explanation: 'explanation',
+  audioUrl: 'audioUrl',
   curriculum: 'curriculum',
   grade: 'grade',
   difficulty: 'difficulty',
