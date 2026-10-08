@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Atlas lip-sync demo (no video generation, pure browser)</title>
+<style>
+  body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px; background: #f5f7ff; }
+  img { width: 320px; height: auto; }
+  button { font-size: 18px; padding: 12px 24px; border-radius: 12px; border: none; background: #ff6b4a; color: white; cursor: pointer; margin-top: 20px; }
+  p { color: #4a457e; }
+</style>
+</head>
+<body>
+  <h2>Atlas — real-time mouth swap, driven by actual audio volume</h2>
+  <img id="mascot" src="atlas-mouth-closed.png" />
+  <button id="play">▶ Play "Hello, I am Atlas"</button>
+  <p id="status">Idle. Click play — this uses the REAL en-US-Standard-F audio clip we generated, no Higgsfield, no video generation, just this page's JavaScript reading the audio's live volume.</p>
+
+  <script>
+    const img = document.getElementById('mascot');
+    const statusEl = document.getElementById('status');
+    const playBtn = document.getElementById('play');
+
+    const SHAPES = {
+      closed: 'atlas-mouth-closed.png',
+      small: 'atlas-mouth-small-open.png',
+      wide: 'atlas-mouth-wide-open.png',
+      round: 'atlas-mouth-round-o.png',
+      grin: 'atlas-mouth-toothy-grin.png',
+    };
+
+    function pickShape(volume) {
+      // volume is 0-255 (Uint8Array amplitude scale from AnalyserNode)
+      if (volume < 15) return SHAPES.closed;
+      if (volume < 60) return SHAPES.small;
+      if (volume < 110) return SHAPES.round;
+      if (volume < 160) return SHAPES.wide;
+      return SHAPES.grin;
+    }
+
+    let audioCtx, analyser, dataArray, source, audioEl, rafId;
+
+    async function play() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioEl = new Audio('atlas-hello.mp3');
+        audioEl.crossOrigin = 'anonymous';
+        source = audioCtx.createMediaElementSource(audioEl);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+      }
+      await audioCtx.resume();
+      audioEl.currentTime = 0;
+      audioEl.play();
+      statusEl.textContent = 'Playing — watch the mouth react to real volume, live.';
+
+      function tick() {
+        analyser.getByteFrequencyData(dataArray);
+        // average the lower/mid frequency bins (where speech energy mostly lives)
+        let sum = 0;
+        const bins = 20;
+        for (let i = 0; i < bins; i++) sum += dataArray[i];
+        const avg = sum / bins;
+        img.src = pickShape(avg);
+        if (!audioEl.paused && !audioEl.ended) {
+          rafId = requestAnimationFrame(tick);
+        } else {
+          img.src = SHAPES.closed;
+          statusEl.textContent = 'Done. Click play again to replay.';
+          cancelAnimationFrame(rafId);
+        }
+      }
+      tick();
+    }
+
+    playBtn.addEventListener('click', play);
+  </script>
+</body>
+</html>

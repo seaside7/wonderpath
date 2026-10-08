@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import AtlasAvatar from "@/components/mascot/atlas-avatar";
 import {
   ApiError,
   AttemptResult,
@@ -17,7 +17,6 @@ import {
   submitAttempt,
 } from "@/lib/api";
 import { getRandomFact, type FunFact } from "@/lib/fun-facts";
-import { useTtsAudio, MOUTH_FILENAME } from "@/hooks/useTtsAudio";
 import {
   ensureAudioReady,
   playCorrect,
@@ -69,10 +68,6 @@ export default function KidQuestionFlow({
   const [funFact, setFunFact] = useState<FunFact | null>(null);
   const [showBackConfirm, setShowBackConfirm] = useState(false);
   const startedAtRef = useRef<number | null>(null);
-
-  const { currentMouth, isPlaying, play: playTts, stop: stopTts } = useTtsAudio({
-    audioUrl: resolveAudioUrl(question?.audioUrl ?? null),
-  });
 
   async function loadSummary(
     answered: number,
@@ -178,15 +173,6 @@ export default function KidQuestionFlow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [childId, sessionId]);
 
-  // Auto-play TTS explanation when feedback screen appears.
-  useEffect(() => {
-    if (status === "feedback" && attempt && question?.audioUrl) {
-      stopTts();
-      playTts();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, attempt?.id, question?.audioUrl]);
-
   // Guard against browser back-button during an active session.
   // pushState creates an extra history entry; popstate lets us intercept the
   // back navigation and confirm with the student before they lose progress.
@@ -214,7 +200,6 @@ export default function KidQuestionFlow({
   }
 
   function reload() {
-    stopTts();
     setStatus("loading");
     setError(null);
     setFunFact(null);
@@ -494,26 +479,9 @@ export default function KidQuestionFlow({
             {attempt.correct ? "🎉 Correct!" : "Not quite."}
           </p>
 
-          {question && question.audioUrl ? (
-            <div className="mt-4 flex flex-col items-center gap-3">
-              <div className="relative h-16 w-16">
-                <Image
-                  src={`/mascot/${MOUTH_FILENAME[currentMouth]}`}
-                  alt="Atlas talking"
-                  fill
-                  className="object-contain"
-                  unoptimized
-                />
-              </div>
-              <button
-                type="button"
-                onClick={isPlaying ? stopTts : playTts}
-                className="flex items-center gap-1.5 rounded-full bg-waypoint/10 px-3 py-1.5 text-xs font-medium text-waypoint"
-              >
-                {isPlaying ? "🔇 Stop" : "🔊 Listen again"}
-              </button>
-            </div>
-          ) : null}
+          <AtlasAvatar
+            audioUrl={resolveAudioUrl(question?.audioUrl ?? null)}
+          />
 
           <p className="mt-4 text-base leading-7 text-ink-soft">
             {attempt.explanation}

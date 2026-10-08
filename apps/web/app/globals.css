@@ -168,6 +168,55 @@ body {
 .feedback-settle {
   animation: feedback-settle 0.3s ease-out both;
 }
+
+/* Quiet idle presence for Atlas: one brief open-mouth breath every few seconds. */
+@keyframes atlas-idle-mouth-open {
+  0%,
+  72%,
+  100% {
+    opacity: 0;
+  }
+  77%,
+  92% {
+    opacity: 1;
+  }
+}
+
+@keyframes atlas-idle-mouth-closed {
+  0%,
+  72%,
+  100% {
+    opacity: 1;
+  }
+  77%,
+  92% {
+    opacity: 0;
+  }
+}
+
+.atlas-idle-open {
+  opacity: 0;
+  animation: atlas-idle-mouth-open 5.5s ease-in-out infinite;
+}
+
+.atlas-idle-closed {
+  animation: atlas-idle-mouth-closed 5.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-idle-open,
+  .atlas-idle-closed {
+    animation: none;
+  }
+
+  .atlas-idle-open {
+    opacity: 0;
+  }
+
+  .atlas-idle-closed {
+    opacity: 1;
+  }
+}
 .levelup-pop {
   animation: waypoint-pop 0.5s ease-out both;
 }
