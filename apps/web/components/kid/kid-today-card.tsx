@@ -30,6 +30,7 @@ export default function KidTodayCard({ childId }: { childId: string }) {
   const [top, setTop] = useState<RecommendationItem | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
 
@@ -77,13 +78,25 @@ export default function KidTodayCard({ childId }: { childId: string }) {
 
   async function handleStart() {
     if (!sessionId || !top || starting) return;
+    // Accept the recommendation and show a confirmation screen so the parent
+    // can see the exact topic before entering the session.
+    try {
+      await acceptRecommendation(sessionId, top.learningObjective.id);
+    } catch {
+      setError("Could not start. Please try again.");
+      return;
+    }
+    setConfirming(true);
+  }
+
+  async function handleConfirm() {
+    if (!sessionId) return;
     setStarting(true);
     setError(null);
     try {
-      await acceptRecommendation(sessionId, top.learningObjective.id);
       router.push(`/learn/${childId}/session/${sessionId}`);
     } catch {
-      setError("Could not start. Please try again.");
+      setError("Could not navigate. Please try again.");
       setStarting(false);
     }
   }
@@ -121,6 +134,58 @@ export default function KidTodayCard({ childId }: { childId: string }) {
             Back to today&apos;s pick
           </button>
         ) : null}
+      </div>
+    );
+  }
+
+  // Topic confirmation — shown after "Start Learning" is clicked so parents
+  // can see exactly which topic their child will practice.
+  if (confirming && top) {
+    return (
+      <div className="flex w-full flex-1 flex-col justify-center">
+        <div className="rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+          <p className="text-sm font-medium uppercase tracking-widest text-ink-soft">
+            Ready to start
+          </p>
+          <p className="mt-3 font-display text-3xl text-ink">
+            {top.learningObjective.name}
+          </p>
+          <p className="mt-2 text-base text-ink-soft">
+            {child?.curricula[0]
+              ? `${child.curricula[0]} · ${top.learningObjective.hierarchy.subject.name}`
+              : top.learningObjective.hierarchy.subject.name}
+          </p>
+          <p className="mt-4 text-base leading-7 text-ink-soft">
+            {kidReasonLine(top.reasonCodes)}
+          </p>
+
+          {error ? (
+            <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
+              {error}
+            </p>
+          ) : null}
+
+          <div className="mt-7 flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={() => void handleConfirm()}
+              disabled={starting}
+              className="btn-tactile btn-primary w-full rounded-2xl px-4 py-4 font-display text-xl font-semibold disabled:opacity-60"
+            >
+              Yes, let&apos;s go!
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setConfirming(false);
+                setShowPicker(true);
+              }}
+              className="btn-tactile w-full rounded-2xl border border-line bg-card px-4 py-3 text-base font-medium text-ink"
+            >
+              Change topic
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

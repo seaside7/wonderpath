@@ -2,6 +2,12 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
+overrides:
+  # vite@8.3.3 (via postcss@8.5.29) pins a nanoid range that doesn't exist
+  # in the registry (^3.3.19 - only 3.3.15 or jumping to 5.x are published).
+  # Force a resolvable version until vite/postcss fix their own pin.
+  nanoid: ^5.1.16
+
 allowBuilds:
   sharp: true
   unrs-resolver: true

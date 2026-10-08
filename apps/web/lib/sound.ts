@@ -12,8 +12,9 @@ interface Note {
 }
 
 let context: AudioContext | null = null;
+let contextResumePromise: Promise<void> | null = null;
 
-function getContext(): AudioContext | null {
+async function getContext(): Promise<AudioContext | null> {
   if (typeof window === "undefined") return null;
   try {
     const Ctor =
@@ -25,7 +26,12 @@ function getContext(): AudioContext | null {
       context = new Ctor();
     }
     if (context.state === "suspended") {
-      void context.resume();
+      if (!contextResumePromise) {
+        contextResumePromise = context.resume().then(() => {
+          contextResumePromise = null;
+        });
+      }
+      await contextResumePromise;
     }
     return context;
   } catch {
@@ -34,16 +40,16 @@ function getContext(): AudioContext | null {
 }
 
 /**
- * Create (and resume) the shared AudioContext. Call synchronously inside the
- * click handler that leads to a sound - browsers only allow audio startup
- * from a real user gesture, and every feedback sound follows a tap.
+ * Resume the shared AudioContext. Call inside the click handler that triggers
+ * sound — browsers require user gesture for audio.  Returns a promise that
+ * resolves once the context is running; sound functions will wait for it.
  */
-export function ensureAudioReady(): void {
-  getContext();
+export async function ensureAudioReady(): Promise<void> {
+  await getContext();
 }
 
-function playNotes(notes: Note[]): void {
-  const ctx = getContext();
+async function playNotes(notes: Note[]): Promise<void> {
+  const ctx = await getContext();
   if (!ctx) return;
   try {
     const now = ctx.currentTime;
@@ -68,8 +74,8 @@ function playNotes(notes: Note[]): void {
 }
 
 /** Pleasant short ascending two-note chime for a correct answer. */
-export function playCorrect(): void {
-  playNotes([
+export async function playCorrect(): Promise<void> {
+  await playNotes([
     { frequency: 523.25, startOffsetSec: 0, durationSec: 0.16 },
     { frequency: 659.25, startOffsetSec: 0.11, durationSec: 0.24 },
   ]);
@@ -79,16 +85,16 @@ export function playCorrect(): void {
  * A single soft, neutral tone for a wrong answer. Deliberately not a buzzer:
  * mid-range sine at gentle gain, acknowledges without punishing.
  */
-export function playWrong(): void {
-  playNotes([
+export async function playWrong(): Promise<void> {
+  await playNotes([
     { frequency: 329.63, startOffsetSec: 0, durationSec: 0.3, gain: 0.11 },
   ]);
 }
 
 /** Brighter, slightly longer ascending arpeggio for a level-up moment. */
-export function playLevelUp(): void {
+export async function playLevelUp(): Promise<void> {
   const type: OscillatorType = "triangle";
-  playNotes([
+  await playNotes([
     { frequency: 523.25, startOffsetSec: 0, durationSec: 0.22, type },
     { frequency: 659.25, startOffsetSec: 0.1, durationSec: 0.22, type },
     { frequency: 783.99, startOffsetSec: 0.2, durationSec: 0.22, type },

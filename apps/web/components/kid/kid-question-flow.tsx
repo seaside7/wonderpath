@@ -9,10 +9,12 @@ import {
   fetchEncouragement,
   fetchNextQuestion,
   getChild,
+  getCurrentSession,
   PerceivedDifficulty,
   ServedQuestion,
   submitAttempt,
 } from "@/lib/api";
+import { getRandomFact, type FunFact } from "@/lib/fun-facts";
 import {
   ensureAudioReady,
   playCorrect,
@@ -59,6 +61,10 @@ export default function KidQuestionFlow({
   const [error, setError] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const [topicName, setTopicName] = useState<string | null>(null);
+  const [showIntro, setShowIntro] = useState(false);
+  const [funFact, setFunFact] = useState<FunFact | null>(null);
+  const [showBackConfirm, setShowBackConfirm] = useState(false);
   const startedAtRef = useRef<number | null>(null);
 
   async function loadSummary(
@@ -114,6 +120,7 @@ export default function KidQuestionFlow({
         setDifficulty(null);
         setRevealFeelings(false);
         setAttempt(null);
+        setShowIntro(true);
         setStatus("question");
       } catch (cause) {
         if (cancelled) return;
@@ -132,9 +139,68 @@ export default function KidQuestionFlow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, reloadKey]);
 
+  // Fetch topic name once on mount and guard against accidental navigation away
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const session = await getCurrentSession(childId);
+        if (cancelled) return;
+        setTopicName(
+          session.focusLearningObjective?.name ?? session.subject,
+        );
+      } catch {
+        // Topic name is best-effort; non-fatal if unavailable
+      }
+    })();
+
+    // Prompt before the user navigates away or closes the tab mid-session.
+    function onBeforeUnload(e: BeforeUnloadEvent) {
+      if (status === "question" || status === "submitting" || status === "feedback") {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    }
+    window.addEventListener("beforeunload", onBeforeUnload);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("beforeunload", onBeforeUnload);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [childId, sessionId]);
+
+  // Guard against browser back-button during an active session.
+  // pushState creates an extra history entry; popstate lets us intercept the
+  // back navigation and confirm with the student before they lose progress.
+  useEffect(() => {
+    // Only guard when the intro is gone and we're in an active session.
+    if (showIntro) return;
+    if (status !== "question" && status !== "submitting" && status !== "feedback") return;
+
+    window.history.pushState(null, "");
+    function onPopState() {
+      setShowBackConfirm(true);
+    }
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [showIntro, status]);
+
+  function handleBackConfirmLeave() {
+    setShowBackConfirm(false);
+    void handleFinish();
+  }
+
+  function handleBackConfirmStay() {
+    setShowBackConfirm(false);
+    window.history.pushState(null, "");
+  }
+
   function reload() {
     setStatus("loading");
     setError(null);
+    setFunFact(null);
     setReloadKey((key) => key + 1);
   }
 
@@ -143,9 +209,10 @@ export default function KidQuestionFlow({
       return;
     }
 
-    // Start audio synchronously inside the tap gesture - browsers only allow
-    // AudioContext startup from a real user interaction.
-    ensureAudioReady();
+    // Start audio inside the tap gesture — browsers require user interaction
+    // for AudioContext. Await so the context is confirmed running before the
+    // API call that may be followed by a feedback sound.
+    await ensureAudioReady();
     setStatus("submitting");
     setError(null);
 
@@ -165,15 +232,21 @@ export default function KidQuestionFlow({
         perceivedDifficulty: difficulty,
       });
       setAttempt(result);
-      setAnsweredCount((count) => count + 1);
+      setAnsweredCount((count) => {
+        const newCount = count + 1;
+        if (newCount > 0 && newCount % 6 === 0) {
+          setFunFact(getRandomFact());
+        }
+        return newCount;
+      });
       setCorrectCount((count) => count + (result.correct ? 1 : 0));
       setStatus("feedback");
       if (result.levelUp) {
-        playLevelUp();
+        await playLevelUp();
       } else if (result.correct) {
-        playCorrect();
+        await playCorrect();
       } else {
-        playWrong();
+        await playWrong();
       }
     } catch {
       setError("Could not send your answer. Please try again.");
@@ -233,6 +306,39 @@ export default function KidQuestionFlow({
     );
   }
 
+  // Back-navigation guard: shown when the browser back button is pressed mid-session.
+  if (showBackConfirm) {
+    return (
+      <div className="flex w-full flex-1 flex-col justify-center">
+        <div className="rounded-3xl bg-card px-7 py-9 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+          <div className="text-center">
+            <p className="font-display text-3xl text-ink">
+              Wait — don&apos;t go yet!
+            </p>
+            <p className="mt-4 text-base leading-7 text-ink-soft">
+              You&apos;re in the middle of a practice session. If you leave now,
+              your progress won&apos;t be saved.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleBackConfirmStay}
+            className="btn-tactile btn-primary mt-8 w-full rounded-2xl px-4 py-4 font-display text-xl font-semibold"
+          >
+            Keep practicing
+          </button>
+          <button
+            type="button"
+            onClick={handleBackConfirmLeave}
+            className="btn-tactile mt-3 w-full rounded-2xl border border-line bg-card px-4 py-3 text-base font-medium text-ink"
+          >
+            Leave anyway
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (status === "summary") {
     return (
       <div className="flex w-full flex-1 flex-col justify-center text-center">
@@ -249,6 +355,92 @@ export default function KidQuestionFlow({
             className="btn-tactile btn-primary mt-6 rounded-2xl px-6 py-3.5 font-display text-lg font-semibold"
           >
             Back to Today
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Session intro — shown once at the start of the first question.
+  // Uses the real level-up thresholds from misconception.config.ts:
+  //   windowSize=6, strongSuccessThreshold=4
+  if (status === "question" && showIntro && topicName) {
+    return (
+      <div className="flex w-full flex-1 flex-col justify-center">
+        <div className="rounded-3xl bg-card px-7 py-9 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+          <div className="text-center">
+            <p className="font-display text-4xl text-ink">
+              Ready to practice {topicName}?
+            </p>
+            <p className="mt-4 text-base leading-7 text-ink-soft">
+              Answer 4 out of 6 questions correctly{" "}
+              <span aria-hidden="true">🎯</span> — and you&apos;ll level up!
+            </p>
+            <p className="mt-2 text-sm text-ink-soft">
+              Take your time. The app adjusts to your child&apos;s pace.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowIntro(false)}
+            className="btn-tactile btn-primary mt-8 w-full rounded-2xl px-4 py-4 font-display text-xl font-semibold"
+          >
+            Let&apos;s go!
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowIntro(false);
+              void handleFinish();
+            }}
+            className="btn-tactile mt-3 w-full rounded-2xl border border-line bg-card px-4 py-3 text-base font-medium text-ink"
+          >
+            Not ready yet — finish later
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Fun-fact break — shown after every 6 questions.
+  if (status === "feedback" && funFact) {
+    const categoryEmoji: Record<FunFact["category"], string> = {
+      math: "🔢",
+      science: "🔬",
+      history: "📜",
+      nature: "🌿",
+    };
+    return (
+      <div className="flex w-full flex-1 flex-col justify-center">
+        <div className="rounded-3xl bg-card px-7 py-9 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
+          <p className="text-center text-sm font-medium uppercase tracking-widest text-ink-soft">
+            Fun fact
+          </p>
+          <p
+            aria-hidden="true"
+            className="mt-3 text-center text-5xl"
+          >
+            {categoryEmoji[funFact.category]}
+          </p>
+          <p className="mt-4 text-center font-display text-2xl leading-snug text-ink">
+            {funFact.text}
+          </p>
+          <button
+            type="button"
+            onClick={() => setFunFact(null)}
+            className="btn-tactile btn-primary mt-8 w-full rounded-2xl px-4 py-4 font-display text-xl font-semibold"
+          >
+            Keep going!
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setFunFact(null);
+              void handleFinish();
+            }}
+            className="btn-tactile mt-3 w-full rounded-2xl border border-line bg-card px-4 py-3 text-base font-medium text-ink"
+          >
+            Finish for today
           </button>
         </div>
       </div>
@@ -329,7 +521,7 @@ export default function KidQuestionFlow({
       <div className="flex items-center gap-2">
         <span aria-hidden="true" className="h-2 w-2 rounded-full bg-waypoint" />
         <span className="text-sm font-medium text-ink-soft">
-          Question {answeredCount + 1}
+          {topicName ? `${topicName} · ` : ""}Question {answeredCount + 1}
         </span>
       </div>
       <h2 className="mt-4 font-display text-3xl leading-snug text-ink">
