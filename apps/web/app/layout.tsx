@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
-import IdleAtlasWidget from "@/components/mascot/idle-atlas-widget";
 import { AuthProvider } from "@/lib/auth-context";
 import "./globals.css";
 
@@ -35,10 +34,7 @@ export default function RootLayout({
       className={`${display.variable} ${body.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-fog text-ink">
-        <AuthProvider>
-          {children}
-          <IdleAtlasWidget />
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

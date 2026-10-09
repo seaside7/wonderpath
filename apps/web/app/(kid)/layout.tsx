@@ -10,6 +10,7 @@ import {
 } from "@/lib/child-mode";
 import PinEntry from "@/components/child-mode/pin-entry";
 import TrailBackdrop from "@/components/ui/trail-backdrop";
+import IdleAtlasWidget from "@/components/mascot/idle-atlas-widget";
 
 function KidHeader({ onLock }: { onLock: () => void }) {
   return (
@@ -143,6 +144,7 @@ export default function KidLayout({ children }: { children: ReactNode }) {
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-10">
         {children}
       </div>
+      <IdleAtlasWidget />
       {showPin ? (
         <div
           role="dialog"

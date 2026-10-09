@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useAuth } from "../../lib/auth-context";
 import { getChildModeChildId } from "../../lib/child-mode";
 import TrailBackdrop from "../../components/ui/trail-backdrop";
+import IdleAtlasWidget from "../../components/mascot/idle-atlas-widget";
 
 function DashboardHeader() {
   const { user, logout } = useAuth();
@@ -101,6 +102,7 @@ function AuthGate({ children }: { children: ReactNode }) {
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-10">
         {children}
       </div>
+      <IdleAtlasWidget />
     </div>
   );
 }
