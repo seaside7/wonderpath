@@ -8,6 +8,7 @@ import {
   ChildProfile,
   fetchRecommendations,
   getChild,
+  RecommendationData,
   RecommendationItem,
 } from "@/lib/api";
 import {
@@ -28,7 +29,9 @@ export default function KidTodayCard({ childId }: { childId: string }) {
   const [status, setStatus] = useState<Status>("loading");
   const [child, setChild] = useState<ChildProfile | null>(null);
   const [top, setTop] = useState<RecommendationItem | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [session, setSession] = useState<RecommendationData["session"] | null>(
+    null,
+  );
   const [showPicker, setShowPicker] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +50,7 @@ export default function KidTodayCard({ childId }: { childId: string }) {
         setChild(profile);
         const first = recommendations.recommendations[0] ?? null;
         setTop(first);
-        setSessionId(recommendations.session.id);
+        setSession(recommendations.session);
         setStatus(first ? "ready" : "fallback");
       } catch (cause) {
         if (cancelled) return;
@@ -77,11 +80,11 @@ export default function KidTodayCard({ childId }: { childId: string }) {
   }, [childId]);
 
   async function handleStart() {
-    if (!sessionId || !top || starting) return;
+    if (!session || !top || starting) return;
     // Accept the recommendation and show a confirmation screen so the parent
     // can see the exact topic before entering the session.
     try {
-      await acceptRecommendation(sessionId, top.learningObjective.id);
+      await acceptRecommendation(session.id, top.learningObjective.id);
     } catch {
       setError("Could not start. Please try again.");
       return;
@@ -90,11 +93,11 @@ export default function KidTodayCard({ childId }: { childId: string }) {
   }
 
   async function handleConfirm() {
-    if (!sessionId) return;
+    if (!session) return;
     setStarting(true);
     setError(null);
     try {
-      router.push(`/learn/${childId}/session/${sessionId}`);
+      router.push(`/learn/${childId}/session/${session.id}`);
     } catch {
       setError("Could not navigate. Please try again.");
       setStarting(false);
@@ -124,7 +127,7 @@ export default function KidTodayCard({ childId }: { childId: string }) {
             ? "No problem — pick what sounds fun."
             : "Let's pick what to practice today."}
         </p>
-        <KidTopicPicker child={child} />
+        <KidTopicPicker child={child} session={session} />
         {status === "ready" && showPicker ? (
           <button
             type="button"

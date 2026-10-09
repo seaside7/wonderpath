@@ -10,12 +10,20 @@ import {
 } from '../../../generated/prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { getOwnedChild } from '../../common/get-owned-child';
-import { mapCurriculumFromPrisma } from '../../child/child.mapper';
+import {
+  mapCurriculumFromPrisma,
+  mapGradeToPrisma,
+  mapCurriculumToPrisma,
+} from '../../child/child.mapper';
 import {
   mapLearningSessionContextFromPrisma,
   mapSubjectFromPrisma,
+  mapSubjectToPrisma,
+  isCurriculumSupported,
 } from '../../learning-session/learning-session.mapper';
 import { AcceptRecommendationDto } from './dto/accept-recommendation.dto';
+import { GetChildTopicsQueryDto } from './dto/get-child-topics-query.dto';
+import { ChildTopicsResponseDto } from './dto/child-topics-response.dto';
 import {
   LearningObjectiveReferenceDto,
   RecommendationItemDto,
@@ -92,7 +100,13 @@ export class RecommendationService {
         status: PrismaLearningSessionStatus.STARTED,
       },
       orderBy: { startedAt: 'desc' },
-      select: { id: true, curriculum: true, subject: true, context: true },
+      select: {
+        id: true,
+        curriculum: true,
+        subject: true,
+        context: true,
+        practiceGrade: true,
+      },
     });
 
     if (!session) {
@@ -107,7 +121,7 @@ export class RecommendationService {
     const inventoryQuestions = await this.prisma.question.findMany({
       where: {
         curriculum: session.curriculum,
-        grade: child.grade,
+        grade: session.practiceGrade ?? child.grade,
         ...(subjectArea
           ? {
               learningObjective: {
@@ -179,6 +193,96 @@ export class RecommendationService {
     };
   }
 
+  async getChildTopics(
+    parentId: string,
+    childId: string,
+    query: GetChildTopicsQueryDto,
+  ): Promise<ChildTopicsResponseDto> {
+    const child = await getOwnedChild(this.prisma, parentId, childId);
+
+    if (!isCurriculumSupported(child.curricula, query.curriculum)) {
+      throw new BadRequestException(
+        'Selected curriculum is not supported for this child',
+      );
+    }
+
+    const inventoryQuestions = await this.prisma.question.findMany({
+      where: {
+        curriculum: mapCurriculumToPrisma(query.curriculum),
+        grade: mapGradeToPrisma(query.grade),
+        learningObjective: {
+          subtopic: {
+            topic: {
+              subjectArea: { code: mapSubjectToPrisma(query.subject) },
+            },
+          },
+        },
+      },
+      select: { learningObjectiveId: true },
+    });
+
+    const learningObjectiveIds = [
+      ...new Set(
+        inventoryQuestions.map((question) => question.learningObjectiveId),
+      ),
+    ];
+
+    const [objectives, masteryRecords] = await Promise.all([
+      this.prisma.learningObjective.findMany({
+        where: { id: { in: learningObjectiveIds } },
+        include: includeLearningObjectiveHierarchy.learningObjective.include,
+      }),
+      this.prisma.studentMastery.findMany({
+        where: {
+          childId: child.id,
+          learningObjectiveId: { in: learningObjectiveIds },
+        },
+        select: {
+          learningObjectiveId: true,
+          masteryScore: true,
+          confidenceScore: true,
+          totalAttempts: true,
+        },
+      }),
+    ]);
+
+    const masteryByObjectiveId = new Map(
+      masteryRecords.map(
+        (record) => [record.learningObjectiveId, record] as const,
+      ),
+    );
+
+    objectives.sort((left, right) => {
+      const leftHierarchy = left.subtopic.topic;
+      const rightHierarchy = right.subtopic.topic;
+      return (
+        leftHierarchy.name.localeCompare(rightHierarchy.name) ||
+        left.subtopic.name.localeCompare(right.subtopic.name) ||
+        left.name.localeCompare(right.name)
+      );
+    });
+
+    return {
+      childId: child.id,
+      curriculum: query.curriculum,
+      subject: query.subject,
+      grade: query.grade,
+      learningObjectives: objectives.map((objective) => {
+        const mastery = masteryByObjectiveId.get(objective.id);
+        return {
+          ...mapLearningObjectiveToReference(objective),
+          mastery: mastery
+            ? {
+                masteryScore: mastery.masteryScore,
+                confidenceScore: mastery.confidenceScore,
+                totalAttempts: mastery.totalAttempts,
+              }
+            : null,
+        };
+      }),
+    };
+  }
+
   async acceptRecommendation(
     parentId: string,
     sessionId: string,
@@ -186,7 +290,13 @@ export class RecommendationService {
   ): Promise<SessionFocusResponseDto> {
     const session = await this.prisma.learningSession.findFirst({
       where: { id: sessionId, child: { parentId } },
-      select: { id: true, subject: true },
+      select: {
+        id: true,
+        subject: true,
+        curriculum: true,
+        practiceGrade: true,
+        child: { select: { grade: true } },
+      },
     });
 
     if (!session) {
@@ -199,7 +309,9 @@ export class RecommendationService {
         id: true,
         name: true,
         subtopic: {
-          select: { topic: { select: { subjectArea: { select: { code: true } } } } },
+          select: {
+            topic: { select: { subjectArea: { select: { code: true } } } },
+          },
         },
       },
     });
@@ -210,13 +322,34 @@ export class RecommendationService {
 
     if (objective.subtopic.topic.subjectArea.code !== session.subject) {
       throw new BadRequestException(
-        'Learning objective does not belong to this session\'s subject',
+        "Learning objective does not belong to this session's subject",
+      );
+    }
+
+    const practiceGrade = dto.grade
+      ? mapGradeToPrisma(dto.grade)
+      : (session.practiceGrade ?? session.child.grade);
+    const question = await this.prisma.question.findFirst({
+      where: {
+        curriculum: session.curriculum,
+        grade: practiceGrade,
+        learningObjectiveId: objective.id,
+      },
+      select: { id: true },
+    });
+
+    if (!question) {
+      throw new BadRequestException(
+        'Learning objective has no questions for the selected curriculum and grade',
       );
     }
 
     const updated = await this.prisma.learningSession.update({
       where: { id: sessionId },
-      data: { focusLearningObjectiveId: objective.id },
+      data: {
+        focusLearningObjectiveId: objective.id,
+        ...(dto.grade ? { practiceGrade } : {}),
+      },
       include: {
         focusLearningObjective: { select: { id: true, name: true } },
         child: { select: { id: true } },

@@ -30,17 +30,19 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [status, setStatus] = useState<AuthStatus>(() =>
-    typeof window !== "undefined" && getStoredToken()
-      ? "loading"
-      : "unauthenticated",
-  );
+  // Always starts "loading" on both server and client - the server can
+  // never know whether a token exists in the browser's localStorage, so
+  // branching the initial value on it here caused a hydration mismatch
+  // (server always rendered "unauthenticated", client's first render
+  // already saw the token and rendered "loading" instead).
+  const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<ParentProfile | null>(null);
 
   useEffect(() => {
     const token = getStoredToken();
 
     if (!token) {
+      setStatus("unauthenticated");
       return;
     }
 

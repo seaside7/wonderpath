@@ -171,6 +171,7 @@ model LearningSession {
   subject                Subject
   status                 LearningSessionStatus @default(STARTED)
   context                LearningSessionContext @default(NORMAL_LEARNING)
+  practiceGrade          Grade?
   focusLearningObjectiveId String?
   focusLearningObjective   LearningObjective?  @relation("SessionFocus", fields: [focusLearningObjectiveId], references: [id], onDelete: SetNull)
   startedAt              DateTime              @default(now())

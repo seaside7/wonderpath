@@ -189,6 +189,13 @@ export type EnumLearningSessionContextFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumLearningSessionContextFilter<$PrismaModel> | $Enums.LearningSessionContext
 }
 
+export type EnumGradeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.Grade | Prisma.EnumGradeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.Grade[] | Prisma.ListEnumGradeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.Grade[] | Prisma.ListEnumGradeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumGradeNullableFilter<$PrismaModel> | $Enums.Grade | null
+}
+
 export type EnumCurriculumWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.Curriculum | Prisma.EnumCurriculumFieldRefInput<$PrismaModel>
   in?: $Enums.Curriculum[] | Prisma.ListEnumCurriculumFieldRefInput<$PrismaModel>
@@ -227,6 +234,16 @@ export type EnumLearningSessionContextWithAggregatesFilter<$PrismaModel = never>
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumLearningSessionContextFilter<$PrismaModel>
   _max?: Prisma.NestedEnumLearningSessionContextFilter<$PrismaModel>
+}
+
+export type EnumGradeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.Grade | Prisma.EnumGradeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.Grade[] | Prisma.ListEnumGradeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.Grade[] | Prisma.ListEnumGradeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumGradeNullableWithAggregatesFilter<$PrismaModel> | $Enums.Grade | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumGradeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumGradeNullableFilter<$PrismaModel>
 }
 
 export type IntFilter<$PrismaModel = never> = {
@@ -815,6 +832,13 @@ export type NestedEnumLearningSessionContextFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumLearningSessionContextFilter<$PrismaModel> | $Enums.LearningSessionContext
 }
 
+export type NestedEnumGradeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.Grade | Prisma.EnumGradeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.Grade[] | Prisma.ListEnumGradeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.Grade[] | Prisma.ListEnumGradeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumGradeNullableFilter<$PrismaModel> | $Enums.Grade | null
+}
+
 export type NestedEnumCurriculumWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.Curriculum | Prisma.EnumCurriculumFieldRefInput<$PrismaModel>
   in?: $Enums.Curriculum[] | Prisma.ListEnumCurriculumFieldRefInput<$PrismaModel>
@@ -853,6 +877,16 @@ export type NestedEnumLearningSessionContextWithAggregatesFilter<$PrismaModel = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumLearningSessionContextFilter<$PrismaModel>
   _max?: Prisma.NestedEnumLearningSessionContextFilter<$PrismaModel>
+}
+
+export type NestedEnumGradeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.Grade | Prisma.EnumGradeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.Grade[] | Prisma.ListEnumGradeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.Grade[] | Prisma.ListEnumGradeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumGradeNullableWithAggregatesFilter<$PrismaModel> | $Enums.Grade | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumGradeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumGradeNullableFilter<$PrismaModel>
 }
 
 export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {

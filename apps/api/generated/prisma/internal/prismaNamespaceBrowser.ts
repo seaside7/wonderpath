@@ -135,6 +135,7 @@ export const LearningSessionScalarFieldEnum = {
   subject: 'subject',
   status: 'status',
   context: 'context',
+  practiceGrade: 'practiceGrade',
   focusLearningObjectiveId: 'focusLearningObjectiveId',
   startedAt: 'startedAt',
   createdAt: 'createdAt',

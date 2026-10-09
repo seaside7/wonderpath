@@ -304,6 +304,39 @@ export interface RecommendationObjective {
   };
 }
 
+export interface AvailableLearningObjective extends RecommendationObjective {
+  mastery: {
+    masteryScore: number;
+    confidenceScore: number;
+    totalAttempts: number;
+  } | null;
+}
+
+export interface ChildTopicsData {
+  childId: string;
+  curriculum: string;
+  subject: string;
+  grade: string;
+  learningObjectives: AvailableLearningObjective[];
+}
+
+export function fetchChildTopics(input: {
+  childId: string;
+  curriculum: string;
+  subject: string;
+  grade: string;
+}): Promise<ChildTopicsData> {
+  const query = new URLSearchParams({
+    curriculum: input.curriculum,
+    subject: input.subject,
+    grade: input.grade,
+  });
+  return request<ChildTopicsData>(
+    `/children/${input.childId}/topics?${query.toString()}`,
+    { headers: authorizedHeaders() },
+  );
+}
+
 export interface RecommendationItem {
   learningObjective: RecommendationObjective;
   action: string;
@@ -343,13 +376,17 @@ export interface SessionFocus {
 export function acceptRecommendation(
   sessionId: string,
   learningObjectiveId: string,
+  grade?: string,
 ): Promise<SessionFocus> {
   return request<SessionFocus>(
     `/learning-sessions/${sessionId}/recommendation/accept`,
     {
       method: "POST",
       headers: authorizedHeaders(),
-      body: JSON.stringify({ learningObjectiveId }),
+      body: JSON.stringify({
+        learningObjectiveId,
+        ...(grade ? { grade } : {}),
+      }),
     },
   );
 }

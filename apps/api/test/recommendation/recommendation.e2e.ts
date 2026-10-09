@@ -41,6 +41,10 @@ interface QuestionResponse {
   correctAnswer: string;
 }
 
+interface NextQuestionResponse {
+  question: { id: string } | null;
+}
+
 interface RecommendationItem {
   learningObjective: {
     id: string;
@@ -68,6 +72,27 @@ interface RecommendationResponse {
     context: string;
   };
   recommendations: RecommendationItem[];
+}
+
+interface ChildTopicsResponse {
+  childId: string;
+  curriculum: string;
+  subject: string;
+  grade: string;
+  learningObjectives: Array<{
+    id: string;
+    name: string;
+    hierarchy: {
+      subject: { id: string; code: string; name: string };
+      topic: { id: string; name: string };
+      subtopic: { id: string; name: string };
+    };
+    mastery: {
+      masteryScore: number;
+      confidenceScore: number;
+      totalAttempts: number;
+    } | null;
+  }>;
 }
 
 interface SessionFocusResponse {
@@ -187,6 +212,21 @@ async function getRecommendations(
   return response.body as RecommendationResponse;
 }
 
+async function getChildTopics(
+  app: INestApplication<App>,
+  token: string,
+  childId: string,
+  params: { curriculum: string; subject: string; grade: string },
+): Promise<ChildTopicsResponse> {
+  const response = await request(app.getHttpServer())
+    .get(`/children/${childId}/topics`)
+    .query(params)
+    .set('Authorization', `Bearer ${token}`)
+    .expect(200);
+
+  return response.body as ChildTopicsResponse;
+}
+
 describe('Recommendation (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
@@ -204,6 +244,7 @@ describe('Recommendation (e2e)', () => {
   let otherLoId: string;
   let topicId: string;
   let weakQuestionId: string;
+  let gradeAheadQuestionId: string;
   let staleQuestionId: string;
 
   beforeAll(async () => {
@@ -296,6 +337,14 @@ describe('Recommendation (e2e)', () => {
     });
     weakQuestionId = weakQuestion.id;
 
+    const gradeAheadQuestion = await createQuestion(app, adminToken, weakLoId, {
+      questionText: 'What is 20 + 22?',
+      options: ['41', '42', '43'],
+      correctAnswer: '42',
+      grade: 'Grade 6',
+    });
+    gradeAheadQuestionId = gradeAheadQuestion.id;
+
     const staleQuestion = await createQuestion(app, adminToken, staleLoId, {
       questionText: 'What is 3 + 4?',
       options: ['6', '7', '8'],
@@ -309,6 +358,13 @@ describe('Recommendation (e2e)', () => {
       options: ['2', '3', '4'],
       correctAnswer: '3',
       curriculum: 'Cambridge',
+    });
+
+    await createQuestion(app, adminToken, otherLoId, {
+      questionText: 'What is 8 - 5?',
+      options: ['2', '3', '4'],
+      correctAnswer: '3',
+      curriculum: 'Nasional',
     });
 
     await recordAttempt(
@@ -445,6 +501,68 @@ describe('Recommendation (e2e)', () => {
   );
 
   it(
+    'Topic Inventory Filters Curriculum, Subject, and Requested Grade',
+    trackScenario(
+      'Topic Inventory Filters Curriculum, Subject, and Requested Grade',
+      async () => {
+        const gradeAheadTopics = await getChildTopics(
+          app,
+          parentOneToken,
+          childId,
+          { curriculum: 'IB', subject: 'Mathematics', grade: 'Grade 6' },
+        );
+        const gradeAheadIds = gradeAheadTopics.learningObjectives.map(
+          (objective) => objective.id,
+        );
+
+        expect(gradeAheadTopics.grade).toBe('Grade 6');
+        expect(gradeAheadIds).toContain(weakLoId);
+        expect(gradeAheadIds).not.toContain(staleLoId);
+        expect(
+          gradeAheadTopics.learningObjectives.find(
+            (objective) => objective.id === weakLoId,
+          )?.mastery,
+        ).toEqual(
+          expect.objectContaining({
+            totalAttempts: 2,
+            masteryScore: expect.any(Number),
+          }),
+        );
+
+        const gradeFiveNasionalTopics = await getChildTopics(
+          app,
+          parentOneToken,
+          childId,
+          { curriculum: 'Nasional', subject: 'Mathematics', grade: 'Grade 5' },
+        );
+        expect(
+          gradeFiveNasionalTopics.learningObjectives.map((item) => item.id),
+        ).toContain(otherLoId);
+        expect(
+          gradeFiveNasionalTopics.learningObjectives.map((item) => item.id),
+        ).not.toContain(weakLoId);
+
+        const noInventory = await getChildTopics(app, parentOneToken, childId, {
+          curriculum: 'IB',
+          subject: 'English',
+          grade: 'Grade 1',
+        });
+        expect(noInventory.learningObjectives).toEqual([]);
+
+        await request(app.getHttpServer())
+          .get(`/children/${childId}/topics`)
+          .query({
+            curriculum: 'IB',
+            subject: 'Mathematics',
+            grade: 'Grade 6',
+          })
+          .set('Authorization', `Bearer ${parentTwoToken}`)
+          .expect(404);
+      },
+    ),
+  );
+
+  it(
     'Session Context',
     trackScenario('Session Context', async () => {
       examSessionId = (
@@ -504,6 +622,15 @@ describe('Recommendation (e2e)', () => {
         .expect(401);
 
       await request(app.getHttpServer())
+        .get(`/children/${childId}/topics`)
+        .query({
+          curriculum: 'IB',
+          subject: 'Mathematics',
+          grade: 'Grade 6',
+        })
+        .expect(401);
+
+      await request(app.getHttpServer())
         .post(`/learning-sessions/${normalSessionId}/recommendation/accept`)
         .send({ learningObjectiveId: weakLoId })
         .expect(401);
@@ -524,6 +651,34 @@ describe('Recommendation (e2e)', () => {
         .send({ learningObjectiveId: weakLoId })
         .expect(404);
     }),
+  );
+
+  it(
+    'Grade Ahead Topic Is Served at the Selected Grade',
+    trackScenario(
+      'Grade Ahead Topic Is Served at the Selected Grade',
+      async () => {
+        const aheadSession = await startSession(app, parentOneToken, childId);
+        await request(app.getHttpServer())
+          .post(`/learning-sessions/${aheadSession.id}/recommendation/accept`)
+          .set('Authorization', `Bearer ${parentOneToken}`)
+          .send({ learningObjectiveId: weakLoId, grade: 'Grade 6' })
+          .expect(201);
+
+        const storedSession = await prisma.learningSession.findUniqueOrThrow({
+          where: { id: aheadSession.id },
+          select: { practiceGrade: true },
+        });
+        expect(storedSession.practiceGrade).toBe('GRADE_6');
+
+        const next = await request(app.getHttpServer())
+          .get(`/learning-sessions/${aheadSession.id}/next-question`)
+          .set('Authorization', `Bearer ${parentOneToken}`)
+          .expect(200);
+        const nextQuestion = next.body as NextQuestionResponse;
+        expect(nextQuestion.question?.id).toBe(gradeAheadQuestionId);
+      },
+    ),
   );
 });
 

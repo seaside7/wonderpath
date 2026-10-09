@@ -79,7 +79,7 @@ export class QuestionServingService {
     const candidates = await this.prisma.question.findMany({
       where: {
         curriculum: session.curriculum,
-        grade: session.child.grade,
+        grade: session.practiceGrade ?? session.child.grade,
         learningObjective: learningObjectivesFilter,
         NOT: { id: { in: [...answeredIds] } },
       },

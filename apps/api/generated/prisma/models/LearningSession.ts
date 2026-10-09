@@ -31,6 +31,7 @@ export type LearningSessionMinAggregateOutputType = {
   subject: $Enums.Subject | null
   status: $Enums.LearningSessionStatus | null
   context: $Enums.LearningSessionContext | null
+  practiceGrade: $Enums.Grade | null
   focusLearningObjectiveId: string | null
   startedAt: Date | null
   createdAt: Date | null
@@ -44,6 +45,7 @@ export type LearningSessionMaxAggregateOutputType = {
   subject: $Enums.Subject | null
   status: $Enums.LearningSessionStatus | null
   context: $Enums.LearningSessionContext | null
+  practiceGrade: $Enums.Grade | null
   focusLearningObjectiveId: string | null
   startedAt: Date | null
   createdAt: Date | null
@@ -57,6 +59,7 @@ export type LearningSessionCountAggregateOutputType = {
   subject: number
   status: number
   context: number
+  practiceGrade: number
   focusLearningObjectiveId: number
   startedAt: number
   createdAt: number
@@ -72,6 +75,7 @@ export type LearningSessionMinAggregateInputType = {
   subject?: true
   status?: true
   context?: true
+  practiceGrade?: true
   focusLearningObjectiveId?: true
   startedAt?: true
   createdAt?: true
@@ -85,6 +89,7 @@ export type LearningSessionMaxAggregateInputType = {
   subject?: true
   status?: true
   context?: true
+  practiceGrade?: true
   focusLearningObjectiveId?: true
   startedAt?: true
   createdAt?: true
@@ -98,6 +103,7 @@ export type LearningSessionCountAggregateInputType = {
   subject?: true
   status?: true
   context?: true
+  practiceGrade?: true
   focusLearningObjectiveId?: true
   startedAt?: true
   createdAt?: true
@@ -184,6 +190,7 @@ export type LearningSessionGroupByOutputType = {
   subject: $Enums.Subject
   status: $Enums.LearningSessionStatus
   context: $Enums.LearningSessionContext
+  practiceGrade: $Enums.Grade | null
   focusLearningObjectiveId: string | null
   startedAt: Date
   createdAt: Date
@@ -218,6 +225,7 @@ export type LearningSessionWhereInput = {
   subject?: Prisma.EnumSubjectFilter<"LearningSession"> | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFilter<"LearningSession"> | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFilter<"LearningSession"> | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.EnumGradeNullableFilter<"LearningSession"> | $Enums.Grade | null
   focusLearningObjectiveId?: Prisma.StringNullableFilter<"LearningSession"> | string | null
   startedAt?: Prisma.DateTimeFilter<"LearningSession"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"LearningSession"> | Date | string
@@ -234,6 +242,7 @@ export type LearningSessionOrderByWithRelationInput = {
   subject?: Prisma.SortOrder
   status?: Prisma.SortOrder
   context?: Prisma.SortOrder
+  practiceGrade?: Prisma.SortOrderInput | Prisma.SortOrder
   focusLearningObjectiveId?: Prisma.SortOrderInput | Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -253,6 +262,7 @@ export type LearningSessionWhereUniqueInput = Prisma.AtLeast<{
   subject?: Prisma.EnumSubjectFilter<"LearningSession"> | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFilter<"LearningSession"> | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFilter<"LearningSession"> | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.EnumGradeNullableFilter<"LearningSession"> | $Enums.Grade | null
   focusLearningObjectiveId?: Prisma.StringNullableFilter<"LearningSession"> | string | null
   startedAt?: Prisma.DateTimeFilter<"LearningSession"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"LearningSession"> | Date | string
@@ -269,6 +279,7 @@ export type LearningSessionOrderByWithAggregationInput = {
   subject?: Prisma.SortOrder
   status?: Prisma.SortOrder
   context?: Prisma.SortOrder
+  practiceGrade?: Prisma.SortOrderInput | Prisma.SortOrder
   focusLearningObjectiveId?: Prisma.SortOrderInput | Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -288,6 +299,7 @@ export type LearningSessionScalarWhereWithAggregatesInput = {
   subject?: Prisma.EnumSubjectWithAggregatesFilter<"LearningSession"> | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusWithAggregatesFilter<"LearningSession"> | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextWithAggregatesFilter<"LearningSession"> | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.EnumGradeNullableWithAggregatesFilter<"LearningSession"> | $Enums.Grade | null
   focusLearningObjectiveId?: Prisma.StringNullableWithAggregatesFilter<"LearningSession"> | string | null
   startedAt?: Prisma.DateTimeWithAggregatesFilter<"LearningSession"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"LearningSession"> | Date | string
@@ -300,6 +312,7 @@ export type LearningSessionCreateInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   startedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -315,6 +328,7 @@ export type LearningSessionUncheckedCreateInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   focusLearningObjectiveId?: string | null
   startedAt?: Date | string
   createdAt?: Date | string
@@ -328,6 +342,7 @@ export type LearningSessionUpdateInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -343,6 +358,7 @@ export type LearningSessionUncheckedUpdateInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   focusLearningObjectiveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -357,6 +373,7 @@ export type LearningSessionCreateManyInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   focusLearningObjectiveId?: string | null
   startedAt?: Date | string
   createdAt?: Date | string
@@ -369,6 +386,7 @@ export type LearningSessionUpdateManyMutationInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -381,6 +399,7 @@ export type LearningSessionUncheckedUpdateManyInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   focusLearningObjectiveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -404,6 +423,7 @@ export type LearningSessionCountOrderByAggregateInput = {
   subject?: Prisma.SortOrder
   status?: Prisma.SortOrder
   context?: Prisma.SortOrder
+  practiceGrade?: Prisma.SortOrder
   focusLearningObjectiveId?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -417,6 +437,7 @@ export type LearningSessionMaxOrderByAggregateInput = {
   subject?: Prisma.SortOrder
   status?: Prisma.SortOrder
   context?: Prisma.SortOrder
+  practiceGrade?: Prisma.SortOrder
   focusLearningObjectiveId?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -430,6 +451,7 @@ export type LearningSessionMinOrderByAggregateInput = {
   subject?: Prisma.SortOrder
   status?: Prisma.SortOrder
   context?: Prisma.SortOrder
+  practiceGrade?: Prisma.SortOrder
   focusLearningObjectiveId?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -499,6 +521,10 @@ export type EnumLearningSessionContextFieldUpdateOperationsInput = {
   set?: $Enums.LearningSessionContext
 }
 
+export type NullableEnumGradeFieldUpdateOperationsInput = {
+  set?: $Enums.Grade | null
+}
+
 export type LearningSessionCreateNestedManyWithoutFocusLearningObjectiveInput = {
   create?: Prisma.XOR<Prisma.LearningSessionCreateWithoutFocusLearningObjectiveInput, Prisma.LearningSessionUncheckedCreateWithoutFocusLearningObjectiveInput> | Prisma.LearningSessionCreateWithoutFocusLearningObjectiveInput[] | Prisma.LearningSessionUncheckedCreateWithoutFocusLearningObjectiveInput[]
   connectOrCreate?: Prisma.LearningSessionCreateOrConnectWithoutFocusLearningObjectiveInput | Prisma.LearningSessionCreateOrConnectWithoutFocusLearningObjectiveInput[]
@@ -561,6 +587,7 @@ export type LearningSessionCreateWithoutChildInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   startedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -574,6 +601,7 @@ export type LearningSessionUncheckedCreateWithoutChildInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   focusLearningObjectiveId?: string | null
   startedAt?: Date | string
   createdAt?: Date | string
@@ -617,6 +645,7 @@ export type LearningSessionScalarWhereInput = {
   subject?: Prisma.EnumSubjectFilter<"LearningSession"> | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFilter<"LearningSession"> | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFilter<"LearningSession"> | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.EnumGradeNullableFilter<"LearningSession"> | $Enums.Grade | null
   focusLearningObjectiveId?: Prisma.StringNullableFilter<"LearningSession"> | string | null
   startedAt?: Prisma.DateTimeFilter<"LearningSession"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"LearningSession"> | Date | string
@@ -629,6 +658,7 @@ export type LearningSessionCreateWithoutFocusLearningObjectiveInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   startedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -643,6 +673,7 @@ export type LearningSessionUncheckedCreateWithoutFocusLearningObjectiveInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   startedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -681,6 +712,7 @@ export type LearningSessionCreateWithoutAttemptsInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   startedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -695,6 +727,7 @@ export type LearningSessionUncheckedCreateWithoutAttemptsInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   focusLearningObjectiveId?: string | null
   startedAt?: Date | string
   createdAt?: Date | string
@@ -723,6 +756,7 @@ export type LearningSessionUpdateWithoutAttemptsInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -737,6 +771,7 @@ export type LearningSessionUncheckedUpdateWithoutAttemptsInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   focusLearningObjectiveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -749,6 +784,7 @@ export type LearningSessionCreateManyChildInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   focusLearningObjectiveId?: string | null
   startedAt?: Date | string
   createdAt?: Date | string
@@ -761,6 +797,7 @@ export type LearningSessionUpdateWithoutChildInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -774,6 +811,7 @@ export type LearningSessionUncheckedUpdateWithoutChildInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   focusLearningObjectiveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -787,6 +825,7 @@ export type LearningSessionUncheckedUpdateManyWithoutChildInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   focusLearningObjectiveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -800,6 +839,7 @@ export type LearningSessionCreateManyFocusLearningObjectiveInput = {
   subject: $Enums.Subject
   status?: $Enums.LearningSessionStatus
   context?: $Enums.LearningSessionContext
+  practiceGrade?: $Enums.Grade | null
   startedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -811,6 +851,7 @@ export type LearningSessionUpdateWithoutFocusLearningObjectiveInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -825,6 +866,7 @@ export type LearningSessionUncheckedUpdateWithoutFocusLearningObjectiveInput = {
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -838,6 +880,7 @@ export type LearningSessionUncheckedUpdateManyWithoutFocusLearningObjectiveInput
   subject?: Prisma.EnumSubjectFieldUpdateOperationsInput | $Enums.Subject
   status?: Prisma.EnumLearningSessionStatusFieldUpdateOperationsInput | $Enums.LearningSessionStatus
   context?: Prisma.EnumLearningSessionContextFieldUpdateOperationsInput | $Enums.LearningSessionContext
+  practiceGrade?: Prisma.NullableEnumGradeFieldUpdateOperationsInput | $Enums.Grade | null
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -881,6 +924,7 @@ export type LearningSessionSelect<ExtArgs extends runtime.Types.Extensions.Inter
   subject?: boolean
   status?: boolean
   context?: boolean
+  practiceGrade?: boolean
   focusLearningObjectiveId?: boolean
   startedAt?: boolean
   createdAt?: boolean
@@ -898,6 +942,7 @@ export type LearningSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   subject?: boolean
   status?: boolean
   context?: boolean
+  practiceGrade?: boolean
   focusLearningObjectiveId?: boolean
   startedAt?: boolean
   createdAt?: boolean
@@ -913,6 +958,7 @@ export type LearningSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   subject?: boolean
   status?: boolean
   context?: boolean
+  practiceGrade?: boolean
   focusLearningObjectiveId?: boolean
   startedAt?: boolean
   createdAt?: boolean
@@ -928,13 +974,14 @@ export type LearningSessionSelectScalar = {
   subject?: boolean
   status?: boolean
   context?: boolean
+  practiceGrade?: boolean
   focusLearningObjectiveId?: boolean
   startedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type LearningSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "childId" | "curriculum" | "subject" | "status" | "context" | "focusLearningObjectiveId" | "startedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["learningSession"]>
+export type LearningSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "childId" | "curriculum" | "subject" | "status" | "context" | "practiceGrade" | "focusLearningObjectiveId" | "startedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["learningSession"]>
 export type LearningSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   child?: boolean | Prisma.ChildDefaultArgs<ExtArgs>
   focusLearningObjective?: boolean | Prisma.LearningSession$focusLearningObjectiveArgs<ExtArgs>
@@ -964,6 +1011,7 @@ export type $LearningSessionPayload<ExtArgs extends runtime.Types.Extensions.Int
     subject: $Enums.Subject
     status: $Enums.LearningSessionStatus
     context: $Enums.LearningSessionContext
+    practiceGrade: $Enums.Grade | null
     focusLearningObjectiveId: string | null
     startedAt: Date
     createdAt: Date
@@ -1400,6 +1448,7 @@ export interface LearningSessionFieldRefs {
   readonly subject: Prisma.FieldRef<"LearningSession", 'Subject'>
   readonly status: Prisma.FieldRef<"LearningSession", 'LearningSessionStatus'>
   readonly context: Prisma.FieldRef<"LearningSession", 'LearningSessionContext'>
+  readonly practiceGrade: Prisma.FieldRef<"LearningSession", 'Grade'>
   readonly focusLearningObjectiveId: Prisma.FieldRef<"LearningSession", 'String'>
   readonly startedAt: Prisma.FieldRef<"LearningSession", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"LearningSession", 'DateTime'>

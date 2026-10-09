@@ -88,8 +88,8 @@ export class TtsService implements OnModuleInit {
       },
       audioConfig: {
         audioEncoding: "MP3" as const,
-        speakingRate: options.speakingRate ?? 1.0,
-        pitch: options.pitch ?? 4.0,
+        speakingRate: options.speakingRate ?? 0.95,
+        pitch: options.pitch ?? 7.0,
         sampleRateHertz: 24000,
       },
     });
@@ -116,8 +116,8 @@ export class TtsService implements OnModuleInit {
   ): Promise<string> {
     const buffer = await this.synthesizeToBuffer({
       text,
-      speakingRate: 1.0,
-      pitch: 4.0,
+      speakingRate: 0.95,
+      pitch: 7.0,
       ...options,
     });
 
