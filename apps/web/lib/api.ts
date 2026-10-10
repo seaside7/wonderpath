@@ -3,9 +3,10 @@ export const API_BASE_URL =
 
 export function resolveAudioUrl(audioUrl: string | null): string | null {
   if (!audioUrl) return null;
-  // audioUrl is stored as /tts/filename.mp3 (NestJS static file path).
-  // Proxy through Next.js /api/tts/ to avoid CORS.
-  return `/api/tts/${audioUrl.replace(/^\/tts\//, "")}`;
+  // TTS files are served by the API. In staging, API_BASE_URL is
+  // https://wonderpath.itsmesaid.id/api and nginx strips /api before routing.
+  const filename = audioUrl.replace(/^\/tts\//, "");
+  return `${API_BASE_URL.replace(/\/+$/, "")}/tts/${filename}`;
 }
 
 export class ApiError extends Error {
@@ -267,7 +268,20 @@ export interface AttemptResult {
   perceivedDifficulty: PerceivedDifficulty;
   attemptNumber: number;
   explanation: string;
+  audioUrl: string | null;
   levelUp: LevelUpSignal | null;
+  points: {
+    earned: number;
+    balance: number;
+    goal: {
+      period: "DAILY" | "WEEKLY" | "MONTHLY";
+      target: number;
+      progress: number;
+      periodStart: string;
+      periodEnd: string;
+    } | null;
+    goalJustReached: boolean;
+  } | null;
 }
 
 export function submitAttempt(input: {
@@ -282,6 +296,114 @@ export function submitAttempt(input: {
     method: "POST",
     headers: authorizedHeaders(),
     body: JSON.stringify(input),
+  });
+}
+
+export interface PointsData {
+  balance: number;
+  goal: {
+    period: "DAILY" | "WEEKLY" | "MONTHLY";
+    target: number;
+    progress: number;
+    periodStart: string;
+    periodEnd: string;
+  } | null;
+  transactions: Array<{
+    id: string;
+    amount: number;
+    reason: string;
+    createdAt: string;
+  }>;
+}
+
+export interface RewardData {
+  id: string;
+  name: string;
+  emoji: string;
+  cost: number;
+  archived: boolean;
+}
+
+export interface RedemptionData {
+  id: string;
+  childId: string;
+  rewardId: string;
+  reward: RewardData;
+  cost: number;
+  status: "PENDING" | "APPROVED" | "DECLINED";
+  requestedAt: string;
+  resolvedAt: string | null;
+}
+
+export function fetchPoints(childId: string): Promise<PointsData> {
+  return request<PointsData>(`/children/${childId}/points`, {
+    headers: authorizedHeaders(),
+  });
+}
+
+export function setPointGoal(
+  childId: string,
+  input: { period: "DAILY" | "WEEKLY" | "MONTHLY"; targetPoints: number },
+): Promise<PointsData["goal"]> {
+  return request<PointsData["goal"]>(`/children/${childId}/point-goal`, {
+    method: "PUT",
+    headers: authorizedHeaders(),
+    body: JSON.stringify(input),
+  });
+}
+
+export function clearPointGoal(childId: string): Promise<void> {
+  return request<void>(`/children/${childId}/point-goal`, {
+    method: "DELETE",
+    headers: authorizedHeaders(),
+  });
+}
+
+export function fetchRewards(childId: string): Promise<RewardData[]> {
+  return request<RewardData[]>(`/children/${childId}/rewards`, {
+    headers: authorizedHeaders(),
+  });
+}
+
+export function createReward(
+  childId: string,
+  input: { name: string; emoji: string; cost: number },
+): Promise<RewardData> {
+  return request<RewardData>(`/children/${childId}/rewards`, {
+    method: "POST",
+    headers: authorizedHeaders(),
+    body: JSON.stringify(input),
+  });
+}
+
+export function redeemReward(
+  childId: string,
+  rewardId: string,
+): Promise<RedemptionData> {
+  return request<RedemptionData>(`/rewards/${rewardId}/redeem`, {
+    method: "POST",
+    headers: authorizedHeaders(),
+    body: JSON.stringify({ childId }),
+  });
+}
+
+export function fetchRedemptions(
+  childId: string,
+  status?: "PENDING" | "APPROVED" | "DECLINED",
+): Promise<RedemptionData[]> {
+  return request<RedemptionData[]>(
+    `/children/${childId}/redemptions${status ? `?status=${status}` : ""}`,
+    { headers: authorizedHeaders() },
+  );
+}
+
+export function resolveRedemption(
+  redemptionId: string,
+  action: "approve" | "decline",
+): Promise<RedemptionData> {
+  return request<RedemptionData>(`/redemptions/${redemptionId}/${action}`, {
+    method: "POST",
+    headers: authorizedHeaders(),
   });
 }
 

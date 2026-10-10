@@ -20,6 +20,34 @@ const GRADES = [
   "Grade 6",
 ];
 
+const TOPIC_PALETTES = [
+  { card: "bg-sky-50 border-sky-200 hover:border-sky-400", chip: "bg-sky-500", bar: "bg-sky-500" },
+  { card: "bg-amber-50 border-amber-200 hover:border-amber-400", chip: "bg-amber-500", bar: "bg-amber-500" },
+  { card: "bg-emerald-50 border-emerald-200 hover:border-emerald-400", chip: "bg-emerald-500", bar: "bg-emerald-500" },
+  { card: "bg-violet-50 border-violet-200 hover:border-violet-400", chip: "bg-violet-500", bar: "bg-violet-500" },
+  { card: "bg-rose-50 border-rose-200 hover:border-rose-400", chip: "bg-rose-500", bar: "bg-rose-500" },
+  { card: "bg-teal-50 border-teal-200 hover:border-teal-400", chip: "bg-teal-500", bar: "bg-teal-500" },
+];
+
+const KNOWN_TOPICS: Record<string, { icon: string; palette: number }> = {
+  Decimals: { icon: "🔢", palette: 0 },
+  Fractions: { icon: "🍕", palette: 1 },
+  Geometry: { icon: "📐", palette: 2 },
+  Measurement: { icon: "📏", palette: 3 },
+  "Number Sense": { icon: "🧮", palette: 4 },
+  "Data & Probability": { icon: "📊", palette: 5 },
+};
+
+function topicStyle(topicName: string) {
+  const known = KNOWN_TOPICS[topicName];
+  if (known) {
+    return { palette: TOPIC_PALETTES[known.palette], icon: known.icon };
+  }
+  let hash = 0;
+  for (const char of topicName) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return { palette: TOPIC_PALETTES[hash % TOPIC_PALETTES.length], icon: "✨" };
+}
+
 type TopicPickerSession = {
   id: string;
   curriculum: string;
@@ -205,18 +233,43 @@ export default function KidTopicPicker({
 
           <button
             type="button"
+            role="switch"
             onClick={() => setPracticeAhead((ahead) => !ahead)}
             disabled={!canPracticeAhead}
-            aria-pressed={practiceAhead}
-            className={`btn-tactile mt-4 w-full rounded-2xl border-2 px-4 py-3 text-left text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${
+            aria-checked={practiceAhead}
+            className={`btn-tactile mt-4 flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-left shadow-[0_4px_0_rgba(46,42,92,0.15)] transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
               practiceAhead
-                ? "border-coral bg-coral/10 text-ink"
-                : "border-line bg-card text-ink"
+                ? "bg-violet-500 text-white"
+                : "bg-violet-100 text-violet-900 hover:bg-violet-200"
             }`}
           >
-            {practiceAhead
-              ? `Practicing one grade ahead · ${practiceGrade}`
-              : "Practice a grade ahead"}
+            <span aria-hidden="true" className="text-2xl">
+              🚀
+            </span>
+            <span className="flex-1">
+              <span className="block font-display text-lg font-semibold">
+                {practiceAhead ? "Practicing a grade ahead!" : "Practice a grade ahead"}
+              </span>
+              <span
+                className={`block text-sm ${practiceAhead ? "text-white/85" : "text-violet-700"}`}
+              >
+                {practiceAhead
+                  ? `Showing ${practiceGrade} topics · tap to go back`
+                  : "Try harder topics from the next grade"}
+              </span>
+            </span>
+            <span
+              aria-hidden="true"
+              className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
+                practiceAhead ? "bg-white/35" : "bg-violet-300"
+              }`}
+            >
+              <span
+                className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all ${
+                  practiceAhead ? "left-6" : "left-1"
+                }`}
+              />
+            </span>
           </button>
           {!canPracticeAhead ? (
             <p className="mt-2 text-sm text-ink-soft">
@@ -245,6 +298,10 @@ export default function KidTopicPicker({
               {learningObjectives.map((objective) => {
                 const isStarting = startingObjectiveId === objective.id;
                 const mastery = objective.mastery;
+                const practiced = mastery !== null && mastery.totalAttempts > 0;
+                const { palette, icon } = topicStyle(
+                  objective.hierarchy.topic.name,
+                );
 
                 return (
                   <button
@@ -254,27 +311,49 @@ export default function KidTopicPicker({
                     disabled={startingObjectiveId !== null}
                     aria-label={`Practice ${objective.hierarchy.subtopic.name}: ${objective.name}`}
                     aria-pressed={isStarting}
-                    className={`btn-tactile min-h-28 rounded-2xl border-2 px-4 py-3 text-left disabled:opacity-60 ${
-                      isStarting
-                        ? "border-coral bg-coral/10 text-ink"
-                        : "border-line bg-card text-ink"
+                    className={`btn-tactile flex min-h-28 flex-col rounded-2xl border-2 px-4 py-3.5 text-left text-ink transition-colors disabled:opacity-60 ${
+                      isStarting ? "border-coral bg-coral/10" : palette.card
                     }`}
                   >
-                    <span className="block text-xs font-semibold text-ink-soft">
-                      {objective.hierarchy.topic.name}
+                    <span className="flex items-center gap-2">
+                      <span
+                        aria-hidden="true"
+                        className={`flex h-8 w-8 items-center justify-center rounded-xl text-base ${palette.chip}`}
+                      >
+                        {icon}
+                      </span>
+                      <span className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
+                        {objective.hierarchy.topic.name}
+                      </span>
                     </span>
-                    <span className="mt-1 block font-display text-lg font-semibold">
+                    <span className="mt-2 block font-display text-lg font-semibold">
                       {objective.hierarchy.subtopic.name}
                     </span>
                     <span className="mt-1 block text-sm leading-5 text-ink-soft">
                       {objective.name}
                     </span>
-                    <span className="mt-2 block text-xs text-ink-soft">
-                      {isStarting
-                        ? "Starting…"
-                        : mastery && mastery.totalAttempts > 0
-                          ? `Practiced · ${mastery.masteryScore}% mastery`
-                          : "New topic"}
+                    <span className="mt-auto pt-3">
+                      {isStarting ? (
+                        <span className="text-xs font-semibold text-coral-deep">
+                          Starting…
+                        </span>
+                      ) : practiced ? (
+                        <span className="flex items-center gap-2">
+                          <span className="h-2 flex-1 overflow-hidden rounded-full bg-white">
+                            <span
+                              className={`block h-full rounded-full ${palette.bar}`}
+                              style={{ width: `${mastery.masteryScore}%` }}
+                            />
+                          </span>
+                          <span className="text-xs font-semibold text-ink-soft">
+                            {mastery.masteryScore}%
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="inline-block rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-ink-soft">
+                          ✨ New topic
+                        </span>
+                      )}
                     </span>
                   </button>
                 );

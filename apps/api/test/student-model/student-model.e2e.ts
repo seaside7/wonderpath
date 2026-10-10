@@ -1,11 +1,14 @@
 import 'dotenv/config';
 import { randomUUID } from 'node:crypto';
+import { stat } from 'node:fs/promises';
+import { join } from 'node:path';
 import { INestApplication } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { Subject as PrismaSubject } from '../../generated/prisma/client';
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { TtsService } from '../../src/atlas/tts/tts.service';
 import { createTestApp } from '../helpers/create-test-app';
 import {
   createScenarioTracker,
@@ -54,6 +57,13 @@ interface AttemptResponse {
   perceivedDifficulty: string;
   attemptNumber: number;
   reasonCodes: string[];
+  audioUrl: string | null;
+  points: {
+    earned: number;
+    balance: number;
+    goal: unknown;
+    goalJustReached: boolean;
+  } | null;
   createdAt: string;
 }
 
@@ -194,12 +204,20 @@ describe('Student Model (e2e)', () => {
   let topicId: string;
   let questionOneId: string;
   let questionTwoId: string;
+  let audioQuestionId: string;
+  let realAudioQuestionId: string;
+  let failedAudioQuestionId: string;
+  let mockAudioQuestionId: string;
   let adminToken: string;
   let adminEmail: string;
   let parentOneEmail: string;
   let parentTwoEmail: string;
+  let synthesizeAudio: jest.SpyInstance;
 
   beforeAll(async () => {
+    synthesizeAudio = jest
+      .spyOn(TtsService.prototype, 'synthesizeAndSave')
+      .mockResolvedValue('');
     app = await createTestApp();
     prisma = app.get(PrismaService);
 
@@ -281,6 +299,38 @@ describe('Student Model (e2e)', () => {
       },
     );
     questionTwoId = questionTwo.id;
+
+    const audioQuestion = await createQuestion(
+      app,
+      adminToken,
+      learningObjectiveId,
+      { explanation: 'This explanation should be spoken by Atlas.' },
+    );
+    audioQuestionId = audioQuestion.id;
+
+    const realAudioQuestion = await createQuestion(
+      app,
+      adminToken,
+      learningObjectiveId,
+      { explanation: 'This local answer uses real Atlas speech audio.' },
+    );
+    realAudioQuestionId = realAudioQuestion.id;
+
+    const failedAudioQuestion = await createQuestion(
+      app,
+      adminToken,
+      learningObjectiveId,
+      { explanation: 'A TTS failure must not block this attempt.' },
+    );
+    failedAudioQuestionId = failedAudioQuestion.id;
+
+    const mockAudioQuestion = await createQuestion(
+      app,
+      adminToken,
+      learningObjectiveId,
+      { explanation: 'Mock TTS has no audio to return.' },
+    );
+    mockAudioQuestionId = mockAudioQuestion.id;
   });
 
   afterAll(async () => {
@@ -294,6 +344,7 @@ describe('Student Model (e2e)', () => {
     }
 
     await app.close();
+    synthesizeAudio.mockRestore();
     printTestReport('Sprint 05 Test Report', testResults);
   });
 
@@ -335,6 +386,12 @@ describe('Student Model (e2e)', () => {
         expect.arrayContaining(['CORRECT_ANSWER', 'FAST_RESPONSE']),
       );
       expect(body.reasonCodes).not.toContain('WRONG_ANSWER');
+      expect(body.points).toEqual(
+        expect.objectContaining({
+          earned: expect.any(Number),
+          balance: expect.any(Number),
+        }),
+      );
     }),
   );
 
@@ -555,6 +612,242 @@ describe('Student Model (e2e)', () => {
         .get(`/children/${childId}/mastery`)
         .set('Authorization', `Bearer ${parentTwoToken}`)
         .expect(404);
+    }),
+  );
+
+  it(
+    'Generate explanation audio once and reuse the cached file',
+    trackScenario(
+      'Generate explanation audio once and reuse the cached file',
+      async () => {
+        synthesizeAudio.mockReset().mockResolvedValue(`${audioQuestionId}.mp3`);
+
+        try {
+          const firstResponse = await request(app.getHttpServer())
+            .post('/attempts')
+            .set('Authorization', `Bearer ${parentOneToken}`)
+            .send({
+              learningSessionId: sessionId,
+              questionId: audioQuestionId,
+              selectedAnswer: '4',
+              timeSpent: 8,
+              hintUsed: false,
+              perceivedDifficulty: 'Just Right',
+            })
+            .expect(201);
+
+          const first = firstResponse.body as AttemptResponse;
+          expect(first.audioUrl).toBe(`/tts/${audioQuestionId}.mp3`);
+          expect(synthesizeAudio).toHaveBeenCalledTimes(1);
+          expect(synthesizeAudio).toHaveBeenCalledWith(
+            audioQuestionId,
+            'This explanation should be spoken by Atlas.',
+          );
+
+          const savedQuestion = await prisma.question.findUniqueOrThrow({
+            where: { id: audioQuestionId },
+            select: { audioUrl: true },
+          });
+          expect(savedQuestion.audioUrl).toBe(first.audioUrl);
+
+          const secondResponse = await request(app.getHttpServer())
+            .post('/attempts')
+            .set('Authorization', `Bearer ${parentOneToken}`)
+            .send({
+              learningSessionId: sessionId,
+              questionId: audioQuestionId,
+              selectedAnswer: '4',
+              timeSpent: 8,
+              hintUsed: false,
+              perceivedDifficulty: 'Just Right',
+            })
+            .expect(201);
+
+          expect((secondResponse.body as AttemptResponse).audioUrl).toBe(
+            first.audioUrl,
+          );
+          expect(synthesizeAudio).toHaveBeenCalledTimes(1);
+        } finally {
+          synthesizeAudio.mockReset().mockResolvedValue('');
+        }
+      },
+    ),
+  );
+
+  it(
+    'TTS failure does not fail the recorded attempt',
+    trackScenario(
+      'TTS failure does not fail the recorded attempt',
+      async () => {
+        synthesizeAudio
+          .mockReset()
+          .mockRejectedValueOnce(new Error('TTS unavailable'));
+
+        try {
+          const response = await request(app.getHttpServer())
+            .post('/attempts')
+            .set('Authorization', `Bearer ${parentOneToken}`)
+            .send({
+              learningSessionId: sessionId,
+              questionId: failedAudioQuestionId,
+              selectedAnswer: '4',
+              timeSpent: 8,
+              hintUsed: false,
+              perceivedDifficulty: 'Just Right',
+            })
+            .expect(201);
+
+          expect((response.body as AttemptResponse).audioUrl).toBeNull();
+          expect(
+            await prisma.question.findUniqueOrThrow({
+              where: { id: failedAudioQuestionId },
+              select: { audioUrl: true },
+            }),
+          ).toEqual({ audioUrl: null });
+        } finally {
+          synthesizeAudio.mockReset().mockResolvedValue('');
+        }
+      },
+    ),
+  );
+
+  it(
+    'Mock TTS leaves audioUrl null without failing the attempt',
+    trackScenario(
+      'Mock TTS leaves audioUrl null without failing the attempt',
+      async () => {
+        synthesizeAudio.mockReset().mockResolvedValueOnce('');
+
+        try {
+          const response = await request(app.getHttpServer())
+            .post('/attempts')
+            .set('Authorization', `Bearer ${parentOneToken}`)
+            .send({
+              learningSessionId: sessionId,
+              questionId: mockAudioQuestionId,
+              selectedAnswer: '4',
+              timeSpent: 8,
+              hintUsed: false,
+              perceivedDifficulty: 'Just Right',
+            })
+            .expect(201);
+
+          expect((response.body as AttemptResponse).audioUrl).toBeNull();
+          expect(synthesizeAudio).toHaveBeenCalledTimes(1);
+        } finally {
+          synthesizeAudio.mockReset().mockResolvedValue('');
+        }
+      },
+    ),
+  );
+
+  const realTtsE2e = process.env.RUN_REAL_TTS_E2E === '1' ? it : it.skip;
+  realTtsE2e(
+    'Real TTS writes a playable MP3 and reuses it on a second answer',
+    trackScenario(
+      'Real TTS writes a playable MP3 and reuses it on a second answer',
+      async () => {
+        synthesizeAudio.mockRestore();
+        const realSynthesis = jest.spyOn(
+          app.get(TtsService),
+          'synthesizeAndSave',
+        );
+
+        try {
+          const payload = {
+            learningSessionId: sessionId,
+            questionId: realAudioQuestionId,
+            selectedAnswer: '4',
+            timeSpent: 8,
+            hintUsed: false,
+            perceivedDifficulty: 'Just Right',
+          };
+          const first = await request(app.getHttpServer())
+            .post('/attempts')
+            .set('Authorization', `Bearer ${parentOneToken}`)
+            .send(payload)
+            .expect(201);
+
+          const firstBody = first.body as AttemptResponse;
+          const expectedUrl = `/tts/${realAudioQuestionId}.mp3`;
+          expect(firstBody.audioUrl).toBe(expectedUrl);
+          expect(realSynthesis).toHaveBeenCalledTimes(1);
+
+          const audioPath = join(
+            process.cwd(),
+            process.env.TTS_UPLOADS_DIR ?? 'uploads/tts',
+            `${realAudioQuestionId}.mp3`,
+          );
+          const beforeSecondAnswer = await stat(audioPath);
+          expect(beforeSecondAnswer.size).toBeGreaterThan(0);
+
+          const second = await request(app.getHttpServer())
+            .post('/attempts')
+            .set('Authorization', `Bearer ${parentOneToken}`)
+            .send(payload)
+            .expect(201);
+
+          expect((second.body as AttemptResponse).audioUrl).toBe(expectedUrl);
+          expect(realSynthesis).toHaveBeenCalledTimes(1);
+          const afterSecondAnswer = await stat(audioPath);
+          expect(afterSecondAnswer.mtimeMs).toBe(beforeSecondAnswer.mtimeMs);
+        } finally {
+          realSynthesis.mockRestore();
+          synthesizeAudio = jest
+            .spyOn(TtsService.prototype, 'synthesizeAndSave')
+            .mockResolvedValue('');
+        }
+      },
+    ),
+  );
+
+  it(
+    'Goal and redemption reserve/refund flow',
+    trackScenario('Goal and redemption reserve/refund flow', async () => {
+      await request(app.getHttpServer())
+        .put(`/children/${childId}/point-goal`)
+        .set('Authorization', `Bearer ${parentOneToken}`)
+        .send({ period: 'WEEKLY', targetPoints: 100 })
+        .expect(200);
+
+      const reward = await request(app.getHttpServer())
+        .post(`/children/${childId}/rewards`)
+        .set('Authorization', `Bearer ${parentOneToken}`)
+        .send({ name: 'Pick the movie', emoji: '🎬', cost: 10 })
+        .expect(201);
+
+      const rewardId = (reward.body as { id: string }).id;
+      const redemption = await request(app.getHttpServer())
+        .post(`/rewards/${rewardId}/redeem`)
+        .set('Authorization', `Bearer ${parentOneToken}`)
+        .send({ childId })
+        .expect(201);
+
+      const redemptionId = (redemption.body as { id: string }).id;
+      const balanceAfterReserve = (
+        await request(app.getHttpServer())
+          .get(`/children/${childId}/points`)
+          .set('Authorization', `Bearer ${parentOneToken}`)
+          .expect(200)
+      ).body.balance as number;
+
+      await request(app.getHttpServer())
+        .post(`/redemptions/${redemptionId}/decline`)
+        .set('Authorization', `Bearer ${parentOneToken}`)
+        .expect(201);
+
+      const balanceAfterRefund = (
+        await request(app.getHttpServer())
+          .get(`/children/${childId}/points`)
+          .set('Authorization', `Bearer ${parentOneToken}`)
+          .expect(200)
+      ).body.balance as number;
+      expect(balanceAfterRefund).toBe(balanceAfterReserve + 10);
+
+      await request(app.getHttpServer())
+        .post(`/redemptions/${redemptionId}/approve`)
+        .set('Authorization', `Bearer ${parentOneToken}`)
+        .expect(409);
     }),
   );
 });

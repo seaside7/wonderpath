@@ -121,6 +121,24 @@ export const GenerationStatus = {
 export type GenerationStatus = (typeof GenerationStatus)[keyof typeof GenerationStatus]
 
 
+export const BookStatus = {
+  DRAFT: 'DRAFT',
+  IN_REVIEW: 'IN_REVIEW',
+  PUBLISHED: 'PUBLISHED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type BookStatus = (typeof BookStatus)[keyof typeof BookStatus]
+
+
+export const ReadingMode = {
+  LISTEN: 'LISTEN',
+  READ: 'READ'
+} as const
+
+export type ReadingMode = (typeof ReadingMode)[keyof typeof ReadingMode]
+
+
 export const QuestionPerformanceStatus = {
   ACTIVE: 'ACTIVE',
   LOW_PERFORMANCE: 'LOW_PERFORMANCE',
@@ -164,6 +182,37 @@ export const ExamTopicStatus = {
 } as const
 
 export type ExamTopicStatus = (typeof ExamTopicStatus)[keyof typeof ExamTopicStatus]
+
+
+export const PointReason = {
+  CORRECT_ANSWER: 'CORRECT_ANSWER',
+  EFFORT: 'EFFORT',
+  SESSION_COMPLETE: 'SESSION_COMPLETE',
+  MASTERY: 'MASTERY',
+  GRADE_AHEAD_BONUS: 'GRADE_AHEAD_BONUS',
+  REDEMPTION: 'REDEMPTION',
+  REDEMPTION_REFUND: 'REDEMPTION_REFUND'
+} as const
+
+export type PointReason = (typeof PointReason)[keyof typeof PointReason]
+
+
+export const GoalPeriod = {
+  DAILY: 'DAILY',
+  WEEKLY: 'WEEKLY',
+  MONTHLY: 'MONTHLY'
+} as const
+
+export type GoalPeriod = (typeof GoalPeriod)[keyof typeof GoalPeriod]
+
+
+export const RedemptionStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  DECLINED: 'DECLINED'
+} as const
+
+export type RedemptionStatus = (typeof RedemptionStatus)[keyof typeof RedemptionStatus]
 
 
 export const LearningPatternKey = {

@@ -15,12 +15,21 @@ const body = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
+const isProduction = process.env.NEXT_PUBLIC_SITE_ENV === "production";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  ),
   title: {
     default: "WonderPath",
     template: "%s",
   },
   description: "A guided learning companion for children.",
+  // Only the real production domain may be indexed; staging and local stay hidden.
+  robots: isProduction
+    ? { index: true, follow: true }
+    : { index: false, follow: false },
 };
 
 export default function RootLayout({

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import AtlasAvatar from "@/components/mascot/atlas-avatar";
+import { useAtlasSpeech } from "@/components/mascot/atlas-speech";
 import {
   ApiError,
   AttemptResult,
@@ -68,6 +68,20 @@ export default function KidQuestionFlow({
   const [funFact, setFunFact] = useState<FunFact | null>(null);
   const [showBackConfirm, setShowBackConfirm] = useState(false);
   const startedAtRef = useRef<number | null>(null);
+  const introSeenRef = useRef(false);
+
+  // The corner Atlas reads the explanation aloud while the feedback is shown,
+  // and goes quiet as soon as the child moves on.
+  const atlas = useAtlasSpeech();
+  const speak = atlas?.speak;
+  const feedbackAudioUrl =
+    status === "feedback" && attempt
+      ? resolveAudioUrl(attempt.audioUrl ?? question?.audioUrl ?? null)
+      : null;
+  useEffect(() => {
+    speak?.(feedbackAudioUrl);
+  }, [speak, feedbackAudioUrl]);
+  useEffect(() => () => speak?.(null), [speak]);
 
   async function loadSummary(
     answered: number,
@@ -122,7 +136,10 @@ export default function KidQuestionFlow({
         setDifficulty(null);
         setRevealFeelings(false);
         setAttempt(null);
-        setShowIntro(true);
+        if (!introSeenRef.current) {
+          introSeenRef.current = true;
+          setShowIntro(true);
+        }
         setStatus("question");
       } catch (cause) {
         if (cancelled) return;
@@ -219,8 +236,10 @@ export default function KidQuestionFlow({
     setError(null);
 
     const startedAt = startedAtRef.current;
+    // Floor, don't round: 1.5s of thinking is not 2s of effort, and the
+    // points rapid-guess rule keys off whole-second thresholds.
     const elapsedSeconds = startedAt
-      ? Math.max(1, Math.round((Date.now() - startedAt) / 1000))
+      ? Math.max(1, Math.floor((Date.now() - startedAt) / 1000))
       : 0;
     startedAtRef.current = null;
 
@@ -479,13 +498,31 @@ export default function KidQuestionFlow({
             {attempt.correct ? "🎉 Correct!" : "Not quite."}
           </p>
 
-          <AtlasAvatar
-            audioUrl={resolveAudioUrl(question?.audioUrl ?? null)}
-          />
+          {attempt.points?.goalJustReached ? (
+            <div className="levelup-pop mt-3 rounded-2xl border-2 border-waypoint bg-waypoint/25 px-4 py-3 text-center font-display text-lg font-semibold text-ink">
+              🎯 You hit your {attempt.points.goal?.period.toLowerCase()} goal!
+            </div>
+          ) : null}
+          {attempt.points && attempt.points.earned > 0 ? (
+            <p className="mt-3 text-center text-sm font-semibold text-waypoint">
+              +{attempt.points.earned} ⭐{" "}
+              {!attempt.correct && "for trying"}
+            </p>
+          ) : null}
 
           <p className="mt-4 text-base leading-7 text-ink-soft">
             {attempt.explanation}
           </p>
+          {feedbackAudioUrl && atlas ? (
+            <button
+              type="button"
+              onClick={atlas.isPlaying ? atlas.stop : atlas.replay}
+              className="btn-tactile mt-3 inline-flex items-center gap-2 rounded-full border-2 border-line bg-card px-4 py-2 text-sm font-semibold text-ink hover:border-ink-soft"
+            >
+              <span aria-hidden="true">{atlas.isPlaying ? "⏹" : "🔊"}</span>
+              {atlas.isPlaying ? "Stop Atlas" : "Hear Atlas explain"}
+            </button>
+          ) : null}
           {error ? (
             <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
               {error}

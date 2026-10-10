@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { LearningSessionStatus as PrismaLearningSessionStatus } from '../../generated/prisma/client';
@@ -21,10 +22,16 @@ import {
   mapCurriculumToPrisma,
 } from '../child/child.mapper';
 import { SessionHistoryResponseDto } from './dto/session-history-response.dto';
+import { PointsService } from '../atlas/points/points.service';
 
 @Injectable()
 export class LearningSessionService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(LearningSessionService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly pointsService: PointsService,
+  ) {}
 
   async start(
     parentId: string,
@@ -158,6 +165,21 @@ export class LearningSessionService {
         },
       },
     });
+
+    try {
+      const answeredCount = await this.prisma.questionAttempt.count({
+        where: { learningSessionId: session.id },
+      });
+      await this.pointsService.awardForSession(
+        session.childId,
+        session.id,
+        answeredCount,
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Session points award failed for ${session.id}; completion was saved. ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
 
     return mapLearningSessionToResponse(updated);
   }

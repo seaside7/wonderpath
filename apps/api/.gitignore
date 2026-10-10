@@ -53,7 +53,7 @@ pids
 *.seed
 *.pid.lock
 
-# e2e test upload artifacts (exam-prep)
+# Runtime uploads: exam-prep artifacts and generated TTS audio
 /uploads
 
 # Diagnostic reports (https://nodejs.org/api/report.html)

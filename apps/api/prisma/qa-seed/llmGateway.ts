@@ -26,22 +26,26 @@ function requireEnv(name: string): string {
   return value;
 }
 
-function openAiConfig(): ProviderConfig {
+function openAiConfig(model?: string): ProviderConfig {
   return {
     apiKey: requireEnv('OPENAI_API_KEY'),
-    model: process.env.QA_OPENAI_MODEL ?? 'gpt-5.6-sol',
+    model: model ?? process.env.QA_OPENAI_MODEL ?? 'gpt-5.6-sol',
   };
 }
 
-function deepSeekConfig(): ProviderConfig {
+function deepSeekConfig(model?: string): ProviderConfig {
   return {
     apiKey: requireEnv('DEEPSEEK_API_KEY'),
-    model: process.env.QA_DEEPSEEK_MODEL ?? 'deepseek-chat',
+    model: model ?? process.env.QA_DEEPSEEK_MODEL ?? 'deepseek-chat',
   };
 }
 
-async function callOpenAi(prompt: string, systemPrompt: string): Promise<GatewayResult> {
-  const { apiKey, model } = openAiConfig();
+async function callOpenAi(
+  prompt: string,
+  systemPrompt: string,
+  requestedModel?: string,
+): Promise<GatewayResult> {
+  const { apiKey, model } = openAiConfig(requestedModel);
   const reasoningEffort = process.env.QA_OPENAI_REASONING_EFFORT ?? 'medium';
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -63,12 +67,18 @@ async function callOpenAi(prompt: string, systemPrompt: string): Promise<Gateway
 
   if (!response.ok) {
     const rawBody = await response.text();
-    throw new Error(`OpenAI request failed (${response.status}): ${rawBody.slice(0, 500)}`);
+    throw new Error(
+      `OpenAI request failed (${response.status}): ${rawBody.slice(0, 500)}`,
+    );
   }
 
   const data = (await response.json()) as {
     choices: Array<{ message: { content: string } }>;
-    usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+    usage: {
+      prompt_tokens: number;
+      completion_tokens: number;
+      total_tokens: number;
+    };
   };
 
   return {
@@ -83,8 +93,12 @@ async function callOpenAi(prompt: string, systemPrompt: string): Promise<Gateway
   };
 }
 
-async function callDeepSeek(prompt: string, systemPrompt: string): Promise<GatewayResult> {
-  const { apiKey, model } = deepSeekConfig();
+async function callDeepSeek(
+  prompt: string,
+  systemPrompt: string,
+  requestedModel?: string,
+): Promise<GatewayResult> {
+  const { apiKey, model } = deepSeekConfig(requestedModel);
 
   const response = await fetch('https://api.deepseek.com/chat/completions', {
     method: 'POST',
@@ -104,12 +118,18 @@ async function callDeepSeek(prompt: string, systemPrompt: string): Promise<Gatew
 
   if (!response.ok) {
     const rawBody = await response.text();
-    throw new Error(`DeepSeek request failed (${response.status}): ${rawBody.slice(0, 500)}`);
+    throw new Error(
+      `DeepSeek request failed (${response.status}): ${rawBody.slice(0, 500)}`,
+    );
   }
 
   const data = (await response.json()) as {
     choices: Array<{ message: { content: string } }>;
-    usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+    usage: {
+      prompt_tokens: number;
+      completion_tokens: number;
+      total_tokens: number;
+    };
   };
 
   return {
@@ -133,6 +153,76 @@ export async function generate(
   provider: Provider,
   prompt: string,
   systemPrompt: string,
+  model?: string,
 ): Promise<GatewayResult> {
-  return provider === 'openai' ? callOpenAi(prompt, systemPrompt) : callDeepSeek(prompt, systemPrompt);
+  return provider === 'openai'
+    ? callOpenAi(prompt, systemPrompt, model)
+    : callDeepSeek(prompt, systemPrompt, model);
+}
+
+/**
+ * Vision variant for image auditing (OpenAI only — DeepSeek chat has no
+ * vision input on this endpoint). Sends the image URLs alongside the prompt
+ * and requires strict JSON back, same contract as the text calls.
+ */
+export async function generateWithImages(
+  prompt: string,
+  systemPrompt: string,
+  model: string,
+  imageUrls: string[],
+): Promise<GatewayResult> {
+  const { apiKey } = openAiConfig();
+  const usedModel = model || openAiConfig().model;
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: usedModel,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            ...imageUrls.map((url) => ({
+              type: 'image_url',
+              image_url: { url },
+            })),
+          ],
+        },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const rawBody = await response.text();
+    throw new Error(
+      `OpenAI vision request failed (${response.status}): ${rawBody.slice(0, 500)}`,
+    );
+  }
+
+  const data = (await response.json()) as {
+    choices: Array<{ message: { content: string } }>;
+    usage: {
+      prompt_tokens: number;
+      completion_tokens: number;
+      total_tokens: number;
+    };
+  };
+
+  return {
+    provider: 'openai',
+    model: usedModel,
+    content: data.choices[0].message.content,
+    usage: {
+      promptTokens: data.usage.prompt_tokens,
+      completionTokens: data.usage.completion_tokens,
+      totalTokens: data.usage.total_tokens,
+    },
+  };
 }

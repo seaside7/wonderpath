@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
+import ChildSummaryCard from "./child-summary-card";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChildProfile, deleteChild, listChildren } from "@/lib/api";
@@ -50,23 +52,32 @@ export default function ChildrenList() {
   }
 
   if (loading) {
-    return <p className="text-sm text-ink-soft">Loading…</p>;
+    return (
+      <div aria-busy="true" className="grid animate-pulse gap-5 lg:grid-cols-2">
+        <span className="sr-only">Loading your family…</span>
+        {[0, 1].map((index) => (
+          <div key={index} className="h-80 rounded-3xl bg-card" />
+        ))}
+      </div>
+    );
   }
 
   return (
     <section>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-4xl text-ink">My Children</h1>
+          <h1 className="font-display text-4xl text-ink">Your family</h1>
           <p className="mt-2 text-sm text-ink-soft">
-            Choose a child to set up today&apos;s learning.
+            {children.length > 0
+              ? "How everyone is doing this week, at a glance."
+              : "Add a child to start their learning path."}
           </p>
         </div>
         <Link
           href="/children/new"
           className="btn-tactile btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold"
         >
-          Add your child
+          + Add a child
         </Link>
       </div>
 
@@ -77,70 +88,38 @@ export default function ChildrenList() {
       ) : null}
 
       {children.length === 0 ? (
-        <div className="mt-8 border-l-2 border-waypoint bg-card px-6 py-10">
-          <p className="font-display text-2xl text-ink">
-            No children yet — add your first child to get started
-          </p>
-          <p className="mt-2 text-sm text-ink-soft">
-            It takes about a minute, and you can add more children later.
-          </p>
-          <Link
-            href="/children/new"
-            className="btn-tactile btn-primary mt-6 inline-block rounded-xl px-5 py-2.5 text-sm font-semibold"
-          >
-            Add your child
-          </Link>
+        <div className="mt-8 flex flex-col items-center gap-6 rounded-3xl bg-card px-6 py-10 text-center shadow-[0_8px_28px_rgba(46,42,92,0.09)] sm:flex-row sm:text-left">
+          <Image
+            src="/mascot/atlas-mouth-toothy-grin.png"
+            alt="Atlas, the WonderPath learning guide"
+            width={180}
+            height={120}
+            className="h-auto w-44 shrink-0"
+            unoptimized
+          />
+          <div>
+            <p className="font-display text-2xl text-ink">
+              Atlas is ready to meet your child
+            </p>
+            <p className="mt-2 text-sm text-ink-soft">
+              It takes about a minute, and you can add more children later.
+            </p>
+            <Link
+              href="/children/new"
+              className="btn-tactile btn-primary mt-5 inline-block rounded-xl px-5 py-2.5 text-sm font-semibold"
+            >
+              Add your child
+            </Link>
+          </div>
         </div>
       ) : (
-        <ul className="mt-8 space-y-3">
+        <ul className="mt-8 grid gap-5 lg:grid-cols-2">
           {children.map((child) => (
-            <li
+            <ChildSummaryCard
               key={child.id}
-              className="border-l-2 border-waypoint bg-card px-6 py-5"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <h2 className="font-display text-2xl text-ink">
-                    {child.fullName}
-                    {child.nickname ? (
-                      <span className="ml-2 align-middle font-body text-sm font-normal text-ink-soft">
-                        &ldquo;{child.nickname}&rdquo;
-                      </span>
-                    ) : null}
-                  </h2>
-                  <p className="mt-1 text-sm text-ink-soft">
-                    {child.grade} · {child.curricula.join(" + ")}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <Link
-                    href={`/children/${child.id}/start`}
-                    className="btn-tactile btn-primary rounded-lg px-4 py-2 text-sm font-semibold"
-                  >
-                    Start Learning
-                  </Link>
-                  <Link
-                    href={`/children/${child.id}/recommendations`}
-                    className="btn-tactile rounded-lg border border-line bg-card px-4 py-2 text-sm font-medium text-ink"
-                  >
-                    View Progress
-                  </Link>
-                  <Link
-                    href={`/children/${child.id}/edit`}
-                    className="btn-tactile rounded-lg border border-line bg-card px-4 py-2 text-sm font-medium text-ink"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(child)}
-                    className="btn-tactile rounded-lg px-3 py-2 text-sm font-medium text-coral-deep"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </li>
+              child={child}
+              onDelete={(target) => void handleDelete(target)}
+            />
           ))}
         </ul>
       )}

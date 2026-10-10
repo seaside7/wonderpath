@@ -68,7 +68,17 @@ export const ModelName = {
   QuestionPerformance: 'QuestionPerformance',
   ExamPrepPlan: 'ExamPrepPlan',
   ExamMaterial: 'ExamMaterial',
-  ExamTopic: 'ExamTopic'
+  ExamTopic: 'ExamTopic',
+  Book: 'Book',
+  BookCharacter: 'BookCharacter',
+  BookPage: 'BookPage',
+  BookQuizQuestion: 'BookQuizQuestion',
+  BookReading: 'BookReading',
+  BookQuizAttempt: 'BookQuizAttempt',
+  PointTransaction: 'PointTransaction',
+  PointGoal: 'PointGoal',
+  Reward: 'Reward',
+  RewardRedemption: 'RewardRedemption'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -387,6 +397,142 @@ export const ExamTopicScalarFieldEnum = {
 } as const
 
 export type ExamTopicScalarFieldEnum = (typeof ExamTopicScalarFieldEnum)[keyof typeof ExamTopicScalarFieldEnum]
+
+
+export const BookScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  summary: 'summary',
+  grade: 'grade',
+  trailStop: 'trailStop',
+  language: 'language',
+  coverImageUrl: 'coverImageUrl',
+  status: 'status',
+  wordCount: 'wordCount',
+  readabilityGrade: 'readabilityGrade',
+  auditResult: 'auditResult',
+  generationMeta: 'generationMeta',
+  createdAt: 'createdAt',
+  publishedAt: 'publishedAt'
+} as const
+
+export type BookScalarFieldEnum = (typeof BookScalarFieldEnum)[keyof typeof BookScalarFieldEnum]
+
+
+export const BookCharacterScalarFieldEnum = {
+  id: 'id',
+  bookId: 'bookId',
+  name: 'name',
+  description: 'description',
+  referenceImageUrl: 'referenceImageUrl'
+} as const
+
+export type BookCharacterScalarFieldEnum = (typeof BookCharacterScalarFieldEnum)[keyof typeof BookCharacterScalarFieldEnum]
+
+
+export const BookPageScalarFieldEnum = {
+  id: 'id',
+  bookId: 'bookId',
+  pageNumber: 'pageNumber',
+  text: 'text',
+  imageUrl: 'imageUrl',
+  audioUrl: 'audioUrl',
+  wordTimings: 'wordTimings'
+} as const
+
+export type BookPageScalarFieldEnum = (typeof BookPageScalarFieldEnum)[keyof typeof BookPageScalarFieldEnum]
+
+
+export const BookQuizQuestionScalarFieldEnum = {
+  id: 'id',
+  bookId: 'bookId',
+  order: 'order',
+  prompt: 'prompt',
+  options: 'options',
+  correctAnswer: 'correctAnswer',
+  explanation: 'explanation'
+} as const
+
+export type BookQuizQuestionScalarFieldEnum = (typeof BookQuizQuestionScalarFieldEnum)[keyof typeof BookQuizQuestionScalarFieldEnum]
+
+
+export const BookReadingScalarFieldEnum = {
+  id: 'id',
+  childId: 'childId',
+  bookId: 'bookId',
+  mode: 'mode',
+  lastPage: 'lastPage',
+  completedAt: 'completedAt',
+  quizScore: 'quizScore',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BookReadingScalarFieldEnum = (typeof BookReadingScalarFieldEnum)[keyof typeof BookReadingScalarFieldEnum]
+
+
+export const BookQuizAttemptScalarFieldEnum = {
+  id: 'id',
+  childId: 'childId',
+  bookQuizQuestionId: 'bookQuizQuestionId',
+  selectedAnswer: 'selectedAnswer',
+  correct: 'correct',
+  createdAt: 'createdAt'
+} as const
+
+export type BookQuizAttemptScalarFieldEnum = (typeof BookQuizAttemptScalarFieldEnum)[keyof typeof BookQuizAttemptScalarFieldEnum]
+
+
+export const PointTransactionScalarFieldEnum = {
+  id: 'id',
+  childId: 'childId',
+  amount: 'amount',
+  reason: 'reason',
+  questionAttemptId: 'questionAttemptId',
+  learningSessionId: 'learningSessionId',
+  learningObjectiveId: 'learningObjectiveId',
+  redemptionId: 'redemptionId',
+  createdAt: 'createdAt'
+} as const
+
+export type PointTransactionScalarFieldEnum = (typeof PointTransactionScalarFieldEnum)[keyof typeof PointTransactionScalarFieldEnum]
+
+
+export const PointGoalScalarFieldEnum = {
+  id: 'id',
+  childId: 'childId',
+  period: 'period',
+  targetPoints: 'targetPoints',
+  active: 'active',
+  createdAt: 'createdAt'
+} as const
+
+export type PointGoalScalarFieldEnum = (typeof PointGoalScalarFieldEnum)[keyof typeof PointGoalScalarFieldEnum]
+
+
+export const RewardScalarFieldEnum = {
+  id: 'id',
+  childId: 'childId',
+  name: 'name',
+  emoji: 'emoji',
+  cost: 'cost',
+  archived: 'archived',
+  createdAt: 'createdAt'
+} as const
+
+export type RewardScalarFieldEnum = (typeof RewardScalarFieldEnum)[keyof typeof RewardScalarFieldEnum]
+
+
+export const RewardRedemptionScalarFieldEnum = {
+  id: 'id',
+  childId: 'childId',
+  rewardId: 'rewardId',
+  cost: 'cost',
+  status: 'status',
+  requestedAt: 'requestedAt',
+  resolvedAt: 'resolvedAt'
+} as const
+
+export type RewardRedemptionScalarFieldEnum = (typeof RewardRedemptionScalarFieldEnum)[keyof typeof RewardRedemptionScalarFieldEnum]
 
 
 export const SortOrder = {

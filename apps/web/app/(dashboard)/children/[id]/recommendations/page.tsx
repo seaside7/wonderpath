@@ -18,7 +18,7 @@ export default async function RecommendationPage({
       <div className="mb-8">
         <h1 className="font-display text-3xl text-ink">Learning Dashboard</h1>
         <p className="mt-1.5 text-sm text-ink-soft">
-          See what Atlas recommends and how mastery is progressing.
+          A weekly snapshot of practice, progress, and what to work on next.
         </p>
       </div>
       <RecommendationDashboard childId={id} />

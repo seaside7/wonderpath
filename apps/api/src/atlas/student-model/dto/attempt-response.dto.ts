@@ -2,6 +2,7 @@ import {
   PerceivedDifficulty,
   ReasonCodeValue,
 } from '../enums/student-model.enums';
+import { AttemptPointsDto } from '../../points/dto/point-response.dto';
 
 export class AttemptResponseDto {
   id: string;
@@ -18,6 +19,8 @@ export class AttemptResponseDto {
   reasonCodes: ReasonCodeValue[];
   metadata: Record<string, unknown> | null;
   explanation: string;
+  audioUrl: string | null;
+  points: AttemptPointsDto | null;
   levelUp: { subject: string; newLevel: number } | null;
   createdAt: Date;
 }

@@ -117,3 +117,53 @@ export type ExamMaterial = Prisma.ExamMaterialModel
  * 
  */
 export type ExamTopic = Prisma.ExamTopicModel
+/**
+ * Model Book
+ * 
+ */
+export type Book = Prisma.BookModel
+/**
+ * Model BookCharacter
+ * 
+ */
+export type BookCharacter = Prisma.BookCharacterModel
+/**
+ * Model BookPage
+ * 
+ */
+export type BookPage = Prisma.BookPageModel
+/**
+ * Model BookQuizQuestion
+ * 
+ */
+export type BookQuizQuestion = Prisma.BookQuizQuestionModel
+/**
+ * Model BookReading
+ * 
+ */
+export type BookReading = Prisma.BookReadingModel
+/**
+ * Model BookQuizAttempt
+ * 
+ */
+export type BookQuizAttempt = Prisma.BookQuizAttemptModel
+/**
+ * Model PointTransaction
+ * 
+ */
+export type PointTransaction = Prisma.PointTransactionModel
+/**
+ * Model PointGoal
+ * 
+ */
+export type PointGoal = Prisma.PointGoalModel
+/**
+ * Model Reward
+ * 
+ */
+export type Reward = Prisma.RewardModel
+/**
+ * Model RewardRedemption
+ * 
+ */
+export type RewardRedemption = Prisma.RewardRedemptionModel

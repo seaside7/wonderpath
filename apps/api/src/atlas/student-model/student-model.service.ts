@@ -12,6 +12,9 @@ import {
 } from '../misconception/misconception.service';
 import { LearningPatternService } from '../learning-pattern/learning-pattern.service';
 import { QuestionPerformanceService } from '../question-performance/question-performance.service';
+import { TtsService } from '../tts/tts.service';
+import { PointsService } from '../points/points.service';
+import { AttemptPointsDto } from '../points/dto/point-response.dto';
 import { CreateAttemptDto } from './dto/create-attempt.dto';
 import { AttemptResponseDto } from './dto/attempt-response.dto';
 import { MasteryResponseDto } from './dto/mastery-response.dto';
@@ -28,15 +31,26 @@ import {
   MasteryAggregate,
 } from './mastery.calculator';
 
+/** "GRADE_5" -> 5, so grades can be compared by order. */
+function gradeNumber(grade: string): number {
+  return Number(grade.replace(/\D/g, ''));
+}
+
 @Injectable()
 export class StudentModelService {
   private readonly logger = new Logger(StudentModelService.name);
+  private readonly pendingAudioGeneration = new Map<
+    string,
+    Promise<string | null>
+  >();
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly misconceptionService: MisconceptionService,
     private readonly learningPatternService: LearningPatternService,
     private readonly questionPerformanceService: QuestionPerformanceService,
+    private readonly ttsService: TtsService,
+    private readonly pointsService: PointsService,
   ) {}
 
   async recordAttempt(
@@ -49,7 +63,12 @@ export class StudentModelService {
         status: PrismaLearningSessionStatus.STARTED,
         child: { parentId },
       },
-      select: { id: true, childId: true },
+      select: {
+        id: true,
+        childId: true,
+        practiceGrade: true,
+        child: { select: { grade: true } },
+      },
     });
 
     if (!session) {
@@ -62,6 +81,7 @@ export class StudentModelService {
         id: true,
         correctAnswer: true,
         explanation: true,
+        audioUrl: true,
         learningObjectiveId: true,
       },
     });
@@ -79,6 +99,15 @@ export class StudentModelService {
 
     const reasonCodes = attemptReasonCodes(signal);
     const learningObjectiveId = question.learningObjectiveId;
+    const masteryBefore = await this.prisma.studentMastery.findUnique({
+      where: {
+        childId_learningObjectiveId: {
+          childId: session.childId,
+          learningObjectiveId,
+        },
+      },
+      select: { masteryScore: true },
+    });
 
     const response = await this.prisma.$transaction(async (tx) => {
       const priorAttempts = await tx.questionAttempt.count({
@@ -135,9 +164,7 @@ export class StudentModelService {
       if (result.status === 'rejected') {
         this.logger.error(
           `${sideEffects[index][0]}.recordAttempt failed for attempt ${response.id}`,
-          result.reason instanceof Error
-            ? result.reason.stack
-            : result.reason,
+          result.reason instanceof Error ? result.reason.stack : result.reason,
         );
       } else if (sideEffects[index][0] === 'misconception') {
         const value = result.value;
@@ -147,7 +174,111 @@ export class StudentModelService {
       }
     });
 
-    return { ...response, explanation, levelUp };
+    const audioUrl = await this.ensureQuestionAudioUrl(
+      question.id,
+      explanation,
+      question.audioUrl,
+    );
+
+    let points: AttemptPointsDto | null = null;
+    try {
+      const masteryAfter = await this.prisma.studentMastery.findUnique({
+        where: {
+          childId_learningObjectiveId: {
+            childId: session.childId,
+            learningObjectiveId,
+          },
+        },
+        select: { masteryScore: true },
+      });
+      points = await this.pointsService.awardForAttempt({
+        childId: session.childId,
+        questionAttemptId: response.id,
+        learningSessionId: session.id,
+        learningObjectiveId,
+        correct: signal.correct,
+        timeSpent: dto.timeSpent,
+        masteredBefore:
+          (masteryBefore?.masteryScore ?? 0) >=
+          this.pointsService.highMasteryThreshold,
+        // Bonus only for practising ABOVE the child's grade, never below.
+        gradeAhead:
+          session.practiceGrade !== null &&
+          gradeNumber(session.practiceGrade) > gradeNumber(session.child.grade),
+        masteryCrossed:
+          (masteryBefore?.masteryScore ?? 0) <
+            this.pointsService.highMasteryThreshold &&
+          (masteryAfter?.masteryScore ?? 0) >=
+            this.pointsService.highMasteryThreshold,
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Points award failed for attempt ${response.id}; attempt was saved. ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+
+    return { ...response, explanation, audioUrl, points, levelUp };
+  }
+
+  private async ensureQuestionAudioUrl(
+    questionId: string,
+    explanation: string,
+    currentAudioUrl: string | null,
+  ): Promise<string | null> {
+    if (currentAudioUrl) return currentAudioUrl;
+
+    const pending = this.pendingAudioGeneration.get(questionId);
+    if (pending) return pending;
+
+    const generation = this.generateQuestionAudioUrl(questionId, explanation);
+    this.pendingAudioGeneration.set(questionId, generation);
+
+    try {
+      return await generation;
+    } finally {
+      if (this.pendingAudioGeneration.get(questionId) === generation) {
+        this.pendingAudioGeneration.delete(questionId);
+      }
+    }
+  }
+
+  private async generateQuestionAudioUrl(
+    questionId: string,
+    explanation: string,
+  ): Promise<string | null> {
+    try {
+      // Another request may have completed while this attempt was being saved.
+      const current = await this.prisma.question.findUnique({
+        where: { id: questionId },
+        select: { audioUrl: true },
+      });
+      if (current?.audioUrl) return current.audioUrl;
+
+      const filename = await this.ttsService.synthesizeAndSave(
+        questionId,
+        explanation,
+      );
+      if (!filename) return null;
+
+      const audioUrl = `/tts/${filename}`;
+      const update = await this.prisma.question.updateMany({
+        where: { id: questionId, audioUrl: null },
+        data: { audioUrl },
+      });
+
+      if (update.count > 0) return audioUrl;
+
+      const saved = await this.prisma.question.findUnique({
+        where: { id: questionId },
+        select: { audioUrl: true },
+      });
+      return saved?.audioUrl ?? audioUrl;
+    } catch (error) {
+      this.logger.warn(
+        `TTS audio generation failed for question ${questionId}; attempt was saved. ${error instanceof Error ? error.message : String(error)}`,
+      );
+      return null;
+    }
   }
 
   async getMastery(

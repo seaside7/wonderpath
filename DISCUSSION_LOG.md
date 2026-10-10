@@ -6,6 +6,26 @@ This is distinct from `daily-update.md` (a diary of what was *done*) and `QA_NOT
 
 ---
 
+## 2026-10-10
+
+**Decision: long-term grade scope is pre-K to Grade 6, later Grades 7-10; the marketing site names no grades.**
+Target audience for the site is millennial parents (~28-40). Because the site won't say which grades are available, parents of children in grades without content will sign up. Today that leads to an empty/broken experience (see `TEST_ACCOUNTS.md` content coverage). **Needed before the new site launches:** when a parent adds a child in a grade with no content, show a friendly "coming soon for this grade, we'll notify you" screen and record the interest (useful demand data for deciding which grade to build next), instead of an empty page. **Same applies to curricula:** at the founder's request the site now lists IB, Cambridge, Merdeka and Nasional, but only IB and Nasional have questions today, so the screen must also trigger for a Cambridge or Merdeka child.
+
+**Decision: no prices on the public website; free trial first, pricing shown inside the app.**
+Parents register and try limited content for free; once the trial ends (e.g. after 7 days), the pricing screen appears inside the app. The marketing site only promises "try it free" (and "no credit card", which the trial design must keep true). Needs its own app spec later: what "limited content" means, trial length, what happens to progress when the trial ends, and how a parent subscribes. Marketing site redesign plan is in `specs/marketing-website-redesign.md`.
+
+**Idea: a leveled reading library ("Raz-Plus style"), turning WonderPath into a learning superapp.**
+Founder referenced raz-plus.com's books-by-grade-level library: a large set of levelled e-books where kids can listen (narrated), read on their own, then take a short comprehension quiz, earning rewards. Wants a similar "Read" section alongside practice, either inside the main subscription or as a separate add-on.
+
+Why it fits: English is already a subject; comprehension quizzes can feed the same mastery model as practice questions; Atlas TTS + the client-side lip-sync can narrate books (an animated Atlas reading aloud is a real differentiator vs. static narration); and it covers the still-open "English listening/reading" feedback item. Lazy TTS generation (see the 2026-10-09 decision) applies here too: narrate a book once, cache it forever.
+
+Open questions:
+- **Content source** is the hard part. Raz-Plus licenses thousands of illustrated books. Options: openly licensed libraries such as StoryWeaver (Pratham Books, mostly CC BY 4.0, levelled, includes Bahasa Indonesia; license must be verified per book), AI-generated levelled stories (text + illustrations; needs a quality/safety review pass like the question bank), or paid licensing.
+- **Pricing**: Claude's recommendation is to include a basic library in the core subscription during beta (a daily reading habit drives retention, and splitting pricing before product-market fit adds friction), and revisit a premium tier later.
+- **Timing**: Claude's recommendation is not to build yet while the family-beta flow is still being stabilized. Next step would be a spec covering a small pilot (~20-30 levelled books for Grade 4-6, narration, a 3-question quiz per book).
+
+**Follow-up (same day): cost estimate and the illustration-consistency approach.** Estimated ~$100-350 to generate 100 Grade 4-6 books (text ≈ $5-50, ~1,000 illustrations ≈ $100-300, narration free within Google's TTS free tier), plus ~20-30 min human review per book. Illustrations are the quality gap vs. Raz-Plus. Founder liked the approach and asked for it to go into Linear: (1) create a character reference sheet first and generate every page from that reference (same lesson as the Atlas mouth shapes: editing from one source stays consistent, fresh generations drift); (2) never render words inside images, keep story text in the app. Suggested a 5-book pilot first (~$5-20 total) to measure real per-book cost, review time, and illustration consistency before committing to 100.
+
 ## 2026-10-07
 
 **Marketing brainstorm: recruiting the first 20 beta-test parents, and what grade range the product needs to cover for that.**

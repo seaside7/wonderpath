@@ -37,14 +37,6 @@ export const PrismaClient = $Class.getPrismaClientClass(__dirname)
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
-// file annotations for bundling tools to include these files
-path.join(__dirname, "query_engine-windows.dll.node")
-path.join(process.cwd(), "generated/prisma/query_engine-windows.dll.node")
-
-// file annotations for bundling tools to include these files
-path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node")
-path.join(process.cwd(), "generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node")
-
 
 
 /**
@@ -147,3 +139,53 @@ export type ExamMaterial = Prisma.ExamMaterialModel
  * 
  */
 export type ExamTopic = Prisma.ExamTopicModel
+/**
+ * Model Book
+ * 
+ */
+export type Book = Prisma.BookModel
+/**
+ * Model BookCharacter
+ * 
+ */
+export type BookCharacter = Prisma.BookCharacterModel
+/**
+ * Model BookPage
+ * 
+ */
+export type BookPage = Prisma.BookPageModel
+/**
+ * Model BookQuizQuestion
+ * 
+ */
+export type BookQuizQuestion = Prisma.BookQuizQuestionModel
+/**
+ * Model BookReading
+ * 
+ */
+export type BookReading = Prisma.BookReadingModel
+/**
+ * Model BookQuizAttempt
+ * 
+ */
+export type BookQuizAttempt = Prisma.BookQuizAttemptModel
+/**
+ * Model PointTransaction
+ * 
+ */
+export type PointTransaction = Prisma.PointTransactionModel
+/**
+ * Model PointGoal
+ * 
+ */
+export type PointGoal = Prisma.PointGoalModel
+/**
+ * Model Reward
+ * 
+ */
+export type Reward = Prisma.RewardModel
+/**
+ * Model RewardRedemption
+ * 
+ */
+export type RewardRedemption = Prisma.RewardRedemptionModel

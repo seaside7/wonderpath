@@ -243,6 +243,12 @@ export type ChildWhereInput = {
   learningPatterns?: Prisma.ChildLearningPatternListRelationFilter
   personalityPreference?: Prisma.XOR<Prisma.ChildPersonalityPreferenceNullableScalarRelationFilter, Prisma.ChildPersonalityPreferenceWhereInput> | null
   examPrepPlans?: Prisma.ExamPrepPlanListRelationFilter
+  bookReadings?: Prisma.BookReadingListRelationFilter
+  bookQuizAttempts?: Prisma.BookQuizAttemptListRelationFilter
+  pointTransactions?: Prisma.PointTransactionListRelationFilter
+  pointGoals?: Prisma.PointGoalListRelationFilter
+  rewards?: Prisma.RewardListRelationFilter
+  redemptions?: Prisma.RewardRedemptionListRelationFilter
 }
 
 export type ChildOrderByWithRelationInput = {
@@ -267,6 +273,12 @@ export type ChildOrderByWithRelationInput = {
   learningPatterns?: Prisma.ChildLearningPatternOrderByRelationAggregateInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceOrderByWithRelationInput
   examPrepPlans?: Prisma.ExamPrepPlanOrderByRelationAggregateInput
+  bookReadings?: Prisma.BookReadingOrderByRelationAggregateInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptOrderByRelationAggregateInput
+  pointTransactions?: Prisma.PointTransactionOrderByRelationAggregateInput
+  pointGoals?: Prisma.PointGoalOrderByRelationAggregateInput
+  rewards?: Prisma.RewardOrderByRelationAggregateInput
+  redemptions?: Prisma.RewardRedemptionOrderByRelationAggregateInput
 }
 
 export type ChildWhereUniqueInput = Prisma.AtLeast<{
@@ -294,6 +306,12 @@ export type ChildWhereUniqueInput = Prisma.AtLeast<{
   learningPatterns?: Prisma.ChildLearningPatternListRelationFilter
   personalityPreference?: Prisma.XOR<Prisma.ChildPersonalityPreferenceNullableScalarRelationFilter, Prisma.ChildPersonalityPreferenceWhereInput> | null
   examPrepPlans?: Prisma.ExamPrepPlanListRelationFilter
+  bookReadings?: Prisma.BookReadingListRelationFilter
+  bookQuizAttempts?: Prisma.BookQuizAttemptListRelationFilter
+  pointTransactions?: Prisma.PointTransactionListRelationFilter
+  pointGoals?: Prisma.PointGoalListRelationFilter
+  rewards?: Prisma.RewardListRelationFilter
+  redemptions?: Prisma.RewardRedemptionListRelationFilter
 }, "id">
 
 export type ChildOrderByWithAggregationInput = {
@@ -353,6 +371,12 @@ export type ChildCreateInput = {
   learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
 }
 
 export type ChildUncheckedCreateInput = {
@@ -376,6 +400,12 @@ export type ChildUncheckedCreateInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
 }
 
 export type ChildUpdateInput = {
@@ -399,6 +429,12 @@ export type ChildUpdateInput = {
   learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateInput = {
@@ -422,6 +458,12 @@ export type ChildUncheckedUpdateInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
 }
 
 export type ChildCreateManyInput = {
@@ -709,6 +751,90 @@ export type ChildUpdateOneRequiredWithoutExamPrepPlansNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChildUpdateToOneWithWhereWithoutExamPrepPlansInput, Prisma.ChildUpdateWithoutExamPrepPlansInput>, Prisma.ChildUncheckedUpdateWithoutExamPrepPlansInput>
 }
 
+export type ChildCreateNestedOneWithoutBookReadingsInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutBookReadingsInput, Prisma.ChildUncheckedCreateWithoutBookReadingsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutBookReadingsInput
+  connect?: Prisma.ChildWhereUniqueInput
+}
+
+export type ChildUpdateOneRequiredWithoutBookReadingsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutBookReadingsInput, Prisma.ChildUncheckedCreateWithoutBookReadingsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutBookReadingsInput
+  upsert?: Prisma.ChildUpsertWithoutBookReadingsInput
+  connect?: Prisma.ChildWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChildUpdateToOneWithWhereWithoutBookReadingsInput, Prisma.ChildUpdateWithoutBookReadingsInput>, Prisma.ChildUncheckedUpdateWithoutBookReadingsInput>
+}
+
+export type ChildCreateNestedOneWithoutBookQuizAttemptsInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutBookQuizAttemptsInput, Prisma.ChildUncheckedCreateWithoutBookQuizAttemptsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutBookQuizAttemptsInput
+  connect?: Prisma.ChildWhereUniqueInput
+}
+
+export type ChildUpdateOneRequiredWithoutBookQuizAttemptsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutBookQuizAttemptsInput, Prisma.ChildUncheckedCreateWithoutBookQuizAttemptsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutBookQuizAttemptsInput
+  upsert?: Prisma.ChildUpsertWithoutBookQuizAttemptsInput
+  connect?: Prisma.ChildWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChildUpdateToOneWithWhereWithoutBookQuizAttemptsInput, Prisma.ChildUpdateWithoutBookQuizAttemptsInput>, Prisma.ChildUncheckedUpdateWithoutBookQuizAttemptsInput>
+}
+
+export type ChildCreateNestedOneWithoutPointTransactionsInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutPointTransactionsInput, Prisma.ChildUncheckedCreateWithoutPointTransactionsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutPointTransactionsInput
+  connect?: Prisma.ChildWhereUniqueInput
+}
+
+export type ChildUpdateOneRequiredWithoutPointTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutPointTransactionsInput, Prisma.ChildUncheckedCreateWithoutPointTransactionsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutPointTransactionsInput
+  upsert?: Prisma.ChildUpsertWithoutPointTransactionsInput
+  connect?: Prisma.ChildWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChildUpdateToOneWithWhereWithoutPointTransactionsInput, Prisma.ChildUpdateWithoutPointTransactionsInput>, Prisma.ChildUncheckedUpdateWithoutPointTransactionsInput>
+}
+
+export type ChildCreateNestedOneWithoutPointGoalsInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutPointGoalsInput, Prisma.ChildUncheckedCreateWithoutPointGoalsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutPointGoalsInput
+  connect?: Prisma.ChildWhereUniqueInput
+}
+
+export type ChildUpdateOneRequiredWithoutPointGoalsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutPointGoalsInput, Prisma.ChildUncheckedCreateWithoutPointGoalsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutPointGoalsInput
+  upsert?: Prisma.ChildUpsertWithoutPointGoalsInput
+  connect?: Prisma.ChildWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChildUpdateToOneWithWhereWithoutPointGoalsInput, Prisma.ChildUpdateWithoutPointGoalsInput>, Prisma.ChildUncheckedUpdateWithoutPointGoalsInput>
+}
+
+export type ChildCreateNestedOneWithoutRewardsInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutRewardsInput, Prisma.ChildUncheckedCreateWithoutRewardsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutRewardsInput
+  connect?: Prisma.ChildWhereUniqueInput
+}
+
+export type ChildUpdateOneRequiredWithoutRewardsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutRewardsInput, Prisma.ChildUncheckedCreateWithoutRewardsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutRewardsInput
+  upsert?: Prisma.ChildUpsertWithoutRewardsInput
+  connect?: Prisma.ChildWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChildUpdateToOneWithWhereWithoutRewardsInput, Prisma.ChildUpdateWithoutRewardsInput>, Prisma.ChildUncheckedUpdateWithoutRewardsInput>
+}
+
+export type ChildCreateNestedOneWithoutRedemptionsInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutRedemptionsInput, Prisma.ChildUncheckedCreateWithoutRedemptionsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutRedemptionsInput
+  connect?: Prisma.ChildWhereUniqueInput
+}
+
+export type ChildUpdateOneRequiredWithoutRedemptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChildCreateWithoutRedemptionsInput, Prisma.ChildUncheckedCreateWithoutRedemptionsInput>
+  connectOrCreate?: Prisma.ChildCreateOrConnectWithoutRedemptionsInput
+  upsert?: Prisma.ChildUpsertWithoutRedemptionsInput
+  connect?: Prisma.ChildWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChildUpdateToOneWithWhereWithoutRedemptionsInput, Prisma.ChildUpdateWithoutRedemptionsInput>, Prisma.ChildUncheckedUpdateWithoutRedemptionsInput>
+}
+
 export type ChildCreateWithoutParentInput = {
   id?: string
   fullName: string
@@ -729,6 +855,12 @@ export type ChildCreateWithoutParentInput = {
   learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
 }
 
 export type ChildUncheckedCreateWithoutParentInput = {
@@ -751,6 +883,12 @@ export type ChildUncheckedCreateWithoutParentInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
 }
 
 export type ChildCreateOrConnectWithoutParentInput = {
@@ -817,6 +955,12 @@ export type ChildCreateWithoutLearningSessionsInput = {
   learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
 }
 
 export type ChildUncheckedCreateWithoutLearningSessionsInput = {
@@ -839,6 +983,12 @@ export type ChildUncheckedCreateWithoutLearningSessionsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
 }
 
 export type ChildCreateOrConnectWithoutLearningSessionsInput = {
@@ -877,6 +1027,12 @@ export type ChildUpdateWithoutLearningSessionsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateWithoutLearningSessionsInput = {
@@ -899,6 +1055,12 @@ export type ChildUncheckedUpdateWithoutLearningSessionsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
 }
 
 export type ChildCreateWithoutAttemptsInput = {
@@ -921,6 +1083,12 @@ export type ChildCreateWithoutAttemptsInput = {
   learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
 }
 
 export type ChildUncheckedCreateWithoutAttemptsInput = {
@@ -943,6 +1111,12 @@ export type ChildUncheckedCreateWithoutAttemptsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
 }
 
 export type ChildCreateOrConnectWithoutAttemptsInput = {
@@ -981,6 +1155,12 @@ export type ChildUpdateWithoutAttemptsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateWithoutAttemptsInput = {
@@ -1003,6 +1183,12 @@ export type ChildUncheckedUpdateWithoutAttemptsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
 }
 
 export type ChildCreateWithoutMasteryRecordsInput = {
@@ -1025,6 +1211,12 @@ export type ChildCreateWithoutMasteryRecordsInput = {
   learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
 }
 
 export type ChildUncheckedCreateWithoutMasteryRecordsInput = {
@@ -1047,6 +1239,12 @@ export type ChildUncheckedCreateWithoutMasteryRecordsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
 }
 
 export type ChildCreateOrConnectWithoutMasteryRecordsInput = {
@@ -1085,6 +1283,12 @@ export type ChildUpdateWithoutMasteryRecordsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateWithoutMasteryRecordsInput = {
@@ -1107,6 +1311,12 @@ export type ChildUncheckedUpdateWithoutMasteryRecordsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
 }
 
 export type ChildCreateWithoutMisconceptionSignalsInput = {
@@ -1129,6 +1339,12 @@ export type ChildCreateWithoutMisconceptionSignalsInput = {
   learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
 }
 
 export type ChildUncheckedCreateWithoutMisconceptionSignalsInput = {
@@ -1151,6 +1367,12 @@ export type ChildUncheckedCreateWithoutMisconceptionSignalsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
 }
 
 export type ChildCreateOrConnectWithoutMisconceptionSignalsInput = {
@@ -1189,6 +1411,12 @@ export type ChildUpdateWithoutMisconceptionSignalsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateWithoutMisconceptionSignalsInput = {
@@ -1211,6 +1439,12 @@ export type ChildUncheckedUpdateWithoutMisconceptionSignalsInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
 }
 
 export type ChildCreateWithoutSubjectDifficultiesInput = {
@@ -1233,6 +1467,12 @@ export type ChildCreateWithoutSubjectDifficultiesInput = {
   learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
 }
 
 export type ChildUncheckedCreateWithoutSubjectDifficultiesInput = {
@@ -1255,6 +1495,12 @@ export type ChildUncheckedCreateWithoutSubjectDifficultiesInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
 }
 
 export type ChildCreateOrConnectWithoutSubjectDifficultiesInput = {
@@ -1293,6 +1539,12 @@ export type ChildUpdateWithoutSubjectDifficultiesInput = {
   learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateWithoutSubjectDifficultiesInput = {
@@ -1315,6 +1567,12 @@ export type ChildUncheckedUpdateWithoutSubjectDifficultiesInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
 }
 
 export type ChildCreateWithoutLearningPatternsInput = {
@@ -1337,6 +1595,12 @@ export type ChildCreateWithoutLearningPatternsInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
 }
 
 export type ChildUncheckedCreateWithoutLearningPatternsInput = {
@@ -1359,6 +1623,12 @@ export type ChildUncheckedCreateWithoutLearningPatternsInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
 }
 
 export type ChildCreateOrConnectWithoutLearningPatternsInput = {
@@ -1397,6 +1667,12 @@ export type ChildUpdateWithoutLearningPatternsInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateWithoutLearningPatternsInput = {
@@ -1419,6 +1695,12 @@ export type ChildUncheckedUpdateWithoutLearningPatternsInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
 }
 
 export type ChildCreateWithoutPersonalityPreferenceInput = {
@@ -1441,6 +1723,12 @@ export type ChildCreateWithoutPersonalityPreferenceInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyCreateNestedManyWithoutChildInput
   learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
 }
 
 export type ChildUncheckedCreateWithoutPersonalityPreferenceInput = {
@@ -1463,6 +1751,12 @@ export type ChildUncheckedCreateWithoutPersonalityPreferenceInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedCreateNestedManyWithoutChildInput
   learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
 }
 
 export type ChildCreateOrConnectWithoutPersonalityPreferenceInput = {
@@ -1501,6 +1795,12 @@ export type ChildUpdateWithoutPersonalityPreferenceInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyUpdateManyWithoutChildNestedInput
   learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateWithoutPersonalityPreferenceInput = {
@@ -1523,6 +1823,12 @@ export type ChildUncheckedUpdateWithoutPersonalityPreferenceInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedUpdateManyWithoutChildNestedInput
   learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
 }
 
 export type ChildCreateWithoutExamPrepPlansInput = {
@@ -1545,6 +1851,12 @@ export type ChildCreateWithoutExamPrepPlansInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyCreateNestedManyWithoutChildInput
   learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
 }
 
 export type ChildUncheckedCreateWithoutExamPrepPlansInput = {
@@ -1567,6 +1879,12 @@ export type ChildUncheckedCreateWithoutExamPrepPlansInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedCreateNestedManyWithoutChildInput
   learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
 }
 
 export type ChildCreateOrConnectWithoutExamPrepPlansInput = {
@@ -1605,6 +1923,12 @@ export type ChildUpdateWithoutExamPrepPlansInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyUpdateManyWithoutChildNestedInput
   learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateWithoutExamPrepPlansInput = {
@@ -1627,6 +1951,780 @@ export type ChildUncheckedUpdateWithoutExamPrepPlansInput = {
   subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedUpdateManyWithoutChildNestedInput
   learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
+}
+
+export type ChildCreateWithoutBookReadingsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent: Prisma.ParentCreateNestedOneWithoutChildrenInput
+  learningSessions?: Prisma.LearningSessionCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
+}
+
+export type ChildUncheckedCreateWithoutBookReadingsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  parentId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptUncheckedCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
+}
+
+export type ChildCreateOrConnectWithoutBookReadingsInput = {
+  where: Prisma.ChildWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChildCreateWithoutBookReadingsInput, Prisma.ChildUncheckedCreateWithoutBookReadingsInput>
+}
+
+export type ChildUpsertWithoutBookReadingsInput = {
+  update: Prisma.XOR<Prisma.ChildUpdateWithoutBookReadingsInput, Prisma.ChildUncheckedUpdateWithoutBookReadingsInput>
+  create: Prisma.XOR<Prisma.ChildCreateWithoutBookReadingsInput, Prisma.ChildUncheckedCreateWithoutBookReadingsInput>
+  where?: Prisma.ChildWhereInput
+}
+
+export type ChildUpdateToOneWithWhereWithoutBookReadingsInput = {
+  where?: Prisma.ChildWhereInput
+  data: Prisma.XOR<Prisma.ChildUpdateWithoutBookReadingsInput, Prisma.ChildUncheckedUpdateWithoutBookReadingsInput>
+}
+
+export type ChildUpdateWithoutBookReadingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.ParentUpdateOneRequiredWithoutChildrenNestedInput
+  learningSessions?: Prisma.LearningSessionUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
+}
+
+export type ChildUncheckedUpdateWithoutBookReadingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUncheckedUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
+}
+
+export type ChildCreateWithoutBookQuizAttemptsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent: Prisma.ParentCreateNestedOneWithoutChildrenInput
+  learningSessions?: Prisma.LearningSessionCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
+}
+
+export type ChildUncheckedCreateWithoutBookQuizAttemptsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  parentId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptUncheckedCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
+}
+
+export type ChildCreateOrConnectWithoutBookQuizAttemptsInput = {
+  where: Prisma.ChildWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChildCreateWithoutBookQuizAttemptsInput, Prisma.ChildUncheckedCreateWithoutBookQuizAttemptsInput>
+}
+
+export type ChildUpsertWithoutBookQuizAttemptsInput = {
+  update: Prisma.XOR<Prisma.ChildUpdateWithoutBookQuizAttemptsInput, Prisma.ChildUncheckedUpdateWithoutBookQuizAttemptsInput>
+  create: Prisma.XOR<Prisma.ChildCreateWithoutBookQuizAttemptsInput, Prisma.ChildUncheckedCreateWithoutBookQuizAttemptsInput>
+  where?: Prisma.ChildWhereInput
+}
+
+export type ChildUpdateToOneWithWhereWithoutBookQuizAttemptsInput = {
+  where?: Prisma.ChildWhereInput
+  data: Prisma.XOR<Prisma.ChildUpdateWithoutBookQuizAttemptsInput, Prisma.ChildUncheckedUpdateWithoutBookQuizAttemptsInput>
+}
+
+export type ChildUpdateWithoutBookQuizAttemptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.ParentUpdateOneRequiredWithoutChildrenNestedInput
+  learningSessions?: Prisma.LearningSessionUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
+}
+
+export type ChildUncheckedUpdateWithoutBookQuizAttemptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUncheckedUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
+}
+
+export type ChildCreateWithoutPointTransactionsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent: Prisma.ParentCreateNestedOneWithoutChildrenInput
+  learningSessions?: Prisma.LearningSessionCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
+}
+
+export type ChildUncheckedCreateWithoutPointTransactionsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  parentId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptUncheckedCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
+}
+
+export type ChildCreateOrConnectWithoutPointTransactionsInput = {
+  where: Prisma.ChildWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChildCreateWithoutPointTransactionsInput, Prisma.ChildUncheckedCreateWithoutPointTransactionsInput>
+}
+
+export type ChildUpsertWithoutPointTransactionsInput = {
+  update: Prisma.XOR<Prisma.ChildUpdateWithoutPointTransactionsInput, Prisma.ChildUncheckedUpdateWithoutPointTransactionsInput>
+  create: Prisma.XOR<Prisma.ChildCreateWithoutPointTransactionsInput, Prisma.ChildUncheckedCreateWithoutPointTransactionsInput>
+  where?: Prisma.ChildWhereInput
+}
+
+export type ChildUpdateToOneWithWhereWithoutPointTransactionsInput = {
+  where?: Prisma.ChildWhereInput
+  data: Prisma.XOR<Prisma.ChildUpdateWithoutPointTransactionsInput, Prisma.ChildUncheckedUpdateWithoutPointTransactionsInput>
+}
+
+export type ChildUpdateWithoutPointTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.ParentUpdateOneRequiredWithoutChildrenNestedInput
+  learningSessions?: Prisma.LearningSessionUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
+}
+
+export type ChildUncheckedUpdateWithoutPointTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUncheckedUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
+}
+
+export type ChildCreateWithoutPointGoalsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent: Prisma.ParentCreateNestedOneWithoutChildrenInput
+  learningSessions?: Prisma.LearningSessionCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
+}
+
+export type ChildUncheckedCreateWithoutPointGoalsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  parentId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptUncheckedCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
+}
+
+export type ChildCreateOrConnectWithoutPointGoalsInput = {
+  where: Prisma.ChildWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChildCreateWithoutPointGoalsInput, Prisma.ChildUncheckedCreateWithoutPointGoalsInput>
+}
+
+export type ChildUpsertWithoutPointGoalsInput = {
+  update: Prisma.XOR<Prisma.ChildUpdateWithoutPointGoalsInput, Prisma.ChildUncheckedUpdateWithoutPointGoalsInput>
+  create: Prisma.XOR<Prisma.ChildCreateWithoutPointGoalsInput, Prisma.ChildUncheckedCreateWithoutPointGoalsInput>
+  where?: Prisma.ChildWhereInput
+}
+
+export type ChildUpdateToOneWithWhereWithoutPointGoalsInput = {
+  where?: Prisma.ChildWhereInput
+  data: Prisma.XOR<Prisma.ChildUpdateWithoutPointGoalsInput, Prisma.ChildUncheckedUpdateWithoutPointGoalsInput>
+}
+
+export type ChildUpdateWithoutPointGoalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.ParentUpdateOneRequiredWithoutChildrenNestedInput
+  learningSessions?: Prisma.LearningSessionUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
+}
+
+export type ChildUncheckedUpdateWithoutPointGoalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUncheckedUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
+}
+
+export type ChildCreateWithoutRewardsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent: Prisma.ParentCreateNestedOneWithoutChildrenInput
+  learningSessions?: Prisma.LearningSessionCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionCreateNestedManyWithoutChildInput
+}
+
+export type ChildUncheckedCreateWithoutRewardsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  parentId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptUncheckedCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  redemptions?: Prisma.RewardRedemptionUncheckedCreateNestedManyWithoutChildInput
+}
+
+export type ChildCreateOrConnectWithoutRewardsInput = {
+  where: Prisma.ChildWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChildCreateWithoutRewardsInput, Prisma.ChildUncheckedCreateWithoutRewardsInput>
+}
+
+export type ChildUpsertWithoutRewardsInput = {
+  update: Prisma.XOR<Prisma.ChildUpdateWithoutRewardsInput, Prisma.ChildUncheckedUpdateWithoutRewardsInput>
+  create: Prisma.XOR<Prisma.ChildCreateWithoutRewardsInput, Prisma.ChildUncheckedCreateWithoutRewardsInput>
+  where?: Prisma.ChildWhereInput
+}
+
+export type ChildUpdateToOneWithWhereWithoutRewardsInput = {
+  where?: Prisma.ChildWhereInput
+  data: Prisma.XOR<Prisma.ChildUpdateWithoutRewardsInput, Prisma.ChildUncheckedUpdateWithoutRewardsInput>
+}
+
+export type ChildUpdateWithoutRewardsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.ParentUpdateOneRequiredWithoutChildrenNestedInput
+  learningSessions?: Prisma.LearningSessionUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
+}
+
+export type ChildUncheckedUpdateWithoutRewardsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUncheckedUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
+}
+
+export type ChildCreateWithoutRedemptionsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent: Prisma.ParentCreateNestedOneWithoutChildrenInput
+  learningSessions?: Prisma.LearningSessionCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardCreateNestedManyWithoutChildInput
+}
+
+export type ChildUncheckedCreateWithoutRedemptionsInput = {
+  id?: string
+  fullName: string
+  nickname?: string | null
+  dateOfBirth: Date | string
+  gender: $Enums.Gender
+  grade: $Enums.Grade
+  curricula?: Prisma.ChildCreatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage: $Enums.PreferredLanguage
+  schoolName?: string | null
+  parentId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedCreateNestedManyWithoutChildInput
+  attempts?: Prisma.QuestionAttemptUncheckedCreateNestedManyWithoutChildInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedCreateNestedManyWithoutChildInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedCreateNestedManyWithoutChildInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedCreateNestedManyWithoutChildInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedCreateNestedManyWithoutChildInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedCreateNestedOneWithoutChildInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedCreateNestedManyWithoutChildInput
+  bookReadings?: Prisma.BookReadingUncheckedCreateNestedManyWithoutChildInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedCreateNestedManyWithoutChildInput
+  pointTransactions?: Prisma.PointTransactionUncheckedCreateNestedManyWithoutChildInput
+  pointGoals?: Prisma.PointGoalUncheckedCreateNestedManyWithoutChildInput
+  rewards?: Prisma.RewardUncheckedCreateNestedManyWithoutChildInput
+}
+
+export type ChildCreateOrConnectWithoutRedemptionsInput = {
+  where: Prisma.ChildWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChildCreateWithoutRedemptionsInput, Prisma.ChildUncheckedCreateWithoutRedemptionsInput>
+}
+
+export type ChildUpsertWithoutRedemptionsInput = {
+  update: Prisma.XOR<Prisma.ChildUpdateWithoutRedemptionsInput, Prisma.ChildUncheckedUpdateWithoutRedemptionsInput>
+  create: Prisma.XOR<Prisma.ChildCreateWithoutRedemptionsInput, Prisma.ChildUncheckedCreateWithoutRedemptionsInput>
+  where?: Prisma.ChildWhereInput
+}
+
+export type ChildUpdateToOneWithWhereWithoutRedemptionsInput = {
+  where?: Prisma.ChildWhereInput
+  data: Prisma.XOR<Prisma.ChildUpdateWithoutRedemptionsInput, Prisma.ChildUncheckedUpdateWithoutRedemptionsInput>
+}
+
+export type ChildUpdateWithoutRedemptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.ParentUpdateOneRequiredWithoutChildrenNestedInput
+  learningSessions?: Prisma.LearningSessionUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+}
+
+export type ChildUncheckedUpdateWithoutRedemptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gender?: Prisma.EnumGenderFieldUpdateOperationsInput | $Enums.Gender
+  grade?: Prisma.EnumGradeFieldUpdateOperationsInput | $Enums.Grade
+  curricula?: Prisma.ChildUpdatecurriculaInput | $Enums.Curriculum[]
+  preferredLanguage?: Prisma.EnumPreferredLanguageFieldUpdateOperationsInput | $Enums.PreferredLanguage
+  schoolName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  learningSessions?: Prisma.LearningSessionUncheckedUpdateManyWithoutChildNestedInput
+  attempts?: Prisma.QuestionAttemptUncheckedUpdateManyWithoutChildNestedInput
+  masteryRecords?: Prisma.StudentMasteryUncheckedUpdateManyWithoutChildNestedInput
+  misconceptionSignals?: Prisma.MisconceptionSignalUncheckedUpdateManyWithoutChildNestedInput
+  subjectDifficulties?: Prisma.ChildSubjectDifficultyUncheckedUpdateManyWithoutChildNestedInput
+  learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
+  personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
+  examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
 }
 
 export type ChildCreateManyParentInput = {
@@ -1663,6 +2761,12 @@ export type ChildUpdateWithoutParentInput = {
   learningPatterns?: Prisma.ChildLearningPatternUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateWithoutParentInput = {
@@ -1685,6 +2789,12 @@ export type ChildUncheckedUpdateWithoutParentInput = {
   learningPatterns?: Prisma.ChildLearningPatternUncheckedUpdateManyWithoutChildNestedInput
   personalityPreference?: Prisma.ChildPersonalityPreferenceUncheckedUpdateOneWithoutChildNestedInput
   examPrepPlans?: Prisma.ExamPrepPlanUncheckedUpdateManyWithoutChildNestedInput
+  bookReadings?: Prisma.BookReadingUncheckedUpdateManyWithoutChildNestedInput
+  bookQuizAttempts?: Prisma.BookQuizAttemptUncheckedUpdateManyWithoutChildNestedInput
+  pointTransactions?: Prisma.PointTransactionUncheckedUpdateManyWithoutChildNestedInput
+  pointGoals?: Prisma.PointGoalUncheckedUpdateManyWithoutChildNestedInput
+  rewards?: Prisma.RewardUncheckedUpdateManyWithoutChildNestedInput
+  redemptions?: Prisma.RewardRedemptionUncheckedUpdateManyWithoutChildNestedInput
 }
 
 export type ChildUncheckedUpdateManyWithoutParentInput = {
@@ -1714,6 +2824,12 @@ export type ChildCountOutputType = {
   subjectDifficulties: number
   learningPatterns: number
   examPrepPlans: number
+  bookReadings: number
+  bookQuizAttempts: number
+  pointTransactions: number
+  pointGoals: number
+  rewards: number
+  redemptions: number
 }
 
 export type ChildCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1724,6 +2840,12 @@ export type ChildCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   subjectDifficulties?: boolean | ChildCountOutputTypeCountSubjectDifficultiesArgs
   learningPatterns?: boolean | ChildCountOutputTypeCountLearningPatternsArgs
   examPrepPlans?: boolean | ChildCountOutputTypeCountExamPrepPlansArgs
+  bookReadings?: boolean | ChildCountOutputTypeCountBookReadingsArgs
+  bookQuizAttempts?: boolean | ChildCountOutputTypeCountBookQuizAttemptsArgs
+  pointTransactions?: boolean | ChildCountOutputTypeCountPointTransactionsArgs
+  pointGoals?: boolean | ChildCountOutputTypeCountPointGoalsArgs
+  rewards?: boolean | ChildCountOutputTypeCountRewardsArgs
+  redemptions?: boolean | ChildCountOutputTypeCountRedemptionsArgs
 }
 
 /**
@@ -1785,6 +2907,48 @@ export type ChildCountOutputTypeCountExamPrepPlansArgs<ExtArgs extends runtime.T
   where?: Prisma.ExamPrepPlanWhereInput
 }
 
+/**
+ * ChildCountOutputType without action
+ */
+export type ChildCountOutputTypeCountBookReadingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookReadingWhereInput
+}
+
+/**
+ * ChildCountOutputType without action
+ */
+export type ChildCountOutputTypeCountBookQuizAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookQuizAttemptWhereInput
+}
+
+/**
+ * ChildCountOutputType without action
+ */
+export type ChildCountOutputTypeCountPointTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PointTransactionWhereInput
+}
+
+/**
+ * ChildCountOutputType without action
+ */
+export type ChildCountOutputTypeCountPointGoalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PointGoalWhereInput
+}
+
+/**
+ * ChildCountOutputType without action
+ */
+export type ChildCountOutputTypeCountRewardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RewardWhereInput
+}
+
+/**
+ * ChildCountOutputType without action
+ */
+export type ChildCountOutputTypeCountRedemptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RewardRedemptionWhereInput
+}
+
 
 export type ChildSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1808,6 +2972,12 @@ export type ChildSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   learningPatterns?: boolean | Prisma.Child$learningPatternsArgs<ExtArgs>
   personalityPreference?: boolean | Prisma.Child$personalityPreferenceArgs<ExtArgs>
   examPrepPlans?: boolean | Prisma.Child$examPrepPlansArgs<ExtArgs>
+  bookReadings?: boolean | Prisma.Child$bookReadingsArgs<ExtArgs>
+  bookQuizAttempts?: boolean | Prisma.Child$bookQuizAttemptsArgs<ExtArgs>
+  pointTransactions?: boolean | Prisma.Child$pointTransactionsArgs<ExtArgs>
+  pointGoals?: boolean | Prisma.Child$pointGoalsArgs<ExtArgs>
+  rewards?: boolean | Prisma.Child$rewardsArgs<ExtArgs>
+  redemptions?: boolean | Prisma.Child$redemptionsArgs<ExtArgs>
   _count?: boolean | Prisma.ChildCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["child"]>
 
@@ -1869,6 +3039,12 @@ export type ChildInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   learningPatterns?: boolean | Prisma.Child$learningPatternsArgs<ExtArgs>
   personalityPreference?: boolean | Prisma.Child$personalityPreferenceArgs<ExtArgs>
   examPrepPlans?: boolean | Prisma.Child$examPrepPlansArgs<ExtArgs>
+  bookReadings?: boolean | Prisma.Child$bookReadingsArgs<ExtArgs>
+  bookQuizAttempts?: boolean | Prisma.Child$bookQuizAttemptsArgs<ExtArgs>
+  pointTransactions?: boolean | Prisma.Child$pointTransactionsArgs<ExtArgs>
+  pointGoals?: boolean | Prisma.Child$pointGoalsArgs<ExtArgs>
+  rewards?: boolean | Prisma.Child$rewardsArgs<ExtArgs>
+  redemptions?: boolean | Prisma.Child$redemptionsArgs<ExtArgs>
   _count?: boolean | Prisma.ChildCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ChildIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1890,6 +3066,12 @@ export type $ChildPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     learningPatterns: Prisma.$ChildLearningPatternPayload<ExtArgs>[]
     personalityPreference: Prisma.$ChildPersonalityPreferencePayload<ExtArgs> | null
     examPrepPlans: Prisma.$ExamPrepPlanPayload<ExtArgs>[]
+    bookReadings: Prisma.$BookReadingPayload<ExtArgs>[]
+    bookQuizAttempts: Prisma.$BookQuizAttemptPayload<ExtArgs>[]
+    pointTransactions: Prisma.$PointTransactionPayload<ExtArgs>[]
+    pointGoals: Prisma.$PointGoalPayload<ExtArgs>[]
+    rewards: Prisma.$RewardPayload<ExtArgs>[]
+    redemptions: Prisma.$RewardRedemptionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2307,6 +3489,12 @@ export interface Prisma__ChildClient<T, Null = never, ExtArgs extends runtime.Ty
   learningPatterns<T extends Prisma.Child$learningPatternsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Child$learningPatternsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChildLearningPatternPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   personalityPreference<T extends Prisma.Child$personalityPreferenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Child$personalityPreferenceArgs<ExtArgs>>): Prisma.Prisma__ChildPersonalityPreferenceClient<runtime.Types.Result.GetResult<Prisma.$ChildPersonalityPreferencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   examPrepPlans<T extends Prisma.Child$examPrepPlansArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Child$examPrepPlansArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExamPrepPlanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bookReadings<T extends Prisma.Child$bookReadingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Child$bookReadingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookReadingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bookQuizAttempts<T extends Prisma.Child$bookQuizAttemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Child$bookQuizAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookQuizAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pointTransactions<T extends Prisma.Child$pointTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Child$pointTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PointTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pointGoals<T extends Prisma.Child$pointGoalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Child$pointGoalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PointGoalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rewards<T extends Prisma.Child$rewardsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Child$rewardsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RewardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  redemptions<T extends Prisma.Child$redemptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Child$redemptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RewardRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2928,6 +4116,150 @@ export type Child$examPrepPlansArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.ExamPrepPlanScalarFieldEnum | Prisma.ExamPrepPlanScalarFieldEnum[]
+}
+
+/**
+ * Child.bookReadings
+ */
+export type Child$bookReadingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BookReading
+   */
+  select?: Prisma.BookReadingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BookReading
+   */
+  omit?: Prisma.BookReadingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookReadingInclude<ExtArgs> | null
+  where?: Prisma.BookReadingWhereInput
+  orderBy?: Prisma.BookReadingOrderByWithRelationInput | Prisma.BookReadingOrderByWithRelationInput[]
+  cursor?: Prisma.BookReadingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookReadingScalarFieldEnum | Prisma.BookReadingScalarFieldEnum[]
+}
+
+/**
+ * Child.bookQuizAttempts
+ */
+export type Child$bookQuizAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BookQuizAttempt
+   */
+  select?: Prisma.BookQuizAttemptSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BookQuizAttempt
+   */
+  omit?: Prisma.BookQuizAttemptOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookQuizAttemptInclude<ExtArgs> | null
+  where?: Prisma.BookQuizAttemptWhereInput
+  orderBy?: Prisma.BookQuizAttemptOrderByWithRelationInput | Prisma.BookQuizAttemptOrderByWithRelationInput[]
+  cursor?: Prisma.BookQuizAttemptWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookQuizAttemptScalarFieldEnum | Prisma.BookQuizAttemptScalarFieldEnum[]
+}
+
+/**
+ * Child.pointTransactions
+ */
+export type Child$pointTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PointTransaction
+   */
+  select?: Prisma.PointTransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PointTransaction
+   */
+  omit?: Prisma.PointTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PointTransactionInclude<ExtArgs> | null
+  where?: Prisma.PointTransactionWhereInput
+  orderBy?: Prisma.PointTransactionOrderByWithRelationInput | Prisma.PointTransactionOrderByWithRelationInput[]
+  cursor?: Prisma.PointTransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PointTransactionScalarFieldEnum | Prisma.PointTransactionScalarFieldEnum[]
+}
+
+/**
+ * Child.pointGoals
+ */
+export type Child$pointGoalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PointGoal
+   */
+  select?: Prisma.PointGoalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PointGoal
+   */
+  omit?: Prisma.PointGoalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PointGoalInclude<ExtArgs> | null
+  where?: Prisma.PointGoalWhereInput
+  orderBy?: Prisma.PointGoalOrderByWithRelationInput | Prisma.PointGoalOrderByWithRelationInput[]
+  cursor?: Prisma.PointGoalWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PointGoalScalarFieldEnum | Prisma.PointGoalScalarFieldEnum[]
+}
+
+/**
+ * Child.rewards
+ */
+export type Child$rewardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Reward
+   */
+  select?: Prisma.RewardSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Reward
+   */
+  omit?: Prisma.RewardOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RewardInclude<ExtArgs> | null
+  where?: Prisma.RewardWhereInput
+  orderBy?: Prisma.RewardOrderByWithRelationInput | Prisma.RewardOrderByWithRelationInput[]
+  cursor?: Prisma.RewardWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RewardScalarFieldEnum | Prisma.RewardScalarFieldEnum[]
+}
+
+/**
+ * Child.redemptions
+ */
+export type Child$redemptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RewardRedemption
+   */
+  select?: Prisma.RewardRedemptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RewardRedemption
+   */
+  omit?: Prisma.RewardRedemptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RewardRedemptionInclude<ExtArgs> | null
+  where?: Prisma.RewardRedemptionWhereInput
+  orderBy?: Prisma.RewardRedemptionOrderByWithRelationInput | Prisma.RewardRedemptionOrderByWithRelationInput[]
+  cursor?: Prisma.RewardRedemptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RewardRedemptionScalarFieldEnum | Prisma.RewardRedemptionScalarFieldEnum[]
 }
 
 /**

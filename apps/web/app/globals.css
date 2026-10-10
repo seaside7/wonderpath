@@ -169,7 +169,10 @@ body {
   animation: feedback-settle 0.3s ease-out both;
 }
 
-/* Quiet idle presence for Atlas: one brief open-mouth breath every few seconds. */
+/* Quiet idle presence for Atlas: one brief open-mouth breath every few seconds.
+   Only the overlay fades - the closed-mouth base stays fully opaque underneath,
+   otherwise mid-crossfade both layers are half-transparent and the page shows
+   through the globe as a white flash. */
 @keyframes atlas-idle-mouth-open {
   0%,
   72%,
@@ -182,41 +185,67 @@ body {
   }
 }
 
-@keyframes atlas-idle-mouth-closed {
-  0%,
-  72%,
-  100% {
-    opacity: 1;
-  }
-  77%,
-  92% {
-    opacity: 0;
-  }
-}
-
 .atlas-idle-open {
   opacity: 0;
   animation: atlas-idle-mouth-open 5.5s ease-in-out infinite;
 }
 
-.atlas-idle-closed {
-  animation: atlas-idle-mouth-closed 5.5s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .atlas-idle-open,
-  .atlas-idle-closed {
-    animation: none;
-  }
-
   .atlas-idle-open {
-    opacity: 0;
-  }
-
-  .atlas-idle-closed {
-    opacity: 1;
+    animation: none;
   }
 }
 .levelup-pop {
   animation: waypoint-pop 0.5s ease-out both;
+}
+
+/* Marketing site */
+@keyframes mk-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -14px;
+  }
+}
+
+.mk-float {
+  animation: mk-float 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-float {
+    animation: none;
+  }
+}
+
+/* Decorative reveal: progressive enhancement only, so browsers without
+   scroll-driven animations (e.g. Firefox) simply show the content. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    @keyframes mk-reveal {
+      from {
+        opacity: 0;
+        translate: 0 36px;
+      }
+    }
+
+    .mk-reveal {
+      animation: mk-reveal auto ease-out backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+}
+
+/* Atlas images include a soft floor shadow that reads as a pale halo on dark
+   backgrounds; hide it there and rely on the CSS drop-shadow instead. */
+.mk-no-floor {
+  mask-image: linear-gradient(to bottom, #000 81%, transparent 85%);
+}
+
+/* Same idea for the generated pose images, whose globe sits a little lower. */
+.mk-no-floor-pose {
+  mask-image: linear-gradient(to bottom, #000 85%, transparent 88%);
 }

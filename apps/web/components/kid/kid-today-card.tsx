@@ -7,6 +7,7 @@ import {
   ApiError,
   ChildProfile,
   fetchRecommendations,
+  fetchPoints,
   getChild,
   RecommendationData,
   RecommendationItem,
@@ -36,21 +37,24 @@ export default function KidTodayCard({ childId }: { childId: string }) {
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
+  const [points, setPoints] = useState<Awaited<ReturnType<typeof fetchPoints>> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
       try {
-        const [profile, recommendations] = await Promise.all([
+        const [profile, recommendations, pointsData] = await Promise.all([
           getChild(childId),
           fetchRecommendations(childId),
+          fetchPoints(childId).catch(() => null),
         ]);
         if (cancelled) return;
         setChild(profile);
         const first = recommendations.recommendations[0] ?? null;
         setTop(first);
         setSession(recommendations.session);
+        setPoints(pointsData);
         setStatus(first ? "ready" : "fallback");
       } catch (cause) {
         if (cancelled) return;
@@ -121,6 +125,16 @@ export default function KidTodayCard({ childId }: { childId: string }) {
   if (status === "fallback" || showPicker) {
     return (
       <div className="flex w-full flex-1 flex-col justify-center">
+        {status === "ready" && showPicker ? (
+          <button
+            type="button"
+            onClick={() => setShowPicker(false)}
+            className="btn-tactile mb-5 inline-flex items-center gap-2 self-start rounded-full border-2 border-line bg-card px-4 py-2 text-sm font-semibold text-ink shadow-[0_3px_0_rgba(46,42,92,0.1)] hover:border-ink-soft"
+          >
+            <span aria-hidden="true">←</span>
+            Back to today&apos;s pick
+          </button>
+        ) : null}
         <h1 className="font-display text-4xl text-ink">Hi {name}</h1>
         <p className="mb-7 mt-2 text-base text-ink-soft">
           {showPicker
@@ -128,15 +142,6 @@ export default function KidTodayCard({ childId }: { childId: string }) {
             : "Let's pick what to practice today."}
         </p>
         <KidTopicPicker child={child} session={session} />
-        {status === "ready" && showPicker ? (
-          <button
-            type="button"
-            onClick={() => setShowPicker(false)}
-            className="btn-tactile mt-4 self-start rounded-xl px-4 py-2.5 text-sm font-medium text-ink-soft"
-          >
-            Back to today&apos;s pick
-          </button>
-        ) : null}
       </div>
     );
   }
@@ -196,6 +201,25 @@ export default function KidTodayCard({ childId }: { childId: string }) {
   return (
     <div className="flex w-full flex-1 flex-col justify-center">
       <h1 className="font-display text-4xl text-ink">Hi {name}</h1>
+
+      {points?.goal ? (
+        <div className="mb-5 rounded-2xl bg-card px-5 py-4 shadow-[0_8px_28px_rgba(46,42,92,0.06)]">
+          <div className="flex items-center justify-between text-sm font-semibold text-ink">
+            <span>
+              {points.goal.progress} / {points.goal.target} ⭐ this {points.goal.period.toLowerCase()}
+            </span>
+            <span>{points.balance} ⭐ saved</span>
+          </div>
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-line">
+            <div
+              className="h-full rounded-full bg-waypoint transition-[width]"
+              style={{
+                width: `${Math.min(100, (points.goal.progress / points.goal.target) * 100)}%`,
+              }}
+            />
+          </div>
+        </div>
+      ) : null}
 
       <div className="mt-7 rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
           <p className="flex items-center gap-2.5 font-display text-3xl text-ink">

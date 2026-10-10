@@ -19,14 +19,17 @@ import {
   RecommendationData,
   SessionHistoryItem,
 } from "@/lib/api";
-import {
-  formatEstimatedSession,
-  formatRelativeTime,
-  reasonBullets,
-} from "@/lib/format";
+import { formatEstimatedSession, reasonBullets } from "@/lib/format";
+import { CheckCircleIcon, SparklesIcon } from "@/components/ui/icons";
 import MisconceptionsSection from "./misconceptions-section";
 import AdaptiveDifficultySection from "./adaptive-difficulty-section";
 import RecentSessionsSection from "./recent-sessions-section";
+import ProgressSummary from "./progress-summary";
+import MasteryProgressSection from "./mastery-progress-section";
+import { firstNameOf } from "./progress-utils";
+
+// Enough history to cover a full week of practice for the summary.
+const HISTORY_LIMIT = 50;
 
 // This screen makes several network calls before it has anything real to
 // show (child profile, recommendations, mastery, misconceptions, adaptive
@@ -108,7 +111,7 @@ export default function RecommendationDashboard({
           fetchMastery(childId),
           fetchMisconceptions(childId),
           fetchAdaptiveDifficultyList(childId),
-          fetchSessionHistory(childId),
+          fetchSessionHistory(childId, HISTORY_LIMIT),
         ]);
 
         const details = await Promise.all(
@@ -199,150 +202,127 @@ export default function RecommendationDashboard({
   }
 
   const top = recommendation?.recommendations[0] ?? null;
-  const subject = recommendation?.session.subject ?? "Mathematics";
-  const firstName = child
-    ? (child.nickname?.trim() ||
-      child.fullName.split(" ")[0] ||
-      child.fullName)
-    : "Your child";
+  const subject = recommendation?.session.subject ?? null;
+  const firstName = firstNameOf(child);
+  const contextLabel =
+    child && subject ? `${child.curricula[0] ?? "Curriculum"} · ${subject}` : null;
 
   return (
     <div className="flex flex-col gap-5">
-      <section className="rounded-3xl bg-card p-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
-        {top ? (
-          <div>
-            <p className="flex items-center gap-2.5 font-display text-2xl text-ink">
-              <span
-                aria-hidden="true"
-                className="h-2.5 w-2.5 shrink-0 rounded-full bg-waypoint"
-              />
-              {top.learningObjective.name}
-            </p>
+      <ProgressSummary
+        firstName={firstName}
+        sessions={sessions}
+        mastery={mastery}
+      />
 
-            <p className="mt-4 text-sm leading-6 text-ink-soft">
-              {top.explanation}
+      <div className="grid gap-5 lg:grid-cols-5">
+        <div className="flex flex-col gap-5 lg:order-2 lg:col-span-2">
+          <section
+            aria-labelledby="next-step-heading"
+            className="rounded-3xl bg-ink p-6 text-white shadow-[0_8px_28px_rgba(46,42,92,0.18)]"
+          >
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-white/75">
+              <SparklesIcon width={14} height={14} />
+              Atlas suggests next
             </p>
-
-            <ul className="mt-3 flex flex-col gap-1.5">
-              {reasonBullets(top.reasonCodes).map((bullet) => (
-                <li
-                  key={bullet}
-                  className="flex items-start gap-2 text-sm text-ink-soft"
+            {top ? (
+              <>
+                <h2
+                  id="next-step-heading"
+                  className="mt-3 font-display text-2xl leading-snug"
                 >
-                  <span aria-hidden="true" className="text-ink-soft/50">
-                    •
-                  </span>
-                  {bullet}
-                </li>
-              ))}
-              {top.learningObjective.estimatedMasteryTime > 0 ? (
-                <li className="flex items-start gap-2 text-sm text-ink-soft">
-                  <span aria-hidden="true" className="text-ink-soft/50">
-                    •
-                  </span>
-                  Estimated session:{" "}
-                  {formatEstimatedSession(top.learningObjective.estimatedMasteryTime)}
-                </li>
-              ) : null}
-            </ul>
+                  {top.learningObjective.name}
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-white/85">
+                  {top.explanation}
+                </p>
+                <ul className="mt-3 flex flex-col gap-1.5">
+                  {reasonBullets(top.reasonCodes).map((bullet) => (
+                    <li
+                      key={bullet}
+                      className="flex items-start gap-2 text-sm text-white/85"
+                    >
+                      <CheckCircleIcon
+                        width={16}
+                        height={16}
+                        className="mt-0.5 shrink-0 text-trail"
+                      />
+                      {bullet}
+                    </li>
+                  ))}
+                  {top.learningObjective.estimatedMasteryTime > 0 ? (
+                    <li className="flex items-start gap-2 text-sm text-white/85">
+                      <CheckCircleIcon
+                        width={16}
+                        height={16}
+                        className="mt-0.5 shrink-0 text-trail"
+                      />
+                      About{" "}
+                      {formatEstimatedSession(
+                        top.learningObjective.estimatedMasteryTime,
+                      )}
+                    </li>
+                  ) : null}
+                </ul>
+              </>
+            ) : (
+              <>
+                <h2
+                  id="next-step-heading"
+                  className="mt-3 font-display text-2xl leading-snug"
+                >
+                  No suggestion yet
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-white/85">
+                  {firstName} needs a little more practice before Atlas can
+                  suggest a focus.
+                </p>
+              </>
+            )}
 
             {error ? (
-              <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
+              <p className="mt-4 rounded-xl bg-white/10 px-3.5 py-2.5 text-sm text-white">
                 {error}
               </p>
             ) : null}
 
-            <div className="mt-6 flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => void handleStart()}
-                disabled={starting}
-                className="btn-tactile btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
-              >
-                {starting ? "Starting…" : "Start Learning"}
-              </button>
+            <div className="mt-5 flex flex-col gap-2.5">
+              {top ? (
+                <button
+                  type="button"
+                  onClick={() => void handleStart()}
+                  disabled={starting}
+                  className="btn-tactile btn-primary w-full rounded-xl px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
+                >
+                  {starting ? "Starting…" : "Start this topic"}
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={() => router.push(`/children/${childId}/start`)}
-                className="btn-tactile rounded-xl border border-line bg-card px-4 py-2.5 text-sm font-medium text-ink"
+                className="btn-tactile w-full rounded-xl border border-white/30 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
-                Choose Another Topic
+                Choose another topic
               </button>
             </div>
-          </div>
-        ) : (
-          <div>
-            <p className="font-display text-2xl text-ink">
-              No recommendation yet
-            </p>
-            <p className="mt-2 text-sm text-ink-soft">
-              {child?.fullName ?? "This child"} hasn&rsquo;t practiced enough
-              sessions for Atlas to recommend a focus yet.
-            </p>
-            <button
-              type="button"
-              onClick={() => router.push(`/children/${childId}/start`)}
-              className="btn-tactile mt-5 rounded-xl border border-line bg-card px-4 py-2.5 text-sm font-medium text-ink"
-            >
-              Choose Another Topic
-            </button>
-          </div>
-        )}
-      </section>
+          </section>
 
-      <section className="rounded-3xl bg-card p-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className="font-display text-xl text-ink">Mastery</h2>
-          {child ? (
-            <p className="text-sm text-ink-soft">
-              {child.curricula[0] ?? "Curriculum"} {subject}
-            </p>
-          ) : null}
+          <AdaptiveDifficultySection levels={difficultyLevels} />
+
+          <MisconceptionsSection
+            signals={misconceptions}
+            childFirstName={firstName}
+          />
         </div>
 
-        {mastery.length === 0 ? (
-          <p className="mt-4 text-sm text-ink-soft">
-            No practice yet. Start a session and answers will show up here.
-          </p>
-        ) : (
-          <ul className="mt-4 flex flex-col divide-y divide-line">
-            {mastery.map((record) => (
-              <li
-                key={record.learningObjectiveId}
-                className="flex flex-wrap items-center justify-between gap-2 py-3.5"
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-ink">
-                    {record.learningObjectiveName}
-                  </p>
-                  <p className="mt-0.5 text-xs text-ink-soft">
-                    Last practiced: {formatRelativeTime(record.lastPracticedAt)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  {record.reviewRecommended ? (
-                    <span className="rounded-full bg-waypoint/20 px-2.5 py-0.5 text-xs font-semibold text-ink">
-                      Review Recommended
-                    </span>
-                  ) : null}
-                  <span className="w-16 text-right text-sm font-semibold text-ink">
-                    {Math.round(record.masteryScore)}%
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <MisconceptionsSection
-        signals={misconceptions}
-        childFirstName={firstName}
-      />
-
-      <AdaptiveDifficultySection levels={difficultyLevels} />
-
-      <RecentSessionsSection sessions={sessions} />
+        <div className="flex flex-col gap-5 lg:order-1 lg:col-span-3">
+          <MasteryProgressSection
+            mastery={mastery}
+            contextLabel={contextLabel}
+          />
+          <RecentSessionsSection sessions={sessions} />
+        </div>
+      </div>
     </div>
   );
 }

@@ -1699,6 +1699,16 @@ Sprint 21
 Feedback Moments — sound + animation for correct/wrong answers, and
 making the adaptive-difficulty level-up an actual celebrated moment
 for the child instead of a silent database field — see specs/sprint-21-feedback-moments.md
+
+Sprint 22
+Points, Goals & Rewards — children earn points (effort + correctness +
+mastery), parents set a daily/weekly/monthly target and a list of
+real-world rewards the child can request to redeem — see specs/sprint-22-points-goals-rewards.md
+
+Sprint 23
+Story Trail (backend) — leveled reading library: AI-generated illustrated
+books with a content auditor, founder review before publishing, lazy
+narration with word highlighting, comprehension quiz — see specs/sprint-23-story-trail-backend.md
 ```
 
 Sprints 12-16 are a frontend track for `apps/web`, added to reach a demoable parent-facing product on top of the Sprint 1-6 backend. They deliberately stop at Sprint 6-level backend depth (Student Model + Recommendation Engine) — they do not wait for Sprints 07-11. Sprints 17-20 (added 2026-10-03) extend that track from "demoable to a friend" to "usable daily by the founder's own family" — child mode, a real kid-facing experience, a real parent dashboard, and a hardened deploy. Sprint 21 (added 2026-10-03, prompted by testing the staging deploy with the founder's real daughter) adds the sound/animation/celebration layer the first pass of Sprint 18 didn't include. `apps/cms` (internal admin tooling) is a separate, not-yet-scoped track.

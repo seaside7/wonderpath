@@ -89,6 +89,18 @@ enum GenerationStatus {
   FAILED
 }
 
+enum BookStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  REJECTED
+}
+
+enum ReadingMode {
+  LISTEN
+  READ
+}
+
 enum QuestionPerformanceStatus {
   ACTIVE
   LOW_PERFORMANCE
@@ -117,6 +129,28 @@ enum ExamTopicStatus {
   CANDIDATE
   CONFIRMED
   REJECTED
+}
+
+enum PointReason {
+  CORRECT_ANSWER
+  EFFORT
+  SESSION_COMPLETE
+  MASTERY
+  GRADE_AHEAD_BONUS
+  REDEMPTION
+  REDEMPTION_REFUND
+}
+
+enum GoalPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum RedemptionStatus {
+  PENDING
+  APPROVED
+  DECLINED
 }
 
 model Parent {
@@ -159,6 +193,12 @@ model Child {
   learningPatterns  ChildLearningPattern[]
   personalityPreference ChildPersonalityPreference?
   examPrepPlans     ExamPrepPlan[]
+  bookReadings      BookReading[]
+  bookQuizAttempts  BookQuizAttempt[]
+  pointTransactions PointTransaction[]
+  pointGoals        PointGoal[]
+  rewards           Reward[]
+  redemptions       RewardRedemption[]
 
   @@index([parentId])
 }
@@ -474,4 +514,148 @@ model ExamTopic {
   createdAt           DateTime          @default(now())
 
   @@index([planId])
+}
+
+model Book {
+  id               String             @id @default(cuid())
+  title            String
+  summary          String
+  grade            Grade
+  trailStop        Int
+  language         PreferredLanguage  @default(ENGLISH)
+  coverImageUrl    String?
+  status           BookStatus         @default(DRAFT)
+  wordCount        Int
+  readabilityGrade Float
+  auditResult      Json?
+  generationMeta   Json?
+  createdAt        DateTime           @default(now())
+  publishedAt      DateTime?
+  pages            BookPage[]
+  characters       BookCharacter[]
+  quizQuestions    BookQuizQuestion[]
+  readings         BookReading[]
+
+  @@index([status, grade, trailStop])
+}
+
+model BookCharacter {
+  id                 String @id @default(cuid())
+  bookId             String
+  book               Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  name               String
+  description        String
+  referenceImageUrl  String
+}
+
+model BookPage {
+  id          String  @id @default(cuid())
+  bookId      String
+  book        Book    @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  pageNumber  Int
+  text        String
+  imageUrl    String?
+  audioUrl    String?
+  wordTimings Json?
+
+  @@unique([bookId, pageNumber])
+}
+
+model BookQuizQuestion {
+  id            String @id @default(cuid())
+  bookId        String
+  book          Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  order         Int
+  prompt        String
+  options       Json
+  correctAnswer String
+  explanation   String
+  attempts      BookQuizAttempt[]
+}
+
+model BookReading {
+  id          String      @id @default(cuid())
+  childId     String
+  child       Child       @relation(fields: [childId], references: [id], onDelete: Cascade)
+  bookId      String
+  book        Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  mode        ReadingMode
+  lastPage    Int         @default(1)
+  completedAt DateTime?
+  quizScore   Int?
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([childId, bookId])
+}
+
+model BookQuizAttempt {
+  id                 String           @id @default(cuid())
+  childId            String
+  child              Child            @relation(fields: [childId], references: [id], onDelete: Cascade)
+  bookQuizQuestionId String
+  bookQuizQuestion   BookQuizQuestion @relation(fields: [bookQuizQuestionId], references: [id], onDelete: Cascade)
+  selectedAnswer     String
+  correct            Boolean
+  createdAt          DateTime         @default(now())
+
+  @@index([childId])
+}
+
+model PointTransaction {
+  id                  String       @id @default(cuid())
+  childId             String
+  child               Child        @relation(fields: [childId], references: [id], onDelete: Cascade)
+  amount              Int
+  reason              PointReason
+  questionAttemptId   String?
+  learningSessionId   String?
+  learningObjectiveId String?
+  redemptionId        String?
+  createdAt           DateTime     @default(now())
+
+  @@unique([reason, questionAttemptId])
+  @@unique([reason, learningSessionId])
+  @@unique([childId, reason, learningObjectiveId])
+  @@unique([reason, redemptionId])
+  @@index([childId, createdAt])
+}
+
+model PointGoal {
+  id           String     @id @default(cuid())
+  childId      String
+  child        Child      @relation(fields: [childId], references: [id], onDelete: Cascade)
+  period       GoalPeriod
+  targetPoints Int
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+
+  @@index([childId, active])
+}
+
+model Reward {
+  id          String             @id @default(cuid())
+  childId     String
+  child       Child              @relation(fields: [childId], references: [id], onDelete: Cascade)
+  name        String
+  emoji       String
+  cost        Int
+  archived    Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+  redemptions RewardRedemption[]
+
+  @@index([childId, archived])
+}
+
+model RewardRedemption {
+  id          String           @id @default(cuid())
+  childId     String
+  child       Child            @relation(fields: [childId], references: [id], onDelete: Cascade)
+  rewardId    String
+  reward      Reward           @relation(fields: [rewardId], references: [id], onDelete: Restrict)
+  cost        Int
+  status      RedemptionStatus @default(PENDING)
+  requestedAt DateTime         @default(now())
+  resolvedAt  DateTime?
+
+  @@index([childId, status])
 }

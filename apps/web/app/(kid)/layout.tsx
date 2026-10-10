@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { fetchParentProfile, verifyParentPin } from "@/lib/api";
+import { fetchParentProfile, fetchPoints, verifyParentPin } from "@/lib/api";
 import {
   clearChildModeChildId,
   getChildModeChildId,
@@ -11,8 +11,30 @@ import {
 import PinEntry from "@/components/child-mode/pin-entry";
 import TrailBackdrop from "@/components/ui/trail-backdrop";
 import IdleAtlasWidget from "@/components/mascot/idle-atlas-widget";
+import { AtlasSpeechProvider } from "@/components/mascot/atlas-speech";
 
 function KidHeader({ onLock }: { onLock: () => void }) {
+  const [childId] = useState<string | null>(() => getChildModeChildId());
+  const [balance, setBalance] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (childId === null) return;
+    const id: string = childId;
+    let cancelled = false;
+    async function loadBalance() {
+      try {
+        const points = await fetchPoints(id);
+        if (!cancelled) setBalance(points.balance);
+      } catch {
+        if (!cancelled) setBalance(null);
+      }
+    }
+    void loadBalance();
+    return () => {
+      cancelled = true;
+    };
+  }, [childId]);
+
   return (
     <header className="border-b border-line bg-ink text-white">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-3.5">
@@ -27,12 +49,21 @@ function KidHeader({ onLock }: { onLock: () => void }) {
             WonderPath
           </span>
         </span>
-        <button
-          type="button"
-          onClick={onLock}
-          aria-label="Parent lock"
-          className="btn-tactile flex items-center gap-1.5 rounded-lg border border-white/25 px-3 py-1.5 text-sm font-medium text-white"
-        >
+        <span className="flex items-center gap-2">
+          {childId ? (
+            <a
+              href={`/learn/${childId}/rewards`}
+              className="rounded-lg border border-white/25 px-3 py-1.5 text-sm font-semibold text-white"
+            >
+              ⭐ {balance ?? "—"}
+            </a>
+          ) : null}
+          <button
+            type="button"
+            onClick={onLock}
+            aria-label="Parent lock"
+            className="btn-tactile flex items-center gap-1.5 rounded-lg border border-white/25 px-3 py-1.5 text-sm font-medium text-white"
+          >
           <svg
             aria-hidden="true"
             width="14"
@@ -47,8 +78,9 @@ function KidHeader({ onLock }: { onLock: () => void }) {
             <rect x="3" y="11" width="18" height="11" rx="2" />
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
-          Parent
-        </button>
+            Parent
+          </button>
+        </span>
       </div>
     </header>
   );
@@ -138,6 +170,7 @@ export default function KidLayout({ children }: { children: ReactNode }) {
   }
 
   return (
+    <AtlasSpeechProvider>
     <div className="relative isolate flex min-h-dvh flex-col bg-fog">
       <TrailBackdrop variant="playful" />
       <KidHeader onLock={handleLockTap} />
@@ -170,5 +203,6 @@ export default function KidLayout({ children }: { children: ReactNode }) {
         </div>
       ) : null}
     </div>
+    </AtlasSpeechProvider>
   );
 }
