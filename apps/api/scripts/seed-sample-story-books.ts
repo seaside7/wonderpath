@@ -93,6 +93,7 @@ const BOOKS: SampleBook[] = [
     title: 'Rahasia Pohon Beringin Tua',
     summary: 'Pohon berumur ratusan tahun yang menyimpan cerita.',
     trailStop: 1,
+    coverPage: 1,
     pages: [
       'Di tengah desa Tiara ada pohon beringin yang sangat tua. Umurnya sudah ratusan tahun.',
       'Suatu pagi, Tiara duduk di bawah pohon itu. Daunnya bergoyang pelan, seolah sedang berbisik.',
@@ -132,6 +133,7 @@ const BOOKS: SampleBook[] = [
     title: 'Penjaga Terumbu Karang',
     summary: 'Petualangan menyelam di lautan Indonesia.',
     trailStop: 2,
+    coverPage: 2,
     pages: [
       'Lumi adalah ikan kecil berwarna jingga. Ia tinggal di terumbu karang yang indah di laut Indonesia.',
       'Terumbu karang adalah rumah bagi ribuan ikan. Warnanya cerah seperti taman bunga di bawah laut.',
