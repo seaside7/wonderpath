@@ -27,7 +27,7 @@ export function useWideBook(): boolean {
 // Sizes are relative to the page's own height (cqh), so text and picture
 // keep the same proportions on any screen instead of following the viewport.
 export const TEXT_SIZES = {
-  wide: ["text-[2.6cqh]", "text-[2.95cqh]", "text-[3.3cqh]"],
+  wide: ["text-[3cqh]", "text-[3.4cqh]", "text-[3.85cqh]"],
   narrow: ["text-[2.9cqh]", "text-[3.25cqh]", "text-[3.6cqh]"],
 } as const;
 export const TEXT_SIZE_COUNT = 3;
