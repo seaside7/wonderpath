@@ -12,6 +12,9 @@ import {
   ReadingMode,
 } from '../../../generated/prisma/client';
 import { ATLAS_VOICE, TtsService } from '../tts/tts.service';
+
+// Same voice as the Indonesian homepage greeting.
+const INDONESIAN_NARRATION_VOICE = 'id-ID-Chirp3-HD-Leda';
 import { getOwnedChild } from '../../common/get-owned-child';
 import { PrismaService } from '../../prisma/prisma.service';
 import { BookQueryDto } from './dto/book-query.dto';
@@ -239,7 +242,7 @@ export class BooksService {
       page.id,
       page.pageNumber,
       page.text,
-      book.language === 'BAHASA_INDONESIA' ? 'id-ID-Wavenet-A' : undefined,
+      book.language === 'BAHASA_INDONESIA' ? INDONESIAN_NARRATION_VOICE : undefined,
     );
     this.pendingNarration.set(page.id, generation);
     try {
@@ -272,11 +275,11 @@ export class BooksService {
 
     const narration = await this.tts.synthesizeWithWordTimings({
       text,
-      // Atlas's English voice by default; Indonesian books use the native
-      // Indonesian voice so they don't get an English accent.
+      // Atlas's English voice by default; Indonesian books use a native
+      // Indonesian voice (chosen by the founder) so there's no English accent.
       voiceName: voiceName ?? 'en-US-Wavenet-H',
       pitch: ATLAS_VOICE.pitch,
-      speakingRate: ATLAS_VOICE.speakingRate,
+      speakingRate: voiceName ? 0.95 : ATLAS_VOICE.speakingRate,
     });
     if (!narration || narration.audio.length === 0) {
       return { audioUrl: null, wordTimings: null };

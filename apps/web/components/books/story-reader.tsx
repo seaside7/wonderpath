@@ -21,6 +21,21 @@ type Narration = "idle" | "loading" | "ready" | "unavailable";
 
 const AUTO_TURN_DELAY_MS = 900;
 
+// Speech has a short lead-in and tail; keep the estimate inside the voiced part.
+function estimateTimings(text: string, duration: number): BookWordTiming[] {
+  const words = text.match(/\S+/g) ?? [];
+  const weights = words.map((word) => word.length + 2);
+  const total = weights.reduce((sum, weight) => sum + weight, 0) || 1;
+  const start = duration * 0.04;
+  const span = duration * 0.9;
+  let elapsed = 0;
+  return words.map((word, i) => {
+    const startSec = start + (elapsed / total) * span;
+    elapsed += weights[i];
+    return { word, startSec };
+  });
+}
+
 function BackToStories({ childId }: { childId: string }) {
   return (
     <Link
@@ -162,25 +177,38 @@ export default function StoryReader({
     }
   }, [phase, mode]);
 
-  // Word highlight follows the audio clock.
+  // Word highlight follows the audio clock. Voices without word timings
+  // (Indonesian Chirp) get estimated ones: the clip's length spread over the
+  // words by character count.
   const getCurrentTime = speech?.getCurrentTime;
+  const getDuration = speech?.getDuration;
   const isPlaying = speech?.isPlaying ?? false;
+  const pageText = page?.text;
   useEffect(() => {
-    if (!isPlaying || !timings || !getCurrentTime) return;
+    if (!isPlaying || !getCurrentTime || !getDuration || !pageText) return;
+    let estimated: BookWordTiming[] | null = null;
     let frame = 0;
     const tick = () => {
-      const now = getCurrentTime();
-      let index = -1;
-      for (let i = 0; i < timings.length; i += 1) {
-        if (timings[i].startSec <= now) index = i;
-        else break;
+      let marks = timings;
+      if (!marks) {
+        const duration = getDuration();
+        if (!estimated && duration > 0) estimated = estimateTimings(pageText, duration);
+        marks = estimated;
       }
-      setActiveWord(index);
+      if (marks) {
+        const now = getCurrentTime();
+        let index = -1;
+        for (let i = 0; i < marks.length; i += 1) {
+          if (marks[i].startSec <= now) index = i;
+          else break;
+        }
+        setActiveWord(index);
+      }
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [isPlaying, timings, getCurrentTime]);
+  }, [isPlaying, timings, getCurrentTime, getDuration, pageText]);
 
   // When a page's narration ends on its own, turn the page.
   const goRef = useRef(go);
@@ -259,9 +287,9 @@ export default function StoryReader({
   // Server timings are per word, in order; map proportionally if a mark
   // was ever dropped so the highlight can't run past the end.
   const highlighted =
-    activeWord < 0 || !timings
+    activeWord < 0
       ? -1
-      : timings.length === words.length
+      : !timings || timings.length === words.length
         ? activeWord
         : Math.min(
             words.length - 1,

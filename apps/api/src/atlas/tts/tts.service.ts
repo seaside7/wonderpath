@@ -136,10 +136,13 @@ export class TtsService implements OnModuleInit {
       .map((word, index) => `<mark name="w${index}"/>${escapeSsml(word)}`)
       .join(' ');
     const voiceName = options.voiceName ?? this.defaultVoice;
+    // Chirp 3 HD voices reject pitch and return no SSML mark timepoints, so
+    // they get plain text and no word timings (the reader estimates them).
+    const isChirp = voiceName.includes('Chirp');
     const [response] = await (this.betaClient.synthesizeSpeech as unknown as (
       request: unknown,
     ) => Promise<[any]> )({
-      input: { ssml: `<speak>${ssml}</speak>` },
+      input: isChirp ? { text: options.text } : { ssml: `<speak>${ssml}</speak>` },
       voice: {
         languageCode: voiceName.split('-').slice(0, 2).join('-'),
         name: voiceName,
@@ -148,10 +151,10 @@ export class TtsService implements OnModuleInit {
       audioConfig: {
         audioEncoding: 'MP3' as const,
         speakingRate: options.speakingRate ?? ATLAS_VOICE.speakingRate,
-        pitch: options.pitch ?? ATLAS_VOICE.pitch,
+        ...(isChirp ? {} : { pitch: options.pitch ?? ATLAS_VOICE.pitch }),
         sampleRateHertz: 24000,
       },
-      enableTimePointing: [1],
+      ...(isChirp ? {} : { enableTimePointing: [1] }),
     });
 
     if (!response.audioContent) throw new Error('No audioContent in TTS response');

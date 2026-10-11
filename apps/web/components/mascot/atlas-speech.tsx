@@ -19,6 +19,7 @@ interface AtlasSpeech {
   replay: () => void;
   stop: () => void;
   getCurrentTime: () => number;
+  getDuration: () => number;
 }
 
 const AtlasSpeechContext = createContext<AtlasSpeech | null>(null);
@@ -26,7 +27,7 @@ const AtlasSpeechContext = createContext<AtlasSpeech | null>(null);
 export function AtlasSpeechProvider({ children }: { children: ReactNode }) {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const audioUrlRef = useRef<string | null>(null);
-  const { currentMouth, isPlaying, play, stop, getCurrentTime } = useTtsAudio({
+  const { currentMouth, isPlaying, play, stop, getCurrentTime, getDuration } = useTtsAudio({
     audioUrl,
     autoPlay: true,
   });
@@ -48,8 +49,9 @@ export function AtlasSpeechProvider({ children }: { children: ReactNode }) {
       replay: play,
       stop,
       getCurrentTime,
+      getDuration,
     }),
-    [audioUrl, currentMouth, isPlaying, speak, play, stop, getCurrentTime],
+    [audioUrl, currentMouth, isPlaying, speak, play, stop, getCurrentTime, getDuration],
   );
 
   return (

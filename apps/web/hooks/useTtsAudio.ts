@@ -38,6 +38,7 @@ interface UseTtsAudioReturn {
   play: () => void;
   stop: () => void;
   getCurrentTime: () => number;
+  getDuration: () => number;
 }
 
 export function useTtsAudio({
@@ -84,6 +85,11 @@ export function useTtsAudio({
     () => audioRef.current?.currentTime ?? 0,
     [],
   );
+
+  const getDuration = useCallback(() => {
+    const duration = audioRef.current?.duration ?? 0;
+    return Number.isFinite(duration) ? duration : 0;
+  }, []);
 
   const play = useCallback(() => {
     if (!audioUrl || typeof window === "undefined") return;
@@ -157,7 +163,7 @@ export function useTtsAudio({
     };
   }, [audioUrl, autoPlay, play, stop]);
 
-  return { currentMouth, isPlaying, hasError, play, stop, getCurrentTime };
+  return { currentMouth, isPlaying, hasError, play, stop, getCurrentTime, getDuration };
 }
 
 export { MOUTH_FILENAME };
