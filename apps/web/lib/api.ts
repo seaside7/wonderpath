@@ -9,6 +9,13 @@ export function resolveAudioUrl(audioUrl: string | null): string | null {
   return `${API_BASE_URL.replace(/\/+$/, "")}/tts/${filename}`;
 }
 
+export function resolveBookMediaUrl(url: string | null): string | null {
+  if (!url) return null;
+  if (/^https?:\/\//.test(url)) return url;
+  // Book images/audio are served by the API under /book-media/...
+  return `${API_BASE_URL.replace(/\/+$/, "")}${url}`;
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -650,4 +657,116 @@ export function fetchSessionHistory(
     `/children/${childId}/learning-sessions?limit=${limit}`,
     { headers: authorizedHeaders() },
   );
+}
+
+
+// ---- Story Trail (leveled reading library) ----
+
+export type BookReadingMode = "LISTEN" | "READ";
+
+export interface BookReadingProgress {
+  mode: BookReadingMode;
+  lastPage: number;
+  completedAt: string | null;
+  quizScore: number | null;
+}
+
+export interface BookSummary {
+  id: string;
+  title: string;
+  summary: string;
+  grade: string;
+  trailStop: number;
+  language: "ENGLISH" | "BAHASA_INDONESIA";
+  coverImageUrl: string | null;
+  wordCount: number;
+  readabilityGrade: number;
+  preview: boolean;
+  reading: BookReadingProgress | null;
+}
+
+export interface BookWordTiming {
+  word: string;
+  startSec: number;
+}
+
+export interface BookPageData {
+  id: string;
+  pageNumber: number;
+  text: string;
+  imageUrl: string | null;
+  audioUrl: string | null;
+  wordTimings: BookWordTiming[] | null;
+}
+
+export interface BookQuizQuestionData {
+  id: string;
+  order: number;
+  prompt: string;
+  options: string[];
+}
+
+export interface BookDetail extends BookSummary {
+  pages: BookPageData[];
+  quizQuestions: BookQuizQuestionData[];
+}
+
+export interface BookQuizResult {
+  score: number;
+  total: number;
+  results: {
+    questionId: string;
+    selectedAnswer: string;
+    correct: boolean;
+    correctAnswer: string;
+    explanation: string;
+  }[];
+}
+
+export function fetchBooks(childId: string): Promise<BookSummary[]> {
+  return request<BookSummary[]>(`/children/${childId}/books`, {
+    headers: authorizedHeaders(),
+  });
+}
+
+export function fetchBook(childId: string, bookId: string): Promise<BookDetail> {
+  return request<BookDetail>(`/children/${childId}/books/${bookId}`, {
+    headers: authorizedHeaders(),
+  });
+}
+
+export function fetchBookNarration(
+  bookId: string,
+  pageNumber: number,
+): Promise<{ audioUrl: string | null; wordTimings: BookWordTiming[] | null }> {
+  return request(`/books/${bookId}/pages/${pageNumber}/narration`, {
+    headers: authorizedHeaders(),
+  });
+}
+
+export function saveBookProgress(
+  childId: string,
+  bookId: string,
+  input: { mode: BookReadingMode; lastPage: number; completed?: boolean },
+): Promise<BookReadingProgress> {
+  return request<BookReadingProgress>(
+    `/children/${childId}/books/${bookId}/progress`,
+    {
+      method: "PUT",
+      headers: authorizedHeaders(),
+      body: JSON.stringify(input),
+    },
+  );
+}
+
+export function submitBookQuiz(
+  childId: string,
+  bookId: string,
+  answers: { questionId: string; selectedAnswer: string }[],
+): Promise<BookQuizResult> {
+  return request<BookQuizResult>(`/children/${childId}/books/${bookId}/quiz`, {
+    method: "POST",
+    headers: authorizedHeaders(),
+    body: JSON.stringify({ answers }),
+  });
 }

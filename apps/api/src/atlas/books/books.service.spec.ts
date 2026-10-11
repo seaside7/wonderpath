@@ -86,8 +86,8 @@ describe('BooksService', () => {
     expect(tts.synthesizeWithWordTimings).toHaveBeenCalledWith(
       expect.objectContaining({
         voiceName: 'en-US-Wavenet-H',
-        pitch: 7,
-        speakingRate: 0.95,
+        pitch: 5,
+        speakingRate: 0.85,
       }),
     );
   });

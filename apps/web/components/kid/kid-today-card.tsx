@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   acceptRecommendation,
@@ -267,6 +268,13 @@ export default function KidTodayCard({ childId }: { childId: string }) {
             >
               Choose Something Else
             </button>
+            <Link
+              href={`/learn/${childId}/books`}
+              className="btn-tactile flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-waypoint bg-waypoint/20 px-4 py-3.5 text-base font-bold text-ink"
+            >
+              <span aria-hidden="true">📚</span> Story Trail
+              <span className="text-sm font-semibold text-ink-soft">· read &amp; listen</span>
+            </Link>
           </div>
       </div>
     </div>

@@ -140,7 +140,11 @@ export class TtsService implements OnModuleInit {
       request: unknown,
     ) => Promise<[any]> )({
       input: { ssml: `<speak>${ssml}</speak>` },
-      voice: { languageCode: 'en-US', name: voiceName, ssmlGender: 'FEMALE' as const },
+      voice: {
+        languageCode: voiceName.split('-').slice(0, 2).join('-'),
+        name: voiceName,
+        ssmlGender: 'FEMALE' as const,
+      },
       audioConfig: {
         audioEncoding: 'MP3' as const,
         speakingRate: options.speakingRate ?? ATLAS_VOICE.speakingRate,

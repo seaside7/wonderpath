@@ -11,7 +11,7 @@ import {
   Prisma,
   ReadingMode,
 } from '../../../generated/prisma/client';
-import { TtsService } from '../tts/tts.service';
+import { ATLAS_VOICE, TtsService } from '../tts/tts.service';
 import { getOwnedChild } from '../../common/get-owned-child';
 import { PrismaService } from '../../prisma/prisma.service';
 import { BookQueryDto } from './dto/book-query.dto';
@@ -219,7 +219,7 @@ export class BooksService {
 
   async getNarration(bookId: string, pageNumber: number) {
     // Visibility check only; the id comes back from the page row itself.
-    await this.findVisibleBook(bookId);
+    const book = await this.findVisibleBook(bookId);
     const page = await this.prisma.bookPage.findFirst({
       where: { bookId, pageNumber },
     });
@@ -239,6 +239,7 @@ export class BooksService {
       page.id,
       page.pageNumber,
       page.text,
+      book.language === 'BAHASA_INDONESIA' ? 'id-ID-Wavenet-A' : undefined,
     );
     this.pendingNarration.set(page.id, generation);
     try {
@@ -255,6 +256,7 @@ export class BooksService {
     pageId: string,
     pageNumber: number,
     text: string,
+    voiceName?: string,
   ): Promise<{ audioUrl: string | null; wordTimings: unknown }> {
     // Another request may have completed while this one was queued.
     const current = await this.prisma.bookPage.findFirst({
@@ -270,9 +272,11 @@ export class BooksService {
 
     const narration = await this.tts.synthesizeWithWordTimings({
       text,
-      voiceName: 'en-US-Wavenet-H',
-      pitch: 7.0,
-      speakingRate: 0.95,
+      // Atlas's English voice by default; Indonesian books use the native
+      // Indonesian voice so they don't get an English accent.
+      voiceName: voiceName ?? 'en-US-Wavenet-H',
+      pitch: ATLAS_VOICE.pitch,
+      speakingRate: ATLAS_VOICE.speakingRate,
     });
     if (!narration || narration.audio.length === 0) {
       return { audioUrl: null, wordTimings: null };
