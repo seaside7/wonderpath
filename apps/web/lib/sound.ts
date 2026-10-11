@@ -101,3 +101,66 @@ export async function playLevelUp(): Promise<void> {
     { frequency: 1046.5, startOffsetSec: 0.3, durationSec: 0.34, type },
   ]);
 }
+
+function noiseBuffer(ctx: AudioContext, durationSec: number): AudioBuffer {
+  const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * durationSec), ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i += 1) {
+    // Occasional louder grains give the papery crinkle.
+    data[i] = (Math.random() * 2 - 1) * (Math.random() < 0.08 ? 1 : 0.4);
+  }
+  return buffer;
+}
+
+/**
+ * Paper page turn: a filtered noise swish sweeping up then down, followed by
+ * a soft low "flap" as the page lands (~0.6s, matching the page animation).
+ */
+export async function playPageFlip(): Promise<void> {
+  const ctx = await getContext();
+  if (!ctx) return;
+  try {
+    const now = ctx.currentTime;
+
+    const swish = ctx.createBufferSource();
+    swish.buffer = noiseBuffer(ctx, 0.5);
+    const highpass = ctx.createBiquadFilter();
+    highpass.type = "highpass";
+    highpass.frequency.value = 500;
+    const band = ctx.createBiquadFilter();
+    band.type = "bandpass";
+    band.Q.value = 0.7;
+    band.frequency.setValueAtTime(1400, now);
+    band.frequency.exponentialRampToValueAtTime(4200, now + 0.2);
+    band.frequency.exponentialRampToValueAtTime(1600, now + 0.5);
+    const swishGain = ctx.createGain();
+    swishGain.gain.setValueAtTime(0.0001, now);
+    swishGain.gain.exponentialRampToValueAtTime(0.32, now + 0.07);
+    swishGain.gain.exponentialRampToValueAtTime(0.1, now + 0.3);
+    swishGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+    swish.connect(highpass);
+    highpass.connect(band);
+    band.connect(swishGain);
+    swishGain.connect(ctx.destination);
+    swish.start(now);
+    swish.stop(now + 0.5);
+
+    const landAt = now + 0.55;
+    const flap = ctx.createBufferSource();
+    flap.buffer = noiseBuffer(ctx, 0.12);
+    const lowpass = ctx.createBiquadFilter();
+    lowpass.type = "lowpass";
+    lowpass.frequency.value = 900;
+    const flapGain = ctx.createGain();
+    flapGain.gain.setValueAtTime(0.0001, landAt);
+    flapGain.gain.exponentialRampToValueAtTime(0.3, landAt + 0.012);
+    flapGain.gain.exponentialRampToValueAtTime(0.0001, landAt + 0.12);
+    flap.connect(lowpass);
+    lowpass.connect(flapGain);
+    flapGain.connect(ctx.destination);
+    flap.start(landAt);
+    flap.stop(landAt + 0.12);
+  } catch {
+    // Decorative only.
+  }
+}

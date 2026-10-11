@@ -15,6 +15,8 @@ import {
 } from "@/lib/api";
 import { useAtlasSpeech } from "@/components/mascot/atlas-speech";
 import BookArt from "./book-art";
+import BookSpread, { PageFlip } from "./book-spread";
+import { playPageFlip } from "@/lib/sound";
 
 type Phase = "intro" | "read" | "quiz" | "result";
 type Narration = "idle" | "loading" | "ready" | "unavailable";
@@ -60,7 +62,7 @@ export default function StoryReader({
   const [phase, setPhase] = useState<Phase>("intro");
   const [mode, setMode] = useState<BookReadingMode>("READ");
   const [pageIdx, setPageIdx] = useState(0);
-  const [turn, setTurn] = useState<"next" | "prev">("next");
+  const [flip, setFlip] = useState<PageFlip | null>(null);
   const [narration, setNarration] = useState<Narration>("idle");
   const [timings, setTimings] = useState<BookWordTiming[] | null>(null);
   const [activeWord, setActiveWord] = useState(-1);
@@ -73,6 +75,8 @@ export default function StoryReader({
   // True only while a page's own narration is playing, so that ending it
   // turns the page - but a manual stop/next/back never does.
   const autoTurnRef = useRef(false);
+  const pausedRef = useRef(false);
+  const [pageAudioUrl, setPageAudioUrl] = useState<string | null>(null);
   const wasPlayingRef = useRef(false);
 
   // Latest speak(), kept in a ref so effects don't re-run on every mouth frame.
@@ -109,7 +113,7 @@ export default function StoryReader({
 
   const go = useCallback(
     (delta: 1 | -1) => {
-      if (!book) return;
+      if (!book || flip) return;
       autoTurnRef.current = false;
       const next = pageIdx + delta;
       if (next < 0) return;
@@ -123,15 +127,26 @@ export default function StoryReader({
         setPhase("quiz");
         return;
       }
-      setTurn(delta === 1 ? "next" : "prev");
-      setPageIdx(next);
+      speakRef.current?.(null);
+      void playPageFlip();
       void saveBookProgress(childId, bookId, {
         mode,
         lastPage: next + 1,
       }).catch(() => undefined);
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setPageIdx(next);
+      } else {
+        // BookSpread animates the leaf, then calls finishFlip to land it.
+        setFlip({ dir: delta === 1 ? "next" : "prev", to: next });
+      }
     },
-    [book, pageIdx, lastPageIdx, childId, bookId, mode, pages.length],
+    [book, flip, pageIdx, lastPageIdx, childId, bookId, mode, pages.length],
   );
+
+  const finishFlip = useCallback(() => {
+    if (flip) setPageIdx(flip.to);
+    setFlip(null);
+  }, [flip]);
 
   // Listen mode: fetch (lazily generated) narration for the visible page.
   const pageNumber = page?.pageNumber;
@@ -145,6 +160,7 @@ export default function StoryReader({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setNarration("loading");
     setTimings(null);
+    setPageAudioUrl(null);
     setActiveWord(-1);
     fetchBookNarration(bookId, pageNumber)
       .then((data) => {
@@ -155,7 +171,10 @@ export default function StoryReader({
           return;
         }
         setTimings(data.wordTimings);
+        setPageAudioUrl(url);
         setNarration("ready");
+        // A child who paused Atlas keeps it quiet until they tap play again.
+        if (pausedRef.current) return;
         autoTurnRef.current = true;
         speakRef.current?.(url);
       })
@@ -225,7 +244,19 @@ export default function StoryReader({
     return () => window.clearTimeout(timer);
   }, [isPlaying]);
 
+  // Arrow keys turn pages like a real e-reader.
+  useEffect(() => {
+    if (phase !== "read") return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "ArrowRight") goRef.current(1);
+      if (event.key === "ArrowLeft") goRef.current(-1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [phase]);
+
   function start(chosen: BookReadingMode) {
+    pausedRef.current = false;
     setMode(chosen);
     setPhase("read");
     if (book && pageIdx >= 0) {
@@ -238,6 +269,7 @@ export default function StoryReader({
 
   function toggleMode() {
     autoTurnRef.current = false;
+    pausedRef.current = false;
     setMode((value) => (value === "LISTEN" ? "READ" : "LISTEN"));
   }
 
@@ -279,7 +311,7 @@ export default function StoryReader({
     setResult(null);
     setError(null);
     setPageIdx(0);
-    setTurn("next");
+    setFlip(null);
     setPhase("intro");
   }
 
@@ -449,30 +481,16 @@ export default function StoryReader({
         </span>
       </div>
 
-      <div className="book-stage">
-        <article
-          key={pageIdx}
-          className={`book-page overflow-hidden rounded-3xl bg-card shadow-[0_8px_28px_rgba(46,42,92,0.12)] ${
-            turn === "next" ? "book-turn-next" : "book-turn-prev"
-          }`}
-        >
-          <div className="relative aspect-[10/6]">
-            <BookArt book={book} imageUrl={page.imageUrl ?? (pageIdx === 0 ? book.coverImageUrl : null)} />
-          </div>
-          <p className="px-6 py-6 text-[1.35rem] leading-[1.9] text-ink sm:text-2xl sm:leading-[1.9]">
-            {words.map((word, i) => (
-              <span
-                key={`${pageIdx}-${i}`}
-                className={`rounded-md px-0.5 transition-colors ${
-                  i === highlighted ? "bg-waypoint" : ""
-                }`}
-              >
-                {word}{" "}
-              </span>
-            ))}
-          </p>
-        </article>
-      </div>
+      <BookSpread
+        book={book}
+        pageIdx={pageIdx}
+        flip={flip}
+        highlighted={highlighted}
+        canPrev={pageIdx > 0}
+        onPrev={() => go(-1)}
+        onNext={() => go(1)}
+        onFlipEnd={finishFlip}
+      />
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <button
@@ -496,10 +514,13 @@ export default function StoryReader({
                 onClick={() => {
                   if (speech?.isPlaying) {
                     autoTurnRef.current = false;
+                    pausedRef.current = true;
                     speech.stop();
                   } else {
                     autoTurnRef.current = true;
-                    speech?.replay();
+                    pausedRef.current = false;
+                    if (speech?.hasAudio) speech.replay();
+                    else speech?.speak(pageAudioUrl);
                   }
                 }}
                 className="btn-tactile rounded-full border-2 border-line bg-card px-4 py-2 text-sm font-semibold text-ink"
