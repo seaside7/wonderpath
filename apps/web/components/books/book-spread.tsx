@@ -24,11 +24,13 @@ export function useWideBook(): boolean {
   );
 }
 
-export const TEXT_SIZES = [
-  "text-[clamp(1rem,1.55vw,1.2rem)]",
-  "text-[clamp(1.1rem,1.8vw,1.4rem)]",
-  "text-[clamp(1.25rem,2.1vw,1.65rem)]",
-] as const;
+// Sizes are relative to the page's own height (cqh), so text and picture
+// keep the same proportions on any screen instead of following the viewport.
+export const TEXT_SIZES = {
+  wide: ["text-[2.6cqh]", "text-[2.95cqh]", "text-[3.3cqh]"],
+  narrow: ["text-[2.9cqh]", "text-[3.25cqh]", "text-[3.6cqh]"],
+} as const;
+export const TEXT_SIZE_COUNT = 3;
 
 // Paper darkens toward the spine, like a real bound page.
 const PAPER = {
@@ -48,19 +50,21 @@ interface StoryPageProps {
   side: Side;
   highlighted: number;
   size: number;
+  wide: boolean;
 }
 
 /** One book page: an illustration fading into the paper, plus its text. */
-function StoryPage({ book, idx, side, highlighted, size }: StoryPageProps) {
+function StoryPage({ book, idx, side, highlighted, size, wide }: StoryPageProps) {
   const page = book.pages[idx];
   if (!page) return <div className={`absolute inset-0 ${PAPER[side]}`} />;
 
   const words = page.text.match(/\S+/g) ?? [];
   // Alternate like a picture book: picture on top, then picture below.
   const imageFirst = idx % 2 === 0;
+  // The picture gets up to ~2/3 of the page and only shrinks for long text.
   const image = (
     <div
-      className={`relative min-h-0 flex-1 overflow-hidden rounded-md ${
+      className={`relative min-h-[40cqh] shrink basis-[66cqh] overflow-hidden rounded-md ${
         imageFirst
           ? "[mask-image:linear-gradient(to_bottom,#000_80%,transparent)]"
           : "[mask-image:linear-gradient(to_top,#000_80%,transparent)]"
@@ -71,10 +75,11 @@ function StoryPage({ book, idx, side, highlighted, size }: StoryPageProps) {
   );
   const text = (
     <p
-      className={`font-display ${TEXT_SIZES[size]} leading-[1.55] text-[#2b2540] ${
-        imageFirst ? "pt-[5%]" : "pb-[5%]"
-      }`}
+      className={`flex flex-1 flex-col justify-center font-display ${
+        TEXT_SIZES[wide ? "wide" : "narrow"][size]
+      } leading-[1.5] text-[#2b2540] ${imageFirst ? "pt-[3cqh]" : "pb-[3cqh]"}`}
     >
+      <span>
       {words.map((word, i) => (
         <span
           key={`${idx}-${i}`}
@@ -85,11 +90,13 @@ function StoryPage({ book, idx, side, highlighted, size }: StoryPageProps) {
           {word}{" "}
         </span>
       ))}
+      </span>
     </p>
   );
 
   return (
-    <div className={`absolute inset-0 flex flex-col ${PAPER[side]} px-[8%] pb-[8%] pt-[7%]`}>
+    <div className={`absolute inset-0 ${PAPER[side]} [container-type:size]`}>
+      <div className="flex h-full flex-col px-[7cqw] pb-[6cqh] pt-[5cqh]">
       {imageFirst ? (
         <>
           {image}
@@ -101,8 +108,9 @@ function StoryPage({ book, idx, side, highlighted, size }: StoryPageProps) {
           {image}
         </>
       )}
+      </div>
       <span
-        className={`absolute bottom-[3%] text-[11px] tabular-nums text-[#7a6f5c] ${
+        className={`absolute bottom-[2cqh] text-[1.7cqh] tabular-nums text-[#7a6f5c] ${
           side === "left" ? "left-[6%]" : "right-[6%]"
         }`}
       >
@@ -193,6 +201,7 @@ export default function BookSpread({
       side={side}
       highlighted={liveIdx ? live(idx) : -1}
       size={size}
+      wide={wide}
     />
   );
 

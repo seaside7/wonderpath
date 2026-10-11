@@ -15,7 +15,7 @@ import {
 } from "@/lib/api";
 import { useAtlasSpeech } from "@/components/mascot/atlas-speech";
 import BookArt from "./book-art";
-import BookSpread, { PageFlip, TEXT_SIZES, useWideBook } from "./book-spread";
+import BookSpread, { PageFlip, TEXT_SIZE_COUNT, useWideBook } from "./book-spread";
 import { playPageFlip } from "@/lib/sound";
 
 type Phase = "intro" | "read" | "quiz" | "result";
@@ -369,7 +369,7 @@ export default function StoryReader({
   }
 
   function cycleTextSize() {
-    const next = (textSize + 1) % TEXT_SIZES.length;
+    const next = (textSize + 1) % TEXT_SIZE_COUNT;
     setTextSize(next);
     writeStored(SIZE_KEY, next);
   }
@@ -587,8 +587,9 @@ export default function StoryReader({
     mode === "LISTEN" && narration === "loading" ? t.preparing : listening ? t.pause : t.listen;
 
   return (
-    <div className="relative left-1/2 flex w-[min(1080px,calc(100vw-2.5rem),calc((100dvh-14rem)*1.6))] min-w-[min(100%,22rem)] -translate-x-1/2 flex-col">
-      <div className="mb-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+    <div className="relative left-1/2 -mt-6 flex w-[calc(100vw-2rem)] max-w-[1320px] -translate-x-1/2 flex-col sm:w-[calc(100vw-4rem)]">
+      {/* One slim toolbar above the book leaves the most height for the pages. */}
+      <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-3">
         <Link
           href={`/learn/${childId}/books`}
           className="btn-tactile inline-flex items-center gap-2 justify-self-start rounded-full border-2 border-line bg-card px-4 py-2 text-sm font-semibold text-ink shadow-[0_3px_0_rgba(46,42,92,0.1)]"
@@ -596,30 +597,10 @@ export default function StoryReader({
           <span aria-hidden="true">←</span>
           <span className="hidden sm:inline">{t.all}</span>
         </Link>
-        <h1 className="text-center font-display text-xl leading-tight text-ink sm:text-3xl">
+        <h1 className="min-w-0 flex-1 truncate font-display text-xl leading-tight text-ink sm:text-2xl">
           {book.title}
         </h1>
-        <span />
-      </div>
-
-      <div className="px-4 sm:px-8">
-        <BookSpread
-          book={book}
-          pageIdx={pageIdx}
-          wide={wide}
-          flip={flip}
-          highlighted={highlighted}
-          size={textSize}
-          bookmarked={bookmark}
-          labels={{ prev: t.prev, next: t.next }}
-          canPrev={spreadFrom > 0}
-          onPrev={() => go(-1)}
-          onNext={() => go(1)}
-          onFlipEnd={finishFlip}
-        />
-      </div>
-
-      <div className="mx-auto mt-7 flex w-full max-w-3xl flex-wrap items-center gap-3 rounded-[28px] bg-card px-4 py-3 shadow-[0_10px_30px_rgba(46,42,92,0.12)] sm:flex-nowrap sm:px-5">
+        <div className="flex w-full flex-wrap items-center gap-2.5 md:w-auto md:flex-nowrap">
         <button
           type="button"
           onClick={handleListen}
@@ -654,7 +635,7 @@ export default function StoryReader({
           {bookmark === pageIdx ? t.saved : t.save}
         </button>
 
-        <div className="ml-auto min-w-[10rem] flex-1 sm:max-w-[16rem]">
+        <div className="min-w-[9rem] flex-1 md:w-44 md:flex-none">
           <p className="text-xs font-semibold text-ink-soft">
             {t.pages(spreadFrom + 1, spreadTo + 1, pages.length)}
           </p>
@@ -665,6 +646,25 @@ export default function StoryReader({
             />
           </div>
         </div>
+        </div>
+      </div>
+
+      {/* Widest book that still fits the screen height under the toolbar. */}
+      <div className="mx-auto w-full px-4 sm:px-8 md:w-[min(100%,calc((100dvh-11rem)*1.509+4rem))]">
+        <BookSpread
+          book={book}
+          pageIdx={pageIdx}
+          wide={wide}
+          flip={flip}
+          highlighted={highlighted}
+          size={textSize}
+          bookmarked={bookmark}
+          labels={{ prev: t.prev, next: t.next }}
+          canPrev={spreadFrom > 0}
+          onPrev={() => go(-1)}
+          onNext={() => go(1)}
+          onFlipEnd={finishFlip}
+        />
       </div>
 
       {mode === "LISTEN" && narration === "unavailable" ? (
