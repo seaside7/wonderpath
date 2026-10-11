@@ -19,16 +19,41 @@ type SampleBook = {
   summary: string;
   trailStop: number;
   photo?: string;
+  /** Page whose illustration doubles as the cover (1-based). */
+  coverPage?: number;
   pages: string[];
   quiz: { prompt: string; options: string[]; correctAnswer: string; explanation: string }[];
 };
 
 const BOOKS: SampleBook[] = [
   {
+    id: 'story-aryan-telur-naga',
+    title: 'Aryan dan Telur Naga Merah',
+    summary: 'Seekor naga merah kecil, sebuah telur ajaib, dan malam tanpa bintang.',
+    trailStop: 1,
+    coverPage: 3,
+    pages: [
+      'Aryan sangat suka naga. Setiap malam ia menggambar naga di buku gambarnya, dan bermimpi suatu hari bisa bertemu naga sungguhan.',
+      'Suatu sore, saat bermain di kebun belakang, Aryan menemukan sebuah telur besar berwarna merah di balik semak. Telur itu hangat dan berkilau seperti batu permata.',
+      'Krak... krak... Telur itu retak! Keluarlah seekor bayi naga merah yang mungil. Matanya bulat dan ramah. Aryan menamainya Api.',
+      'Api cepat tumbuh besar. Dari mulutnya keluar cahaya hangat yang tidak membakar, hanya menerangi malam. Aryan dan Api menjadi sahabat.',
+      'Suatu malam, langit menjadi gelap. Naga Hitam yang besar datang dari balik gunung. Ia ingin mengambil semua cahaya bintang supaya dunia selalu gelap.',
+      'Api merasa takut. Tetapi Aryan memeluknya dan berkata, "Kita lebih kuat kalau bersama. Ayo kita kembalikan cahaya bintang!"',
+      'Aryan naik ke punggung Api, lalu mereka terbang tinggi. Api menyemburkan cahayanya yang paling terang. Naga Hitam silau, lalu terbang kembali ke balik gunung.',
+      'Bintang-bintang kembali bersinar dan semua orang bersorak. Aryan mengusap kepala Api. "Pemberani bukan berarti tidak takut," katanya, "tapi tetap berbuat baik walaupun takut."',
+    ],
+    quiz: [
+      { prompt: 'Apa warna telur yang ditemukan Aryan?', options: ['Merah', 'Biru', 'Hitam', 'Putih'], correctAnswer: 'Merah', explanation: 'Aryan menemukan sebuah telur besar berwarna merah di kebun belakang.' },
+      { prompt: 'Siapa nama bayi naga merah itu?', options: ['Api', 'Bara', 'Merah', 'Naga'], correctAnswer: 'Api', explanation: 'Aryan menamai bayi naga merah itu Api.' },
+      { prompt: 'Apa yang ingin diambil Naga Hitam?', options: ['Telur naga', 'Cahaya bintang', 'Buku gambar Aryan', 'Bulan'], correctAnswer: 'Cahaya bintang', explanation: 'Naga Hitam ingin mengambil semua cahaya bintang supaya dunia selalu gelap.' },
+    ],
+  },
+  {
     id: 'story-misi-planet-merah',
     title: 'Misi ke Planet Merah',
     summary: 'Raka dan robotnya mencari air di Mars.',
     trailStop: 2,
+    coverPage: 2,
     pages: [
       'Raka adalah astronaut cilik yang pemberani. Hari ini ia terbang ke Planet Mars bersama robot kecilnya, Boti.',
       'Mars berwarna merah karena tanahnya berkarat. Udaranya dingin, dan tidak ada seorang pun di sana.',
@@ -148,11 +173,17 @@ const words = (text: string) => text.match(/\S+/g)?.length ?? 0;
 async function main() {
   const uploads = process.env.BOOK_UPLOADS_DIR ?? 'uploads/books';
   const heroes = resolve(__dirname, '../../web/public/books/heroes');
+  // Page illustrations live in the web app's public folder (committed).
+  const pageArt = resolve(__dirname, '../../web/public/books/pages');
+  const artFor = (bookId: string, page: number) =>
+    existsSync(join(pageArt, bookId, `p${page}.webp`))
+      ? `/books/pages/${bookId}/p${page}.webp`
+      : null;
 
   for (const book of BOOKS) {
     await prisma.book.deleteMany({ where: { id: book.id } });
 
-    let coverImageUrl: string | null = null;
+    let coverImageUrl: string | null = book.coverPage ? artFor(book.id, book.coverPage) : null;
     if (book.photo) {
       const source = join(heroes, book.photo);
       if (existsSync(source)) {
@@ -177,7 +208,13 @@ async function main() {
         wordCount: words(book.pages.join(' ')),
         readabilityGrade: 3 + book.trailStop * 0.5,
         generationMeta: { source: 'hand-written sample', estimatedCostUsd: 0 },
-        pages: { create: book.pages.map((text, i) => ({ pageNumber: i + 1, text })) },
+        pages: {
+          create: book.pages.map((text, i) => ({
+            pageNumber: i + 1,
+            text,
+            imageUrl: artFor(book.id, i + 1),
+          })),
+        },
         quizQuestions: {
           create: book.quiz.map((q, i) => ({ order: i + 1, ...q })),
         },
