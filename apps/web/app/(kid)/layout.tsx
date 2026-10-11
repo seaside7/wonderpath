@@ -49,7 +49,16 @@ function KidHeader({ onLock }: { onLock: () => void }) {
             WonderPath
           </span>
         </span>
-        <span className="flex items-center gap-2">
+        <span className="flex shrink-0 items-center gap-2 whitespace-nowrap">
+          {childId ? (
+            <a
+              href={`/learn/${childId}/books`}
+              className="btn-tactile rounded-lg border border-white/25 px-3 py-1.5 text-sm font-semibold text-white"
+            >
+              <span aria-hidden="true">📚</span>
+              <span className="sr-only sm:not-sr-only sm:ml-1">Stories</span>
+            </a>
+          ) : null}
           {childId ? (
             <a
               href={`/learn/${childId}/rewards`}
@@ -78,7 +87,7 @@ function KidHeader({ onLock }: { onLock: () => void }) {
             <rect x="3" y="11" width="18" height="11" rx="2" />
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
-            Parent
+            <span className="sr-only sm:not-sr-only">Parent</span>
           </button>
         </span>
       </div>
@@ -174,7 +183,7 @@ export default function KidLayout({ children }: { children: ReactNode }) {
     <div className="relative isolate flex min-h-dvh flex-col bg-fog">
       <TrailBackdrop variant="playful" />
       <KidHeader onLock={handleLockTap} />
-      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-10">
+      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 pb-36 pt-10 sm:pb-10">
         {children}
       </div>
       <IdleAtlasWidget />

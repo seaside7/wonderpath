@@ -27,9 +27,7 @@ export default function IdleAtlasWidget() {
   return (
     <div
       aria-hidden="true"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="fixed bottom-0 right-0 z-30 h-[16.8rem] w-[16.8rem] select-none drop-shadow-[0_3px_5px_rgba(30,50,90,0.2)] sm:h-[22.4rem] sm:w-[22.4rem]"
+      className="pointer-events-none fixed bottom-0 right-0 z-30 h-40 w-40 select-none drop-shadow-[0_3px_5px_rgba(30,50,90,0.2)] sm:h-[22.4rem] sm:w-[22.4rem]"
     >
       {/* Closed-mouth base stays fully opaque; every other mouth is an overlay
           on top of it, so swapping mouths can never show the page through. */}
@@ -72,6 +70,13 @@ export default function IdleAtlasWidget() {
           unoptimized
         />
       ))}
+      {/* Only the globe itself reacts to hover; the transparent corners of
+          the image box must not block buttons underneath. */}
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="pointer-events-auto absolute left-[30%] top-[28%] h-[40%] w-[40%] rounded-full"
+      />
     </div>
   );
 }
