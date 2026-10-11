@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { fetchParentProfile, fetchPoints, verifyParentPin } from "@/lib/api";
 import {
@@ -98,6 +98,7 @@ function KidHeader({ onLock }: { onLock: () => void }) {
 export default function KidLayout({ children }: { children: ReactNode }) {
   const { status } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [hasPin, setHasPin] = useState<boolean | null>(null);
   const [showPin, setShowPin] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
@@ -186,7 +187,8 @@ export default function KidLayout({ children }: { children: ReactNode }) {
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 pb-36 pt-10 sm:pb-10">
         {children}
       </div>
-      <IdleAtlasWidget />
+      {/* Story Trail has its own reading UI; the corner Atlas would cover the book. */}
+      {pathname.includes("/books") ? null : <IdleAtlasWidget />}
       {showPin ? (
         <div
           role="dialog"

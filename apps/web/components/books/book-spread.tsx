@@ -4,10 +4,10 @@ import { AnimationEvent, ReactNode, useSyncExternalStore } from "react";
 import { BookDetail } from "@/lib/api";
 import BookArt from "./book-art";
 
+/** A page turn in progress; `to` is the reading page it lands on. */
 export type PageFlip = { dir: "next" | "prev"; to: number };
 
 const WIDE_QUERY = "(min-width: 768px)";
-const PAPER = "bg-[#fffaf0]";
 
 function subscribeWide(onChange: () => void) {
   const query = window.matchMedia(WIDE_QUERY);
@@ -15,8 +15,8 @@ function subscribeWide(onChange: () => void) {
   return () => query.removeEventListener("change", onChange);
 }
 
-/** Two-page spread on tablets/laptops, a single page on phones. */
-function useWideBook(): boolean {
+/** Two facing pages on tablets/laptops, one page at a time on phones. */
+export function useWideBook(): boolean {
   return useSyncExternalStore(
     subscribeWide,
     () => window.matchMedia(WIDE_QUERY).matches,
@@ -24,80 +24,143 @@ function useWideBook(): boolean {
   );
 }
 
+export const TEXT_SIZES = [
+  "text-[clamp(1rem,1.55vw,1.2rem)]",
+  "text-[clamp(1.1rem,1.8vw,1.4rem)]",
+  "text-[clamp(1.25rem,2.1vw,1.65rem)]",
+] as const;
+
+// Paper darkens toward the spine, like a real bound page.
+const PAPER = {
+  left: "bg-[linear-gradient(to_right,#f4ebd7,#fbf6ea_10%,#fbf6ea_84%,#e6d7b9)]",
+  right: "bg-[linear-gradient(to_left,#f4ebd7,#fbf6ea_10%,#fbf6ea_84%,#e6d7b9)]",
+} as const;
+
+type Side = "left" | "right";
+
 function imageFor(book: BookDetail, idx: number) {
   return book.pages[idx]?.imageUrl ?? (idx === 0 ? book.coverImageUrl : null);
 }
 
-interface FaceProps {
+interface StoryPageProps {
   book: BookDetail;
   idx: number;
+  side: Side;
+  highlighted: number;
+  size: number;
 }
 
-function Picture({ book, idx }: FaceProps) {
-  return (
-    <div className={`absolute inset-0 ${PAPER} p-[6%]`}>
-      <div className="relative h-full w-full overflow-hidden rounded-lg shadow-[inset_0_0_0_1px_rgba(46,42,92,0.08)]">
-        <BookArt book={book} imageUrl={imageFor(book, idx)} />
-      </div>
-      {/* gutter shadow toward the spine */}
-      <span className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[rgba(46,42,92,0.16)] to-transparent" />
+/** One book page: an illustration fading into the paper, plus its text. */
+function StoryPage({ book, idx, side, highlighted, size }: StoryPageProps) {
+  const page = book.pages[idx];
+  if (!page) return <div className={`absolute inset-0 ${PAPER[side]}`} />;
+
+  const words = page.text.match(/\S+/g) ?? [];
+  // Alternate like a picture book: picture on top, then picture below.
+  const imageFirst = idx % 2 === 0;
+  const image = (
+    <div
+      className={`relative min-h-0 flex-1 overflow-hidden rounded-md ${
+        imageFirst
+          ? "[mask-image:linear-gradient(to_bottom,#000_80%,transparent)]"
+          : "[mask-image:linear-gradient(to_top,#000_80%,transparent)]"
+      }`}
+    >
+      <BookArt book={book} imageUrl={imageFor(book, idx)} />
     </div>
   );
-}
-
-function Words({ book, idx, highlighted }: FaceProps & { highlighted: number }) {
-  const words = book.pages[idx]?.text.match(/\S+/g) ?? [];
-  return (
-    <>
+  const text = (
+    <p
+      className={`font-display ${TEXT_SIZES[size]} leading-[1.55] text-[#2b2540] ${
+        imageFirst ? "pt-[5%]" : "pb-[5%]"
+      }`}
+    >
       {words.map((word, i) => (
         <span
           key={`${idx}-${i}`}
-          className={`rounded-md px-0.5 transition-colors ${
-            i === highlighted ? "bg-waypoint" : ""
+          className={`rounded px-0.5 transition-colors duration-150 ${
+            i === highlighted ? "bg-[#c9ece4]" : ""
           }`}
         >
           {word}{" "}
         </span>
       ))}
-    </>
+    </p>
   );
-}
 
-function Text({ book, idx, highlighted }: FaceProps & { highlighted: number }) {
   return (
-    <div className={`absolute inset-0 flex flex-col ${PAPER} px-[9%] pb-[6%] pt-[8%]`}>
-      <p className="my-auto text-[clamp(1.05rem,2.2vw,1.45rem)] leading-[1.8] text-ink">
-        <Words book={book} idx={idx} highlighted={highlighted} />
-      </p>
-      <span className="text-right text-xs font-semibold tabular-nums text-ink-soft">
+    <div className={`absolute inset-0 flex flex-col ${PAPER[side]} px-[8%] pb-[8%] pt-[7%]`}>
+      {imageFirst ? (
+        <>
+          {image}
+          {text}
+        </>
+      ) : (
+        <>
+          {text}
+          {image}
+        </>
+      )}
+      <span
+        className={`absolute bottom-[3%] text-[11px] tabular-nums text-[#7a6f5c] ${
+          side === "left" ? "left-[6%]" : "right-[6%]"
+        }`}
+      >
         {idx + 1}
       </span>
-      <span className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[rgba(46,42,92,0.16)] to-transparent" />
     </div>
   );
 }
 
-function SinglePage({ book, idx, highlighted }: FaceProps & { highlighted: number }) {
+function Ribbon() {
   return (
-    <div className={`${PAPER} rounded-xl p-3`}>
-      <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
-        <BookArt book={book} imageUrl={imageFor(book, idx)} />
-      </div>
-      <p className="px-2 pb-1 pt-4 text-[1.3rem] leading-[1.8] text-ink">
-        <Words book={book} idx={idx} highlighted={highlighted} />
-      </p>
-      <p className="px-2 text-right text-xs font-semibold tabular-nums text-ink-soft">
-        {idx + 1}
-      </p>
-    </div>
+    <span
+      aria-hidden="true"
+      className="absolute -top-1.5 right-[9%] z-40 flex h-[24%] w-[5.5%] min-w-6 items-end justify-center bg-[#1f7a72] pb-[18%] text-[#ffd36e] shadow-[2px_3px_6px_rgba(0,0,0,0.25)] [clip-path:polygon(0_0,100%_0,100%_100%,50%_82%,0_100%)]"
+    >
+      ★
+    </span>
+  );
+}
+
+function ArrowButton({
+  dir,
+  label,
+  disabled,
+  onClick,
+}: {
+  dir: "prev" | "next";
+  label: string;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      className={`btn-tactile absolute top-1/2 z-50 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-[0_6px_18px_rgba(46,42,92,0.22)] disabled:opacity-0 sm:h-14 sm:w-14 ${
+        dir === "prev" ? "-left-3 sm:-left-7" : "-right-3 sm:-right-7"
+      }`}
+    >
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d={dir === "prev" ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"} />
+      </svg>
+    </button>
   );
 }
 
 interface BookSpreadProps {
   book: BookDetail;
+  /** The page currently being read (0-based). */
   pageIdx: number;
+  wide: boolean;
   flip: PageFlip | null;
   highlighted: number;
+  size: number;
+  bookmarked: number | null;
+  labels: { prev: string; next: string };
   canPrev: boolean;
   onPrev: () => void;
   onNext: () => void;
@@ -107,116 +170,131 @@ interface BookSpreadProps {
 export default function BookSpread({
   book,
   pageIdx,
+  wide,
   flip,
   highlighted,
+  size,
+  bookmarked,
+  labels,
   canPrev,
   onPrev,
   onNext,
   onFlipEnd,
 }: BookSpreadProps) {
-  const wide = useWideBook();
-
   // Only the leaf's own animation ends the turn (shade layers bubble too).
   const handleEnd = (event: AnimationEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) onFlipEnd();
   };
-
-  const turnZones = (
-    <>
-      <button
-        type="button"
-        aria-label="Previous page"
-        onClick={onPrev}
-        disabled={!canPrev || flip !== null}
-        className="absolute inset-y-0 left-0 z-30 w-1/2 cursor-w-resize disabled:cursor-default"
-      />
-      <button
-        type="button"
-        aria-label="Next page"
-        onClick={onNext}
-        disabled={flip !== null}
-        className="group absolute inset-y-0 right-0 z-30 w-1/2 cursor-e-resize"
-      >
-        {/* dog-ear hint in the bottom-right corner */}
-        <span
-          aria-hidden="true"
-          className="book-corner absolute bottom-0 right-0 h-9 w-9 rounded-tl-lg bg-[linear-gradient(135deg,#efe4cc_50%,transparent_50%)] shadow-[-2px_-2px_4px_rgba(46,42,92,0.12)]"
-        />
-      </button>
-    </>
+  const live = (idx: number) => (flip === null && idx === pageIdx ? highlighted : -1);
+  const page = (idx: number, side: Side, liveIdx = true) => (
+    <StoryPage
+      book={book}
+      idx={idx}
+      side={side}
+      highlighted={liveIdx ? live(idx) : -1}
+      size={size}
+    />
   );
 
   let content: ReactNode;
   if (wide) {
-    const leftIdx = flip?.dir === "prev" ? flip.to : pageIdx;
-    const rightIdx = flip?.dir === "next" ? flip.to : pageIdx;
+    // Spreads are [0,1], [2,3], ... ; a turn moves a whole spread.
+    const left = pageIdx - (pageIdx % 2);
+    const toLeft = flip ? flip.to - (flip.to % 2) : left;
+    const under = {
+      left: flip?.dir === "prev" ? toLeft : left,
+      right: flip?.dir === "next" ? toLeft + 1 : left + 1,
+    };
+    const showRibbon =
+      bookmarked !== null && flip === null && (bookmarked === left || bookmarked === left + 1);
+
     content = (
-      <div className="relative aspect-[16/10] w-full">
-        <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden rounded-l-xl">
-          <Picture book={book} idx={leftIdx} />
+      <div className="relative aspect-[16/10.6] w-full">
+        {/* stacked paper edges peeking out around both pages */}
+        <div className="absolute inset-y-0 left-0 w-1/2 rounded-l-md shadow-[-2px_2px_0_#efe5cd,-4px_4px_0_#ddcfb0,-6px_5px_0_#f1e8d2,-8px_7px_0_#d6c7a6]">
+          <div className="absolute inset-0 overflow-hidden rounded-l-md">{page(under.left, "left")}</div>
         </div>
-        <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden rounded-r-xl">
-          <Text book={book} idx={rightIdx} highlighted={flip === null ? highlighted : -1} />
+        <div className="absolute inset-y-0 right-0 w-1/2 rounded-r-md shadow-[2px_2px_0_#efe5cd,4px_4px_0_#ddcfb0,6px_5px_0_#f1e8d2,8px_7px_0_#d6c7a6]">
+          <div className="absolute inset-0 overflow-hidden rounded-r-md">{page(under.right, "right")}</div>
         </div>
+
         {flip ? (
           <div
             className={`book-leaf ${flip.dir === "next" ? "book-leaf-next" : "book-leaf-prev"}`}
             onAnimationEnd={handleEnd}
           >
-            <div
-              className={`book-leaf-face ${flip.dir === "next" ? "rounded-r-xl" : "rounded-l-xl"}`}
-            >
-              {flip.dir === "next" ? (
-                <Text book={book} idx={pageIdx} highlighted={-1} />
-              ) : (
-                <Picture book={book} idx={pageIdx} />
-              )}
+            <div className={`book-leaf-face ${flip.dir === "next" ? "rounded-r-md" : "rounded-l-md"}`}>
+              {flip.dir === "next" ? page(left + 1, "right", false) : page(left, "left", false)}
               <span className="book-leaf-shade-front" />
             </div>
-            <div
-              className={`book-leaf-face book-leaf-back ${flip.dir === "next" ? "rounded-l-xl" : "rounded-r-xl"}`}
-            >
-              {flip.dir === "next" ? (
-                <Picture book={book} idx={flip.to} />
-              ) : (
-                <Text book={book} idx={flip.to} highlighted={-1} />
-              )}
+            <div className={`book-leaf-face book-leaf-back ${flip.dir === "next" ? "rounded-l-md" : "rounded-r-md"}`}>
+              {flip.dir === "next" ? page(toLeft, "left", false) : page(toLeft + 1, "right", false)}
               <span className="book-leaf-shade-back" />
             </div>
           </div>
         ) : null}
-        {/* spine */}
-        <span className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-px -translate-x-1/2 bg-[rgba(46,42,92,0.18)]" />
-        {turnZones}
+
+        {/* the gutter where the pages meet the spine */}
+        <span className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-[7%] -translate-x-1/2 bg-[linear-gradient(to_right,transparent,rgba(80,55,20,0.18)_45%,rgba(80,55,20,0.28)_50%,rgba(80,55,20,0.18)_55%,transparent)]" />
+        {showRibbon ? <Ribbon /> : null}
+
+        <button
+          type="button"
+          aria-label={labels.prev}
+          onClick={onPrev}
+          disabled={!canPrev || flip !== null}
+          className="absolute inset-y-0 left-0 z-30 w-1/2 cursor-w-resize disabled:cursor-default"
+        />
+        <button
+          type="button"
+          aria-label={labels.next}
+          onClick={onNext}
+          disabled={flip !== null}
+          className="absolute inset-y-0 right-0 z-30 w-1/2 cursor-e-resize"
+        />
       </div>
     );
   } else {
     const underIdx = flip?.dir === "next" ? flip.to : pageIdx;
     const leafIdx = flip?.dir === "next" ? pageIdx : flip?.to;
     content = (
-      <div className="relative">
-        <SinglePage book={book} idx={underIdx} highlighted={flip === null ? highlighted : -1} />
+      <div className="relative aspect-[10/14.5] w-full rounded-r-md shadow-[2px_2px_0_#efe5cd,4px_4px_0_#ddcfb0,6px_5px_0_#f1e8d2]">
+        <div className="absolute inset-0 overflow-hidden rounded-r-md">{page(underIdx, "right")}</div>
         {flip && leafIdx !== undefined ? (
           <div
             className={flip.dir === "next" ? "book-leaf-single-next" : "book-leaf-single-prev"}
             onAnimationEnd={handleEnd}
           >
-            <div className="absolute inset-0 overflow-hidden rounded-xl">
-              <SinglePage book={book} idx={leafIdx} highlighted={-1} />
-            </div>
+            <div className="absolute inset-0 overflow-hidden rounded-r-md">{page(leafIdx, "right", false)}</div>
           </div>
         ) : null}
-        {turnZones}
+        {bookmarked === pageIdx && flip === null ? <Ribbon /> : null}
+        <button
+          type="button"
+          aria-label={labels.prev}
+          onClick={onPrev}
+          disabled={!canPrev || flip !== null}
+          className="absolute inset-y-0 left-0 z-30 w-1/3"
+        />
+        <button
+          type="button"
+          aria-label={labels.next}
+          onClick={onNext}
+          disabled={flip !== null}
+          className="absolute inset-y-0 right-0 z-30 w-2/3"
+        />
       </div>
     );
   }
 
   return (
-    <div className="book-3d w-full">
-      {/* hard cover, with a few page edges peeking out at the bottom */}
-      <div className="rounded-[22px] bg-ink p-2 shadow-[0_24px_50px_rgba(46,42,92,0.28)] sm:p-2.5">
-        <div className="rounded-xl shadow-[0_3px_0_#efe4cc,0_6px_0_#e4d7ba]">{content}</div>
+    <div className="book-3d relative w-full">
+      {/* thick hardcover around the pages */}
+      <div className="rounded-[14px] bg-[linear-gradient(160deg,#c99545,#9c6a28_55%,#7d5219)] px-3 pb-4 pt-2.5 shadow-[0_28px_60px_rgba(70,45,10,0.35),inset_0_1px_0_rgba(255,255,255,0.35)] sm:px-4 sm:pb-5 sm:pt-3">
+        {content}
       </div>
+      <ArrowButton dir="prev" label={labels.prev} disabled={!canPrev || flip !== null} onClick={onPrev} />
+      <ArrowButton dir="next" label={labels.next} disabled={flip !== null} onClick={onNext} />
     </div>
   );
 }

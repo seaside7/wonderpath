@@ -15,13 +15,68 @@ import {
 } from "@/lib/api";
 import { useAtlasSpeech } from "@/components/mascot/atlas-speech";
 import BookArt from "./book-art";
-import BookSpread, { PageFlip } from "./book-spread";
+import BookSpread, { PageFlip, TEXT_SIZES, useWideBook } from "./book-spread";
 import { playPageFlip } from "@/lib/sound";
 
 type Phase = "intro" | "read" | "quiz" | "result";
 type Narration = "idle" | "loading" | "ready" | "unavailable";
 
 const AUTO_TURN_DELAY_MS = 900;
+
+const LABELS = {
+  id: {
+    all: "Semua cerita",
+    listen: "Dengarkan",
+    pause: "Jeda",
+    preparing: "Atlas bersiap…",
+    unavailable: "Atlas belum bisa membacakan halaman ini.",
+    size: "Ukuran teks",
+    save: "Simpan",
+    saved: "Tersimpan",
+    prev: "Halaman sebelumnya",
+    next: "Halaman berikutnya",
+    quiz: "Lanjut ke kuis",
+    pages: (from: number, to: number, total: number) =>
+      `Halaman ${from}${to > from ? `–${to}` : ""} dari ${total}`,
+  },
+  en: {
+    all: "All stories",
+    listen: "Listen",
+    pause: "Pause",
+    preparing: "Atlas is getting ready…",
+    unavailable: "Atlas can't read this page aloud right now.",
+    size: "Text size",
+    save: "Bookmark",
+    saved: "Bookmarked",
+    prev: "Previous page",
+    next: "Next page",
+    quiz: "Go to the quiz",
+    pages: (from: number, to: number, total: number) =>
+      `Page${to > from ? "s" : ""} ${from}${to > from ? `–${to}` : ""} of ${total}`,
+  },
+};
+
+const SIZE_KEY = "wonderpath:reader-size";
+const bookmarkKey = (childId: string, bookId: string) =>
+  `wonderpath:bookmark:${childId}:${bookId}`;
+
+function readStored(key: string): number | null {
+  try {
+    const value = window.localStorage.getItem(key);
+    return value === null ? null : Number(value);
+  } catch {
+    return null;
+  }
+}
+
+function writeStored(key: string, value: number | null) {
+  try {
+    if (value === null) window.localStorage.removeItem(key);
+    else window.localStorage.setItem(key, String(value));
+  } catch {
+    // Storage can be blocked; these are conveniences only.
+  }
+}
 
 // Speech has a short lead-in and tail; keep the estimate inside the voiced part.
 function estimateTimings(text: string, duration: number): BookWordTiming[] {
@@ -66,6 +121,11 @@ export default function StoryReader({
   const [narration, setNarration] = useState<Narration>("idle");
   const [timings, setTimings] = useState<BookWordTiming[] | null>(null);
   const [activeWord, setActiveWord] = useState(-1);
+  const wide = useWideBook();
+  const [textSize, setTextSize] = useState(() =>
+    typeof window === "undefined" ? 1 : Math.min(2, Math.max(0, readStored(SIZE_KEY) ?? 1)),
+  );
+  const [bookmark, setBookmark] = useState<number | null>(null);
 
   const [quizIdx, setQuizIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -93,9 +153,15 @@ export default function StoryReader({
       .then((data) => {
         if (cancelled) return;
         setBook(data);
+        const saved = readStored(bookmarkKey(childId, bookId));
+        const marked =
+          saved !== null && saved >= 0 && saved < data.pages.length ? saved : null;
+        setBookmark(marked);
         if (data.reading && !data.reading.completedAt) {
           setMode(data.reading.mode);
-          setPageIdx(Math.min(data.reading.lastPage, data.pages.length) - 1);
+          setPageIdx(marked ?? Math.min(data.reading.lastPage, data.pages.length) - 1);
+        } else if (marked !== null) {
+          setPageIdx(marked);
         }
       })
       .catch(() => {
@@ -115,7 +181,8 @@ export default function StoryReader({
     (delta: 1 | -1) => {
       if (!book || flip) return;
       autoTurnRef.current = false;
-      const next = pageIdx + delta;
+      // Wide screens turn a whole spread ([0,1], [2,3], ...) at a time.
+      const next = wide ? pageIdx - (pageIdx % 2) + delta * 2 : pageIdx + delta;
       if (next < 0) return;
       if (next > lastPageIdx) {
         speakRef.current?.(null);
@@ -140,8 +207,22 @@ export default function StoryReader({
         setFlip({ dir: delta === 1 ? "next" : "prev", to: next });
       }
     },
-    [book, flip, pageIdx, lastPageIdx, childId, bookId, mode, pages.length],
+    [book, flip, wide, pageIdx, lastPageIdx, childId, bookId, mode, pages.length],
   );
+
+  // After Atlas reads a page: move to the facing page, or turn the spread.
+  const advance = useCallback(() => {
+    const next = pageIdx + 1;
+    if (wide && next <= lastPageIdx && next % 2 === 1) {
+      autoTurnRef.current = false;
+      setPageIdx(next);
+      void saveBookProgress(childId, bookId, { mode, lastPage: next + 1 }).catch(
+        () => undefined,
+      );
+      return;
+    }
+    go(1);
+  }, [pageIdx, wide, lastPageIdx, childId, bookId, mode, go]);
 
   const finishFlip = useCallback(() => {
     if (flip) setPageIdx(flip.to);
@@ -231,15 +312,17 @@ export default function StoryReader({
 
   // When a page's narration ends on its own, turn the page.
   const goRef = useRef(go);
+  const advanceRef = useRef(advance);
   useEffect(() => {
     goRef.current = go;
+    advanceRef.current = advance;
   });
   useEffect(() => {
     const finished = wasPlayingRef.current && !isPlaying;
     wasPlayingRef.current = isPlaying;
     if (!finished || !autoTurnRef.current) return;
     const timer = window.setTimeout(() => {
-      if (autoTurnRef.current) goRef.current(1);
+      if (autoTurnRef.current) advanceRef.current();
     }, AUTO_TURN_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, [isPlaying]);
@@ -267,10 +350,34 @@ export default function StoryReader({
     }
   }
 
-  function toggleMode() {
-    autoTurnRef.current = false;
+  function handleListen() {
+    if (mode !== "LISTEN") {
+      pausedRef.current = false;
+      setMode("LISTEN");
+      return;
+    }
+    if (speech?.isPlaying) {
+      autoTurnRef.current = false;
+      pausedRef.current = true;
+      speech.stop();
+      return;
+    }
+    autoTurnRef.current = true;
     pausedRef.current = false;
-    setMode((value) => (value === "LISTEN" ? "READ" : "LISTEN"));
+    if (speech?.hasAudio) speech.replay();
+    else speech?.speak(pageAudioUrl);
+  }
+
+  function cycleTextSize() {
+    const next = (textSize + 1) % TEXT_SIZES.length;
+    setTextSize(next);
+    writeStored(SIZE_KEY, next);
+  }
+
+  function toggleBookmark() {
+    const next = bookmark === pageIdx ? null : pageIdx;
+    setBookmark(next);
+    writeStored(bookmarkKey(childId, bookId), next);
   }
 
   async function finishQuiz(finalAnswers: Record<string, string>) {
@@ -471,84 +578,107 @@ export default function StoryReader({
   }
 
   // phase === "read"
-  const isLast = pageIdx === lastPageIdx;
+  const t = book.language === "BAHASA_INDONESIA" ? LABELS.id : LABELS.en;
+  const spreadFrom = wide ? pageIdx - (pageIdx % 2) : pageIdx;
+  const spreadTo = wide ? Math.min(spreadFrom + 1, lastPageIdx) : pageIdx;
+  const onLastSpread = spreadTo >= lastPageIdx;
+  const listening = mode === "LISTEN" && (speech?.isPlaying ?? false);
+  const listenLabel =
+    mode === "LISTEN" && narration === "loading" ? t.preparing : listening ? t.pause : t.listen;
+
   return (
-    <div className="flex w-full flex-1 flex-col">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <BackToStories childId={childId} />
-        <span className="text-sm font-semibold text-ink-soft">
-          Page {pageIdx + 1} of {pages.length}
-        </span>
+    <div className="relative left-1/2 flex w-[min(1080px,calc(100vw-2.5rem),calc((100dvh-14rem)*1.6))] min-w-[min(100%,22rem)] -translate-x-1/2 flex-col">
+      <div className="mb-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        <Link
+          href={`/learn/${childId}/books`}
+          className="btn-tactile inline-flex items-center gap-2 justify-self-start rounded-full border-2 border-line bg-card px-4 py-2 text-sm font-semibold text-ink shadow-[0_3px_0_rgba(46,42,92,0.1)]"
+        >
+          <span aria-hidden="true">←</span>
+          <span className="hidden sm:inline">{t.all}</span>
+        </Link>
+        <h1 className="text-center font-display text-xl leading-tight text-ink sm:text-3xl">
+          {book.title}
+        </h1>
+        <span />
       </div>
 
-      <BookSpread
-        book={book}
-        pageIdx={pageIdx}
-        flip={flip}
-        highlighted={highlighted}
-        canPrev={pageIdx > 0}
-        onPrev={() => go(-1)}
-        onNext={() => go(1)}
-        onFlipEnd={finishFlip}
-      />
-
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={toggleMode}
-          className="btn-tactile rounded-full border-2 border-line bg-card px-4 py-2 text-sm font-semibold text-ink"
-        >
-          {mode === "LISTEN" ? "📖 Read by myself" : "🔊 Listen with Atlas"}
-        </button>
-        {mode === "LISTEN" ? (
-          <>
-            {narration === "loading" ? (
-              <span className="text-sm text-ink-soft">Atlas is getting ready…</span>
-            ) : null}
-            {narration === "unavailable" ? (
-              <span className="text-sm text-ink-soft">Atlas can&apos;t read this page aloud right now.</span>
-            ) : null}
-            {narration === "ready" ? (
-              <button
-                type="button"
-                onClick={() => {
-                  if (speech?.isPlaying) {
-                    autoTurnRef.current = false;
-                    pausedRef.current = true;
-                    speech.stop();
-                  } else {
-                    autoTurnRef.current = true;
-                    pausedRef.current = false;
-                    if (speech?.hasAudio) speech.replay();
-                    else speech?.speak(pageAudioUrl);
-                  }
-                }}
-                className="btn-tactile rounded-full border-2 border-line bg-card px-4 py-2 text-sm font-semibold text-ink"
-              >
-                {speech?.isPlaying ? "⏹ Pause Atlas" : "🔊 Hear this page"}
-              </button>
-            ) : null}
-          </>
-        ) : null}
+      <div className="px-4 sm:px-8">
+        <BookSpread
+          book={book}
+          pageIdx={pageIdx}
+          wide={wide}
+          flip={flip}
+          highlighted={highlighted}
+          size={textSize}
+          bookmarked={bookmark}
+          labels={{ prev: t.prev, next: t.next }}
+          canPrev={spreadFrom > 0}
+          onPrev={() => go(-1)}
+          onNext={() => go(1)}
+          onFlipEnd={finishFlip}
+        />
       </div>
 
-      <div className="mt-5 flex gap-3">
+      <div className="mx-auto mt-7 flex w-full max-w-3xl flex-wrap items-center gap-3 rounded-[28px] bg-card px-4 py-3 shadow-[0_10px_30px_rgba(46,42,92,0.12)] sm:flex-nowrap sm:px-5">
         <button
           type="button"
-          onClick={() => go(-1)}
-          disabled={pageIdx === 0}
-          className="btn-tactile flex-1 rounded-2xl border-2 border-line bg-card px-4 py-3.5 text-base font-semibold text-ink disabled:opacity-40"
+          onClick={handleListen}
+          aria-pressed={listening}
+          className="btn-tactile inline-flex items-center gap-2.5 rounded-full border-2 border-line bg-card py-1.5 pl-1.5 pr-4 text-sm font-bold text-ink"
         >
-          ← Back
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1f7a72] text-white">
+            {listening ? (
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+            ) : (
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" /></svg>
+            )}
+          </span>
+          {listenLabel}
         </button>
+        <button
+          type="button"
+          onClick={cycleTextSize}
+          aria-label={t.size}
+          title={t.size}
+          className="btn-tactile flex h-12 w-12 items-center justify-center rounded-full border-2 border-line bg-card font-display text-lg font-semibold text-ink"
+        >
+          A<span className="text-sm">a</span>
+        </button>
+        <button
+          type="button"
+          onClick={toggleBookmark}
+          aria-pressed={bookmark === pageIdx}
+          className="btn-tactile inline-flex items-center gap-2 rounded-full border-2 border-line bg-card px-4 py-2.5 text-sm font-bold text-ink"
+        >
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill={bookmark === pageIdx ? "#1f7a72" : "none"} stroke={bookmark === pageIdx ? "#1f7a72" : "currentColor"} strokeWidth="2.2" strokeLinejoin="round"><path d="M6 3h12v18l-6-4.5L6 21z" /></svg>
+          {bookmark === pageIdx ? t.saved : t.save}
+        </button>
+
+        <div className="ml-auto min-w-[10rem] flex-1 sm:max-w-[16rem]">
+          <p className="text-xs font-semibold text-ink-soft">
+            {t.pages(spreadFrom + 1, spreadTo + 1, pages.length)}
+          </p>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-line">
+            <div
+              className="h-full rounded-full bg-[#1f7a72] transition-[width] duration-500"
+              style={{ width: `${((spreadTo + 1) / pages.length) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {mode === "LISTEN" && narration === "unavailable" ? (
+        <p className="mt-3 text-center text-sm text-ink-soft">{t.unavailable}</p>
+      ) : null}
+      {onLastSpread ? (
         <button
           type="button"
           onClick={() => go(1)}
-          className="btn-tactile btn-primary flex-[2] rounded-2xl px-4 py-3.5 font-display text-xl font-semibold"
+          className="btn-tactile btn-primary mx-auto mt-5 rounded-2xl px-8 py-3.5 font-display text-xl font-semibold"
         >
-          {isLast ? "Finish · Quiz →" : "Next page →"}
+          {t.quiz} →
         </button>
-      </div>
+      ) : null}
     </div>
   );
 }
