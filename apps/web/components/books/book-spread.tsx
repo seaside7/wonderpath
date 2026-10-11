@@ -29,7 +29,12 @@ export function useWideBook(): boolean {
 export const TEXT_SIZES = {
   wide: ["text-[3cqh]", "text-[3.4cqh]", "text-[3.85cqh]"],
   narrow: ["text-[2.9cqh]", "text-[3.25cqh]", "text-[3.6cqh]"],
+  // Longer pages (higher reading levels): a bit smaller, so the picture
+  // can still take about half the page.
+  wideDense: ["text-[2.65cqh]", "text-[3cqh]", "text-[3.4cqh]"],
+  narrowDense: ["text-[2.6cqh]", "text-[2.9cqh]", "text-[3.2cqh]"],
 } as const;
+const DENSE_WORDS = 40;
 export const TEXT_SIZE_COUNT = 3;
 
 // Paper darkens toward the spine, like a real bound page.
@@ -61,10 +66,14 @@ function StoryPage({ book, idx, side, highlighted, size, wide }: StoryPageProps)
   const words = page.text.match(/\S+/g) ?? [];
   // Alternate like a picture book: picture on top, then picture below.
   const imageFirst = idx % 2 === 0;
-  // The picture gets up to ~2/3 of the page and only shrinks for long text.
+  const dense = words.length > DENSE_WORDS;
+  // The picture gets up to ~2/3 of the page (about half on long pages) and
+  // only shrinks further when the text needs the room.
   const image = (
     <div
-      className={`relative min-h-[40cqh] shrink basis-[66cqh] overflow-hidden rounded-md ${
+      className={`relative shrink overflow-hidden rounded-md ${
+        dense ? "min-h-[30cqh] basis-[48cqh]" : "min-h-[40cqh] basis-[66cqh]"
+      } ${
         imageFirst
           ? "[mask-image:linear-gradient(to_bottom,#000_80%,transparent)]"
           : "[mask-image:linear-gradient(to_top,#000_80%,transparent)]"
@@ -76,7 +85,7 @@ function StoryPage({ book, idx, side, highlighted, size, wide }: StoryPageProps)
   const text = (
     <p
       className={`flex flex-1 flex-col justify-center font-display ${
-        TEXT_SIZES[wide ? "wide" : "narrow"][size]
+        TEXT_SIZES[wide ? (dense ? "wideDense" : "wide") : dense ? "narrowDense" : "narrow"][size]
       } leading-[1.5] text-[#2b2540] ${imageFirst ? "pt-[3cqh]" : "pb-[3cqh]"}`}
     >
       <span>
