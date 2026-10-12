@@ -27,7 +27,7 @@ const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}]/u;
 const SYSTEM = `You write answer explanations for WonderPath, a learning app for primary-school children.
 Return strict JSON: {"explanation": string}.
 Rules for the explanation:
-- Write in the SAME language as the question (Indonesian question -> Indonesian; English question -> English).
+- Write in the language given in "writeIn" (it matches the question).
 - 2 to 4 short sentences, at most 70 words, simple words a Grade 4-6 child understands.
 - First explain WHY the correct answer is right, showing the key step, rule or reason (for math, show the working).
 - Then, only if you are certain it is a real and specific mistake, name the most likely mistake or why a tempting wrong choice does not fit. Any numbers in it must be correct. If unsure, leave this sentence out.
@@ -73,7 +73,9 @@ async function audit(row: Row, text: string): Promise<string | null> {
 }
 
 async function rewrite(row: Row): Promise<string> {
+  const indonesian = /(yang|adalah|berapa|manakah|dari|dengan|tentukan|hasil)/i.test(row.questionText);
   const prompt = JSON.stringify({
+    writeIn: indonesian ? 'Bahasa Indonesia' : 'English',
     grade: row.grade,
     question: row.questionText,
     options: row.options,
@@ -133,7 +135,12 @@ async function main() {
   const limit = flag('--limit') ? Number(value('--limit')) : undefined;
   const all = (await prisma.question.findMany({ orderBy: { id: 'asc' } })) as unknown as Row[];
   const todo = all
-    .filter((q) => !(q.metadata && typeof q.metadata === 'object' && 'previousExplanation' in (q.metadata as object)))
+    .filter((q) => {
+      const meta = (q.metadata && typeof q.metadata === 'object' ? q.metadata : {}) as Record<string, unknown>;
+      // Skip ones already rewritten, and newly generated questions whose
+      // explanations were written to these rules from the start.
+      return !('previousExplanation' in meta) && meta.seedScript !== 'seed-ib-new-topics';
+    })
     .sort(() => (apply ? 0 : Math.random() - 0.5))
     .slice(0, limit);
 
