@@ -34,3 +34,20 @@ export function contentPolicyPrompt(): string {
     (rule, index) => `${index + 1}. ${rule}`,
   ).join('\n');
 }
+
+/**
+ * Story craft rules from the founder (2026-10-12). They shape how stories are
+ * written, separate from the policy above (what must never appear).
+ */
+export const STORY_CRAFT_RULES = [
+  'Reader: children aged 7-9, beginner Indonesian readers. Keep sentences short and words familiar.',
+  'Tone: warm adventure and gentle curiosity.',
+  'World rules: magic is allowed, but events must make sense within the story.',
+  'Detail selection: every unusual detail must develop the character, setting, or plot. No random details.',
+  'Humor: light situational humor that comes from the story; avoid unrelated absurd jokes.',
+  'Structure: clear goal, then an obstacle, then the character acts, then a resolution.',
+] as const;
+
+export function storyCraftPrompt(): string {
+  return STORY_CRAFT_RULES.map((rule, index) => `${index + 1}. ${rule}`).join('\n');
+}

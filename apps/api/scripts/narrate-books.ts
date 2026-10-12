@@ -12,7 +12,8 @@
  */
 import 'dotenv/config';
 import './register-prisma';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { createHash } from 'crypto';
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { Prisma, PrismaClient } from '../generated/prisma/client';
 import { narrateWithElevenLabs } from '../src/atlas/tts/elevenlabs';
@@ -44,9 +45,16 @@ async function main() {
 
     let characters = 0;
     for (const page of pages) {
-      const file = `page-${page.pageNumber}-v3.mp3`;
       const recorded = manifest[page.pageNumber];
       const spoken = spokenText(bookId, page.pageNumber, page.text);
+      // Content-addressed name: a re-recorded page gets a new URL, so
+      // browsers never keep playing a cached old recording.
+      const hash = createHash('sha1').update(spoken).digest('hex').slice(0, 8);
+      const file = `page-${page.pageNumber}-${hash}.mp3`;
+      const legacy = join(dir, `page-${page.pageNumber}-v3.mp3`);
+      if (!existsSync(join(dir, file)) && recorded?.spoken === spoken && existsSync(legacy)) {
+        renameSync(legacy, join(dir, file));
+      }
       // Re-record only when the text or its acting cues changed.
       if (
         !importOnly &&

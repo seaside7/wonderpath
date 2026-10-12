@@ -13,6 +13,7 @@ import { generate, generateWithImages } from '../prisma/qa-seed/llmGateway';
 import {
   CONTENT_POLICY_BANNED_WORDS,
   contentPolicyPrompt,
+  storyCraftPrompt,
 } from '../src/atlas/books/content-policy';
 import { downloadImage, generateImage } from './higgsfield';
 
@@ -194,7 +195,9 @@ function ruleCheck(book: GeneratedBook, level: (typeof BOOK_LEVELS)[1]) {
 
 async function writeBook(grade: Grade, trailStop: number, index: number) {
   const level = BOOK_LEVELS[trailStop as keyof typeof BOOK_LEVELS];
-  const writerPrompt = `Write one original English ${grade.replace('GRADE_', 'Grade ')} children's story for trail stop ${trailStop}. Alternate fiction and non-fiction across calls. Return strict JSON with title, summary, characters (name and detailed visual description), ${level.pages[0]}-${level.pages[1]} pages with text only, and exactly 3 multiple-choice quiz questions with four options, correctAnswer, and a short explanation. Target ${level.minWords}-${level.maxWords} words and Flesch-Kincaid ${level.fk[0]}-${level.fk[1]}. Policy:\n${contentPolicyPrompt()}`;
+  const writerPrompt = `Write one original English ${grade.replace('GRADE_', 'Grade ')} children's story for trail stop ${trailStop}. Alternate fiction and non-fiction across calls. Return strict JSON with title, summary, characters (name and detailed visual description), ${level.pages[0]}-${level.pages[1]} pages with text only, and exactly 3 multiple-choice quiz questions with four options, correctAnswer, and a short explanation. Target ${level.minWords}-${level.maxWords} words and Flesch-Kincaid ${level.fk[0]}-${level.fk[1]}. Story craft:
+${storyCraftPrompt()}
+Policy:\n${contentPolicyPrompt()}`;
   const auditTrail: unknown[] = [];
   let result = parseJson<GeneratedBook>(
     (

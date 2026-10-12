@@ -36,8 +36,8 @@ const BOOKS: SampleBook[] = [
     trailStop: 1,
     coverArt: 'p3',
     pages: [
-      ['p1', 'Di dinding kamar Aryan ada dua puluh tiga gambar naga. Ada naga yang terbang, naga yang tidur, bahkan naga yang makan nasi goreng. "Suatu hari," bisik Aryan sebelum tidur, "aku akan bertemu naga sungguhan."'],
-      ['p2', 'Sore itu, bola Aryan menggelinding ke balik semak di kebun belakang. Saat ia mengambilnya, tangannya menyentuh sesuatu yang hangat. Sebuah telur! Telur itu besar, merah, dan berkilau seperti permen stroberi raksasa.'],
+      ['p1', 'Di dinding kamar Aryan ada dua puluh tiga gambar naga. Ada naga yang terbang, naga yang tidur, dan naga yang menjaga istana. "Suatu hari," bisik Aryan sebelum tidur, "aku akan bertemu naga sungguhan."'],
+      ['p2', 'Sore itu, bola Aryan menggelinding ke balik semak di kebun belakang. Saat ia mengambilnya, tangannya menyentuh sesuatu yang hangat. Sebuah telur! Telur itu besar, merah, dan berkilau seperti batu permata.'],
       ['p3', 'Tok... tok... krak! Kulit telur retak sedikit demi sedikit. Sebuah kepala mungil menyembul keluar, lalu bersin. "Hacih!" Percikan cahaya kecil terbang ke udara. Aryan tertawa. "Halo, Naga Kecil. Namamu Api, ya?"'],
       ['a1', 'Setiap pagi, Api belajar terbang di kebun. Sayapnya mengepak-ngepak, tubuhnya naik sejengkal... lalu jatuh ke tumpukan daun. Bruk! "Tidak apa-apa," kata Aryan sambil membersihkan daun dari kepala Api. "Kita coba lagi besok."'],
       ['p4', 'Hari demi hari, Api tumbuh besar. Kini ia bisa terbang tinggi. Dari mulutnya keluar cahaya hangat berwarna emas. Cahaya itu tidak membakar. Setiap malam, Api menerangi kebun seperti lampu taman yang paling indah.'],
@@ -48,7 +48,7 @@ const BOOKS: SampleBook[] = [
       ['a2', 'Malam itu, Aryan tidur dengan senyum lebar. Api meringkuk di dekat jendela, bersinar lembut seperti lampu tidur. Sebelum terlelap, Aryan berbisik, "Pemberani bukan berarti tidak takut. Pemberani itu tetap berbuat baik walaupun takut."'],
     ],
     quiz: [
-      { prompt: 'Apa warna telur yang ditemukan Aryan?', options: ['Merah', 'Biru', 'Hitam', 'Putih'], correctAnswer: 'Merah', explanation: 'Telur itu besar, merah, dan berkilau seperti permen stroberi raksasa.' },
+      { prompt: 'Apa warna telur yang ditemukan Aryan?', options: ['Merah', 'Biru', 'Hitam', 'Putih'], correctAnswer: 'Merah', explanation: 'Telur itu besar, merah, dan berkilau seperti batu permata.' },
       { prompt: 'Siapa nama naga kecil sahabat Aryan?', options: ['Api', 'Bara', 'Merah', 'Kilat'], correctAnswer: 'Api', explanation: 'Aryan menamai bayi naga merah itu Api.' },
       { prompt: 'Apa yang diambil Naga Hitam dari langit?', options: ['Bulan', 'Awan hujan', 'Cahaya bintang', 'Pelangi'], correctAnswer: 'Cahaya bintang', explanation: 'Naga Hitam menyedot cahaya bintang ke dalam awan gelapnya.' },
     ],
@@ -163,7 +163,7 @@ const BOOKS: SampleBook[] = [
       ['p1', 'Di laut biru Indonesia, hiduplah ikan kecil berwarna jingga bernama Lumi. Siripnya kecil, tapi berenangnya cepat sekali. Setiap pagi, Lumi menyapa sinar matahari yang menembus air. "Selamat pagi, Laut!"'],
       ['p2', 'Rumah Lumi adalah terumbu karang. Karangnya merah, ungu, kuning, dan biru, seperti taman bunga di bawah air. Ribuan ikan tinggal di sana. Ada yang bersembunyi, ada yang bermain, ada yang sibuk mencari makan.'],
       ['a1', 'Lumi paling suka bermain petak umpet bersama teman-temannya. Ia bersembunyi di balik karang bercabang. "Satu, dua, tiga... ketemu!" seru Kepiting Kecil. Lumi tertawa sampai gelembungnya naik ke atas. Blup, blup, blup!'],
-      ['p3', 'Tapi suatu hari, ada sesuatu yang aneh. Sebuah kantong plastik besar menyangkut di karang. Kantong itu melambai-lambai seperti hantu. Ikan-ikan kecil susah lewat, dan karang di bawahnya jadi gelap tertutup.'],
+      ['p3', 'Tapi suatu hari, ada sesuatu yang aneh. Sebuah kantong plastik besar menyangkut di karang. Kantong itu melambai-lambai seperti ubur-ubur. Ikan-ikan kecil susah lewat, dan karang di bawahnya jadi gelap tertutup.'],
       ['a2', '"Aku terlalu kecil untuk memindahkannya," pikir Lumi. Lalu ia ingat seseorang. Lumi berenang secepat-cepatnya ke gua karang, tempat Pak Penyu sedang tidur siang. "Pak Penyu, bangun! Laut kita butuh bantuan!"'],
       ['p4', 'Pak Penyu membuka matanya pelan-pelan, lalu ikut berenang. Ia menggigit ujung kantong itu. Lumi mendorong dari bawah sekuat tenaga. "Satu, dua, tarik!" Sedikit demi sedikit, kantong plastik itu naik ke permukaan.'],
       ['p5', 'Di atas air, seorang nelayan sedang mendayung perahunya. Ia melihat kantong plastik itu, lalu mengambilnya dengan hati-hati. "Terima kasih, Penyu dan ikan kecil," katanya kagum. "Plastik bisa membuat penyu dan ikan sakit."'],
@@ -200,7 +200,7 @@ const BOOKS: SampleBook[] = [
     quiz: [
       { prompt: 'Di negara mana Habibie belajar teknik pesawat terbang?', options: ['Jerman', 'Jepang', 'Amerika', 'Australia'], correctAnswer: 'Jerman', explanation: 'Habibie berangkat ke Jerman untuk belajar teknik pesawat terbang.' },
       { prompt: 'Apa nama pesawat buatan Indonesia yang terbang pertama kali pada 1995?', options: ['N250 Gatotkaca', 'Garuda Super', 'Merpati Jaya', 'Elang Biru'], correctAnswer: 'N250 Gatotkaca', explanation: 'Pesawat N250 Gatotkaca terbang pertama kali pada 10 Agustus 1995.' },
-      { prompt: 'Kenapa Habibie dijuluki "Mr. Crack"?', options: ['Karena suka bercanda', 'Karena menemukan cara menghitung retakan pada pesawat', 'Karena pernah jatuh', 'Karena suka kerupuk'], correctAnswer: 'Karena menemukan cara menghitung retakan pada pesawat', explanation: 'Habibie menemukan cara menghitung retakan kecil pada badan pesawat supaya pesawat lebih aman.' },
+      { prompt: 'Kenapa Habibie dijuluki "Mr. Crack"?', options: ['Karena suka bercanda', 'Karena menemukan cara menghitung retakan pada pesawat', 'Karena pernah jatuh', 'Karena pandai berhitung cepat'], correctAnswer: 'Karena menemukan cara menghitung retakan pada pesawat', explanation: 'Habibie menemukan cara menghitung retakan kecil pada badan pesawat supaya pesawat lebih aman.' },
     ],
   },
 ];
