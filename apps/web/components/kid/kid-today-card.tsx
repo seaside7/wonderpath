@@ -136,7 +136,7 @@ export default function KidTodayCard({ childId }: { childId: string }) {
             Back to today&apos;s pick
           </button>
         ) : null}
-        <h1 className="font-display text-4xl text-ink">Hi {name}</h1>
+        <h1 className="font-display text-4xl text-ink">Hi {name}!</h1>
         <p className="mb-7 mt-2 text-base text-ink-soft">
           {showPicker
             ? "No problem — pick what sounds fun."
@@ -201,7 +201,7 @@ export default function KidTodayCard({ childId }: { childId: string }) {
 
   return (
     <div className="flex w-full flex-1 flex-col justify-center">
-      <h1 className="font-display text-4xl text-ink">Hi {name}</h1>
+      <h1 className="font-display text-4xl text-ink">Hi {name}!</h1>
 
       {points?.goal ? (
         <div className="mb-5 rounded-2xl bg-card px-5 py-4 shadow-[0_8px_28px_rgba(46,42,92,0.06)]">

@@ -58,23 +58,14 @@ const AUDITOR = `You check answer explanations in a children's learning app. Ret
 ok must be false if ANY of these is true: a fact or calculation is wrong; it contradicts the given correct answer; a described "mistake" is not actually a mistake or has wrong numbers; it corrects itself or is confusing; it is in a different language from the question.`;
 
 async function audit(row: Row, text: string): Promise<string | null> {
-  // Direct call: the shared gateway adds reasoning options gpt-4o-mini rejects.
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      temperature: 0,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: AUDITOR },
-        { role: 'user', content: JSON.stringify({ question: row.questionText, options: row.options, correctAnswer: row.correctAnswer, explanation: text }) },
-      ],
-    }),
-  });
-  if (!response.ok) throw new Error(`auditor ${response.status}`);
-  const data = (await response.json()) as { choices: { message: { content: string } }[] };
-  const verdict = JSON.parse(data.choices[0].message.content) as { ok?: boolean; reason?: string };
+  // The gateway's default OpenAI model (a reasoning model): gpt-4o-mini proved
+  // unreliable at checking arithmetic and rejected correct explanations.
+  const result = await generate(
+    'openai',
+    JSON.stringify({ question: row.questionText, options: row.options, correctAnswer: row.correctAnswer, explanation: text }),
+    AUDITOR,
+  );
+  const verdict = JSON.parse(result.content) as { ok?: boolean; reason?: string };
   return verdict.ok ? null : `audit: ${verdict.reason ?? 'rejected'}`;
 }
 
@@ -111,6 +102,19 @@ async function main() {
       updated++;
     }
     console.log(`imported ${updated} of ${items.length}`);
+    return;
+  }
+
+  if (flag('--revert')) {
+    const rows = await prisma.question.findMany({ where: { metadata: { path: ['previousExplanation'], not: Prisma.AnyNull } } });
+    for (const r of rows) {
+      const { previousExplanation, ...rest } = r.metadata as Record<string, unknown>;
+      await prisma.question.update({
+        where: { id: r.id },
+        data: { explanation: String(previousExplanation), audioUrl: null, metadata: rest as Prisma.InputJsonValue },
+      });
+    }
+    console.log(`reverted ${rows.length}`);
     return;
   }
 
