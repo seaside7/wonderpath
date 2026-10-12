@@ -29,6 +29,7 @@ type Status =
   | "question"
   | "submitting"
   | "feedback"
+  | "funfact"
   | "summary"
   | "error";
 
@@ -176,7 +177,7 @@ export default function KidQuestionFlow({
 
     // Prompt before the user navigates away or closes the tab mid-session.
     function onBeforeUnload(e: BeforeUnloadEvent) {
-      if (status === "question" || status === "submitting" || status === "feedback") {
+      if (status === "question" || status === "submitting" || status === "feedback" || status === "funfact") {
         e.preventDefault();
         e.returnValue = "";
       }
@@ -196,7 +197,7 @@ export default function KidQuestionFlow({
   useEffect(() => {
     // Only guard when the intro is gone and we're in an active session.
     if (showIntro) return;
-    if (status !== "question" && status !== "submitting" && status !== "feedback") return;
+    if (status !== "question" && status !== "submitting" && status !== "feedback" && status !== "funfact") return;
 
     window.history.pushState(null, "");
     function onPopState() {
@@ -365,7 +366,7 @@ export default function KidQuestionFlow({
       <div className="flex w-full flex-1 flex-col justify-center text-center">
         <div className="rounded-3xl bg-card px-7 py-9 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
           <p className="font-display text-3xl text-ink">
-            Awesome work{summaryName ? `, ${summaryName}` : ""}! 🎉
+            Awesome work{summaryName ? `, ${summaryName}` : ""}!
           </p>
           <p className="mx-auto mt-3 max-w-md text-base leading-7 text-ink-soft">
             {summary}
@@ -394,8 +395,7 @@ export default function KidQuestionFlow({
               Ready to practice {topicName}?
             </p>
             <p className="mt-4 text-base leading-7 text-ink-soft">
-              Answer 4 out of 6 questions correctly{" "}
-              <span aria-hidden="true">🎯</span> — and you&apos;ll level up!
+              Answer 4 out of 6 questions correctly and you&apos;ll level up!
             </p>
             <p className="mt-2 text-sm text-ink-soft">
               Take your time. The app adjusts to your child&apos;s pace.
@@ -423,32 +423,27 @@ export default function KidQuestionFlow({
     );
   }
 
-  // Fun-fact break — shown after every 6 questions.
-  if (status === "feedback" && funFact) {
-    const categoryEmoji: Record<FunFact["category"], string> = {
-      math: "🔢",
-      science: "🔬",
-      history: "📜",
-      nature: "🌿",
+  // Fun-fact break after every 6 questions. It comes after the child has
+  // seen the explanation (on "Next Question"), never in place of it.
+  if (status === "funfact" && funFact) {
+    const categoryLabel: Record<FunFact["category"], string> = {
+      math: "Math",
+      science: "Science",
+      history: "History",
+      nature: "Nature",
     };
     return (
       <div className="flex w-full flex-1 flex-col justify-center">
         <div className="rounded-3xl bg-card px-7 py-9 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
           <p className="text-center text-sm font-medium uppercase tracking-widest text-ink-soft">
-            Fun fact
-          </p>
-          <p
-            aria-hidden="true"
-            className="mt-3 text-center text-5xl"
-          >
-            {categoryEmoji[funFact.category]}
+            Fun fact · {categoryLabel[funFact.category]}
           </p>
           <p className="mt-4 text-center font-display text-2xl leading-snug text-ink">
             {funFact.text}
           </p>
           <button
             type="button"
-            onClick={() => setFunFact(null)}
+            onClick={reload}
             className="btn-tactile btn-primary mt-8 w-full rounded-2xl px-4 py-4 font-display text-xl font-semibold"
           >
             Keep going!
@@ -475,7 +470,7 @@ export default function KidQuestionFlow({
           {attempt.levelUp ? (
             <div className="levelup-pop mb-3 rounded-2xl border-2 border-waypoint bg-waypoint/25 px-4 py-4 text-center">
               <p className="font-display text-2xl font-semibold text-ink">
-                🎉 Level Up!
+                Level Up!
               </p>
               <p className="mt-1 text-base text-ink-soft">
                 {attempt.levelUp.subject} is now Level{" "}
@@ -495,12 +490,12 @@ export default function KidQuestionFlow({
                 : "feedback-settle bg-waypoint/25 text-ink"
             }`}
           >
-            {attempt.correct ? "🎉 Correct!" : "Not quite."}
+            {attempt.correct ? "Correct!" : "Not quite."}
           </p>
 
           {attempt.points?.goalJustReached ? (
             <div className="levelup-pop mt-3 rounded-2xl border-2 border-waypoint bg-waypoint/25 px-4 py-3 text-center font-display text-lg font-semibold text-ink">
-              🎯 You hit your {attempt.points.goal?.period.toLowerCase()} goal!
+              You hit your {attempt.points.goal?.period.toLowerCase()} goal!
             </div>
           ) : null}
           {attempt.points && attempt.points.earned > 0 ? (
@@ -519,7 +514,11 @@ export default function KidQuestionFlow({
               onClick={atlas.isPlaying ? atlas.stop : atlas.replay}
               className="btn-tactile mt-3 inline-flex items-center gap-2 rounded-full border-2 border-line bg-card px-4 py-2 text-sm font-semibold text-ink hover:border-ink-soft"
             >
-              <span aria-hidden="true">{atlas.isPlaying ? "⏹" : "🔊"}</span>
+              {atlas.isPlaying ? (
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
+              ) : (
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" /></svg>
+              )}
               {atlas.isPlaying ? "Stop Atlas" : "Hear Atlas explain"}
             </button>
           ) : null}
@@ -531,7 +530,7 @@ export default function KidQuestionFlow({
           <div className="mt-6 flex flex-col gap-3">
             <button
               type="button"
-              onClick={reload}
+              onClick={() => (funFact ? setStatus("funfact") : reload())}
               className="btn-tactile btn-primary w-full rounded-2xl px-4 py-3.5 font-display text-lg font-semibold"
             >
               Next Question

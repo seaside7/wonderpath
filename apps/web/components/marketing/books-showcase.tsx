@@ -36,12 +36,15 @@ export default function BooksShowcase({ locale }: { locale: Locale }) {
                       alt={book.title}
                       fill
                       sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
-                      className="object-cover object-[50%_18%] transition-transform duration-300 group-hover:scale-105"
+                      className={`object-cover ${book.biography ? "object-[50%_18%]" : "object-center"} transition-transform duration-300 group-hover:scale-105`}
                     />
-                    <div
-                      aria-hidden="true"
-                      className={`absolute inset-x-0 bottom-0 h-1/2 opacity-80 [mask-image:linear-gradient(to_top,#000,transparent)] ${COVER_BG[book.theme as BookTheme]}`}
-                    />
+                    {/* Tint only the archive photos; illustrations show as painted. */}
+                    {book.biography ? (
+                      <div
+                        aria-hidden="true"
+                        className={`absolute inset-x-0 bottom-0 h-1/2 opacity-80 [mask-image:linear-gradient(to_top,#000,transparent)] ${COVER_BG[book.theme as BookTheme]}`}
+                      />
+                    ) : null}
                   </>
                 ) : (
                   <div className="absolute inset-0 p-4 transition-transform duration-300 group-hover:scale-105">

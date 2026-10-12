@@ -143,6 +143,7 @@ const id = {
         genre: "Fiksi · Sains",
         level: 2,
         theme: "space" as BookTheme,
+        photo: "/books/pages/story-misi-planet-merah/p2.webp",
         biography: false,
       },
       {
@@ -161,6 +162,7 @@ const id = {
         genre: "Fiksi · Alam",
         level: 1,
         theme: "tree" as BookTheme,
+        photo: "/books/pages/story-pohon-beringin/p1.webp",
         biography: false,
       },
       {
@@ -179,6 +181,7 @@ const id = {
         genre: "Fiksi · Laut",
         level: 2,
         theme: "ocean" as BookTheme,
+        photo: "/books/pages/story-penjaga-terumbu/p2.webp",
         biography: false,
       },
       {
@@ -429,6 +432,7 @@ const en: MarketingCopy = {
         genre: "Fiction · Science",
         level: 2,
         theme: "space",
+        photo: "/books/pages/story-misi-planet-merah/p2.webp",
         biography: false,
       },
       {
@@ -447,6 +451,7 @@ const en: MarketingCopy = {
         genre: "Fiction · Nature",
         level: 1,
         theme: "tree",
+        photo: "/books/pages/story-pohon-beringin/p1.webp",
         biography: false,
       },
       {
@@ -465,6 +470,7 @@ const en: MarketingCopy = {
         genre: "Fiction · Ocean",
         level: 2,
         theme: "ocean",
+        photo: "/books/pages/story-penjaga-terumbu/p2.webp",
         biography: false,
       },
       {
