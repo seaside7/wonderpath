@@ -6,6 +6,13 @@ This is distinct from `daily-update.md` (a diary of what was *done*) and `QA_NOT
 
 ---
 
+## 2026-10-12
+
+**Found: IB Math Grade 5 and Grade 6 share the exact same 17 learning objectives, and Ratio is missing from both.**
+The founder noticed that turning on "practice a grade ahead" shows the same topic list. Checked the content: every IB Math learning objective has 20 Grade 5 and 20 Grade 6 questions (harder for Grade 6), but the topics are identical (Decimals, Fractions, Geometry, Measurement, Number Sense, Percentages). His daughter is currently learning **ratio** in IB Grade 5, which WonderPath has no topic for. Needed: a real per-grade IB scope and sequence. Grade 6 needs distinct topics (e.g. ratio and proportion, negative numbers, simple algebraic expressions, data and probability), and ratio should be added for Grade 5 at least as an intro. Generating the questions needs the DeepSeek account topped up (it ran out on 2026-10-12). Until then, the grade-ahead switch only changes question difficulty, not topics.
+
+**Explanation rewrite paused (DeepSeek out of credit).** `scripts/enrich-explanations.ts` rewrites the 1,680 shallow explanations (909 under 90 characters). The first full run used gpt-4o-mini as the auditor, which proved unreliable (it rejected correct maths and made its own arithmetic errors), so those 421 rewrites were reverted; the auditor now uses the gateway's default reasoning model. Resume after the founder tops up DeepSeek: pilot `--limit 16`, then `--apply`, then `--export` and `--import` on the VPS (explanation texts only).
+
 ## 2026-10-10
 
 **Decision: long-term grade scope is pre-K to Grade 6, later Grades 7-10; the marketing site names no grades.**
