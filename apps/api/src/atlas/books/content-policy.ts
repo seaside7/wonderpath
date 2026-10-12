@@ -46,6 +46,13 @@ export const STORY_CRAFT_RULES = [
   'Detail selection: every unusual detail must develop the character, setting, or plot. No random details.',
   'Humor: light situational humor that comes from the story; avoid unrelated absurd jokes.',
   'Structure: clear goal, then an obstacle, then the character acts, then a resolution.',
+  // WonderPath_Content_Guide.md section 6
+  'Before writing pages, define reading level, language, genre, tone, characters, setting and learning purpose, then outline: goal, obstacle, action, consequence, resolution.',
+  'Keep names, appearance, abilities, locations, objects, chronology and illustration descriptions consistent across pages.',
+  'Match vocabulary and sentence length to the reading level; a reading level is not a school grade.',
+  'Biographies and factual stories: only verified facts; never invent historical quotations or events, and keep any imagined scene clearly ordinary and plausible.',
+  'Every comprehension question must be answerable from the story itself.',
+  'Write natural Bahasa Indonesia; review the whole story for coherence, repetition and age fit before illustrations or narration are made.',
 ] as const;
 
 export function storyCraftPrompt(): string {

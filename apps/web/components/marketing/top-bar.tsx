@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { authHref } from "@/components/auth/auth-copy";
 import { useEffect, useState } from "react";
 import { MenuIcon, XIcon } from "@/components/ui/icons";
 import { CONTENT, Locale, LOCALE_PATH } from "./content";
@@ -86,13 +87,13 @@ export default function TopBar({ locale }: { locale: Locale }) {
         <div className="hidden items-center gap-4 lg:flex">
           <LanguageSwitch locale={locale} label={t.switchLabel} />
           <Link
-            href="/login"
+            href={authHref("/login", locale)}
             className="text-sm font-semibold text-ink hover:text-coral-deep"
           >
             {t.login}
           </Link>
           <Link
-            href="/register"
+            href={authHref("/register", locale)}
             className="btn-tactile rounded-full bg-coral px-5 py-2.5 text-sm font-bold text-ink shadow-[0_4px_0_rgba(46,42,92,0.18)] hover:bg-[#ff7c5f]"
           >
             {t.cta}
@@ -128,12 +129,12 @@ export default function TopBar({ locale }: { locale: Locale }) {
           </ul>
           <div className="mt-3 flex items-center justify-between">
             <LanguageSwitch locale={locale} label={t.switchLabel} />
-            <Link href="/login" className="text-sm font-semibold text-ink">
+            <Link href={authHref("/login", locale)} className="text-sm font-semibold text-ink">
               {t.login}
             </Link>
           </div>
           <Link
-            href="/register"
+            href={authHref("/register", locale)}
             className="btn-tactile mt-4 block rounded-full bg-coral px-5 py-3 text-center text-base font-bold text-ink"
           >
             {t.cta}

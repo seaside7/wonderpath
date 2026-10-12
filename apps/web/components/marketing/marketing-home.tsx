@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { authHref } from "@/components/auth/auth-copy";
 import type { ComponentType, SVGProps } from "react";
 import {
   ArrowRightIcon,
@@ -10,8 +11,6 @@ import {
   CompassIcon,
   HeartIcon,
   LockIcon,
-  MailIcon,
-  MessageIcon,
   ShieldIcon,
   SparklesIcon,
   StarIcon,
@@ -19,7 +18,7 @@ import {
   TrendUpIcon,
   UsersIcon,
 } from "@/components/ui/icons";
-import { CONTACT, CONTENT, Locale } from "./content";
+import { CONTENT, Locale } from "./content";
 import TopBar from "./top-bar";
 import MeetAtlas from "./meet-atlas";
 import HeroAtlas from "./hero-atlas";
@@ -79,7 +78,7 @@ function Hero({ locale }: { locale: Locale }) {
           <p className="mt-6 max-w-xl text-lg leading-8 text-white/85">{t.sub}</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
-              href="/register"
+              href={authHref("/register", locale)}
               className="btn-tactile inline-flex items-center gap-2 rounded-full bg-coral px-7 py-4 text-base font-bold text-ink shadow-[0_5px_0_rgba(0,0,0,0.25)] hover:bg-[#ff7c5f]"
             >
               {t.primary}
@@ -122,8 +121,13 @@ function Curricula({ locale }: { locale: Locale }) {
               key={item.name}
               className="mk-reveal rounded-2xl bg-white/90 px-4 py-5 text-center shadow-[0_4px_0_rgba(46,42,92,0.12)]"
             >
-              <p className="font-display text-3xl text-ink">{item.name}</p>
+              <p className={`font-display text-3xl ${item.soon ? "text-ink/45" : "text-ink"}`}>{item.name}</p>
               <p className="mt-1 text-sm font-semibold text-ink-soft">{item.detail}</p>
+              {item.soon ? (
+                <p className="mt-2 inline-block rounded-full bg-ink/10 px-2.5 py-0.5 text-xs font-bold text-ink-soft">
+                  {t.soon}
+                </p>
+              ) : null}
             </li>
           ))}
         </ul>
@@ -397,7 +401,7 @@ function Founding({ locale }: { locale: Locale }) {
           <h2 className="mt-5 font-display text-4xl leading-tight md:text-5xl">{t.title}</h2>
           <p className="mt-4 text-lg leading-8">{t.text}</p>
           <Link
-            href="/register"
+            href={authHref("/register", locale)}
             className="btn-tactile mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-7 py-4 text-base font-bold text-white shadow-[0_5px_0_rgba(0,0,0,0.25)] hover:bg-[#3a3570]"
           >
             {t.cta}
@@ -460,7 +464,7 @@ function FinalCta({ locale }: { locale: Locale }) {
         <h2 className="mt-4 font-display text-4xl leading-tight md:text-6xl">{t.title}</h2>
         <p className="mt-4 text-lg text-white/85">{t.text}</p>
         <Link
-          href="/register"
+          href={authHref("/register", locale)}
           className="btn-tactile mt-8 inline-flex items-center gap-2 rounded-full bg-coral px-8 py-4 text-lg font-bold text-ink shadow-[0_5px_0_rgba(0,0,0,0.3)] hover:bg-[#ff7c5f]"
         >
           {t.cta}
@@ -475,7 +479,7 @@ function Footer({ locale }: { locale: Locale }) {
   const t = CONTENT[locale];
   return (
     <footer className="bg-[#221e47] text-white/75">
-      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-2">
         <div>
           <p className="flex items-center gap-2.5 font-display text-xl font-semibold text-white">
             <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-full bg-waypoint text-base font-bold text-ink">
@@ -493,27 +497,9 @@ function Footer({ locale }: { locale: Locale }) {
             <li><a href="#books" className="hover:text-white">{t.nav.books}</a></li>
             <li><a href="#parents" className="hover:text-white">{t.nav.parents}</a></li>
             <li><a href="#faq" className="hover:text-white">{t.nav.faq}</a></li>
-            <li><Link href="/login" className="hover:text-white">{t.nav.login}</Link></li>
+            <li><Link href={authHref("/login", locale)} className="hover:text-white">{t.nav.login}</Link></li>
           </ul>
         </nav>
-        <div>
-          <p className="text-sm font-bold uppercase tracking-wider text-white">{t.footer.contact}</p>
-          <ul className="mt-4 flex flex-col gap-2.5">
-            <li>
-              <a href={CONTACT.whatsappLink} className="inline-flex items-center gap-2 hover:text-white">
-                <MessageIcon width={16} height={16} /> {CONTACT.whatsapp}
-              </a>
-            </li>
-            <li>
-              <a href={`mailto:${CONTACT.email}`} className="inline-flex items-center gap-2 hover:text-white">
-                <MailIcon width={16} height={16} /> {CONTACT.email}
-              </a>
-            </li>
-            <li className="inline-flex items-center gap-2">
-              <TargetIcon width={16} height={16} /> {CONTACT.instagram}
-            </li>
-          </ul>
-        </div>
       </div>
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-6xl px-5 py-6 text-sm">© 2026 WonderPath. {t.footer.madeIn}</p>

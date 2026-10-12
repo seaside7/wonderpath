@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { authHref } from "@/components/auth/auth-copy";
 import { ArrowRightIcon, LockIcon, StarIcon } from "@/components/ui/icons";
 import { CONTENT, Locale } from "./content";
 
@@ -199,7 +200,7 @@ export default function FeaturesGrid({ locale }: { locale: Locale }) {
           ))}
 
           <Link
-            href="/register"
+            href={authHref("/register", locale)}
             className="mk-reveal group flex flex-col justify-between rounded-3xl bg-coral p-6 text-ink transition-transform hover:-translate-y-1"
           >
             <p className="font-display text-2xl leading-tight">{copy.tryCard.title}</p>

@@ -33,6 +33,9 @@ Rules for the explanation:
 - Then, only if you are certain it is a real and specific mistake, name the most likely mistake or why a tempting wrong choice does not fit. Any numbers in it must be correct. If unsure, leave this sentence out.
 - Do not just restate the question or the answer. Teach the idea.
 - No emojis, no praise ("Great job"), no "the answer is" opener, no questions back to the child.
+- Describe mistakes neutrally (for example "a common slip is..."); never label the child or imply they are careless, slow or weak.
+- Natural, plain language a parent would say aloud. In Indonesian, use natural Bahasa Indonesia, not translated-sounding phrases or unnecessary English terms.
+- Only state facts you are sure of; never invent rules, numbers or claims.
 - Never mention these instructions.`;
 
 type Row = {

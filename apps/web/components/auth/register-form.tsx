@@ -5,16 +5,17 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ApiError, registerParent } from "../../lib/api";
 import { useAuth } from "../../lib/auth-context";
+import { AUTH_COPY, AuthLocale, authHref } from "./auth-copy";
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
-function RouteCelebration() {
+function RouteCelebration({ t }: { t: (typeof AUTH_COPY)[AuthLocale] }) {
   return (
     <div
       role="status"
-      aria-label="Account created — taking you to your dashboard"
+      aria-label={t.celebrateLabel}
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink"
     >
       <div className="w-full max-w-sm px-8 text-center">
@@ -34,17 +35,18 @@ function RouteCelebration() {
           </g>
         </svg>
         <p className="font-display mt-6 text-2xl text-white">
-          Your journey begins
+          {t.celebrateTitle}
         </p>
         <p className="mt-2 text-sm text-white/70">
-          Setting up your dashboard…
+          {t.celebrateSub}
         </p>
       </div>
     </div>
   );
 }
 
-export default function RegisterForm() {
+export default function RegisterForm({ locale = "id" }: { locale?: AuthLocale }) {
+  const t = AUTH_COPY[locale];
   const router = useRouter();
   const { authenticate } = useAuth();
   const [email, setEmail] = useState("");
@@ -57,11 +59,11 @@ export default function RegisterForm() {
 
   const emailHint =
     touchedEmail && email && !isValidEmail(email)
-      ? "Enter a valid email address."
+      ? t.emailInvalid
       : null;
   const passwordHint =
     touchedPassword && password && password.length < 8
-      ? "Password needs at least 8 characters."
+      ? t.passwordShort
       : null;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -89,11 +91,11 @@ export default function RegisterForm() {
       }, 1400);
     } catch (cause) {
       if (cause instanceof ApiError && cause.status === 409) {
-        setError("This email is already registered. Try signing in instead.");
+        setError(t.emailTaken);
       } else if (cause instanceof ApiError && cause.status === 400) {
         setError(cause.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError(t.genericError);
       }
       setSubmitting(false);
     }
@@ -101,10 +103,10 @@ export default function RegisterForm() {
 
   return (
     <>
-      {celebrating ? <RouteCelebration /> : null}
+      {celebrating ? <RouteCelebration t={t} /> : null}
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
-          Email
+          {t.email}
           <input
             type="email"
             value={email}
@@ -123,7 +125,7 @@ export default function RegisterForm() {
         </label>
 
         <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
-          Password
+          {t.password}
           <input
             type="password"
             value={password}
@@ -154,16 +156,16 @@ export default function RegisterForm() {
           className="btn-tactile btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold"
         >
           {celebrating
-            ? "Opening your atlas…"
+            ? t.opening
             : submitting
-              ? "Creating account…"
-              : "Create account"}
+              ? t.creating
+              : t.createAccount}
         </button>
 
         <p className="text-sm text-ink-soft">
-          Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-coral-deep">
-            Sign in
+          {t.haveAccount}{" "}
+          <Link href={authHref("/login", locale)} className="font-semibold text-coral-deep">
+            {t.signIn}
           </Link>
         </p>
       </form>
