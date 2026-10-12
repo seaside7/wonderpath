@@ -16,11 +16,12 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { Prisma, PrismaClient } from '../generated/prisma/client';
 import { narrateWithElevenLabs } from '../src/atlas/tts/elevenlabs';
+import { spokenText } from './narration-cues';
 
 const prisma = new PrismaClient();
 const uploads = process.env.BOOK_UPLOADS_DIR ?? 'uploads/books';
 
-type Manifest = Record<string, { text: string; wordTimings: unknown }>;
+type Manifest = Record<string, { text: string; spoken?: string; wordTimings: unknown }>;
 
 async function main() {
   const args = process.argv.slice(2);
@@ -43,15 +44,19 @@ async function main() {
 
     let characters = 0;
     for (const page of pages) {
-      const file = `page-${page.pageNumber}-el.mp3`;
+      const file = `page-${page.pageNumber}-v3.mp3`;
       const recorded = manifest[page.pageNumber];
-      // Re-record only when the page text changed since the last recording.
-      if (!importOnly && (recorded?.text !== page.text || !existsSync(join(dir, file)))) {
-        const narration = await narrateWithElevenLabs(page.text);
+      const spoken = spokenText(bookId, page.pageNumber, page.text);
+      // Re-record only when the text or its acting cues changed.
+      if (
+        !importOnly &&
+        (recorded?.text !== page.text || recorded?.spoken !== spoken || !existsSync(join(dir, file)))
+      ) {
+        const narration = await narrateWithElevenLabs(page.text, spoken);
         writeFileSync(join(dir, file), narration.audio);
-        manifest[page.pageNumber] = { text: page.text, wordTimings: narration.wordTimings };
+        manifest[page.pageNumber] = { text: page.text, spoken, wordTimings: narration.wordTimings };
         writeFileSync(manifestPath, JSON.stringify(manifest, null, 1));
-        characters += page.text.length;
+        characters += spoken.length;
         console.log(`${bookId} p${page.pageNumber} recorded`);
       }
       const entry = manifest[page.pageNumber];

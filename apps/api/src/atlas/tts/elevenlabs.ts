@@ -4,8 +4,9 @@ import { NarrationResult, WordTiming } from './tts.service';
 // (~15s per page is too slow for on-demand). Questions stay on Google TTS.
 // The founder picked this storyteller voice; override with ELEVENLABS_VOICE_ID.
 const DEFAULT_VOICE_ID = 'd15jrIAARvF899pDoC6T';
-// Multilingual v2 reads Indonesian and English with the same voice.
-const DEFAULT_MODEL = 'eleven_multilingual_v2';
+// v3 is ElevenLabs' expressive storytelling model: it follows audio tags
+// like [excited] or [whispers] and reads Indonesian and English alike.
+const DEFAULT_MODEL = 'eleven_v3';
 
 interface ElevenLabsTimestampResponse {
   audio_base64: string;
@@ -18,9 +19,12 @@ interface ElevenLabsTimestampResponse {
 /**
  * Narrates one page and returns per-word start times taken from ElevenLabs'
  * character alignment, so the reader's highlight follows the voice exactly.
+ * `spoken` is the text actually sent - the page text plus optional acting
+ * cues ("[excited] Tok... tok..."); timings are mapped back onto `text`.
  */
 export async function narrateWithElevenLabs(
   text: string,
+  spoken: string = text,
 ): Promise<NarrationResult> {
   const key = process.env.ELEVENLABS_API_KEY;
   if (!key) throw new Error('ELEVENLABS_API_KEY is not set');
@@ -32,8 +36,9 @@ export async function narrateWithElevenLabs(
       method: 'POST',
       headers: { 'xi-api-key': key, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        text,
+        text: spoken,
         model_id: process.env.ELEVENLABS_MODEL || DEFAULT_MODEL,
+        voice_settings: { stability: 0.5 },
       }),
     },
   );
@@ -49,18 +54,25 @@ export async function narrateWithElevenLabs(
   };
 }
 
-/** Maps character start times onto the same \S+ words the reader renders. */
+/**
+ * Maps character start times onto the same \S+ words the reader renders.
+ * The aligned text may contain acting cues, so each displayed word is found
+ * in order in the aligned characters rather than by position.
+ */
 function wordTimingsFrom(
   text: string,
   alignment: NonNullable<ElevenLabsTimestampResponse['alignment']>,
 ): WordTiming[] | null {
+  const aligned = alignment.characters.join('');
   const starts = alignment.character_start_times_seconds;
-  if (alignment.characters.join('') !== text || starts.length !== text.length) {
-    return null;
-  }
+  if (starts.length !== alignment.characters.length) return null;
   const timings: WordTiming[] = [];
-  for (const match of text.matchAll(/\S+/g)) {
-    timings.push({ word: match[0], startSec: starts[match.index ?? 0] });
+  let cursor = 0;
+  for (const [word] of text.matchAll(/\S+/g)) {
+    const at = aligned.indexOf(word, cursor);
+    if (at < 0) return null;
+    timings.push({ word, startSec: starts[at] });
+    cursor = at + word.length;
   }
   return timings.length > 0 ? timings : null;
 }
