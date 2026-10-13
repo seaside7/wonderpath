@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import QuestionText from "@/components/questions/question-text";
 import { useRouter } from "next/navigation";
 import { useAtlasSpeech } from "@/components/mascot/atlas-speech";
 import {
@@ -567,9 +568,7 @@ export default function KidQuestionFlow({
           {topicName ? `${topicName} · ` : ""}Question {answeredCount + 1}
         </span>
       </div>
-      <h2 className="mt-4 font-display text-3xl leading-snug text-ink">
-        {question.questionText}
-      </h2>
+      <QuestionText text={question.questionText} className="mt-4 font-display text-3xl leading-snug text-ink" />
 
       {!revealFeelings ? (
         <fieldset className="mt-6">

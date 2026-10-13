@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { AVAILABLE_CURRICULA, AVAILABLE_GRADES } from "@/lib/content-availability";
 import { useRouter } from "next/navigation";
 import {
   ApiError,
@@ -173,7 +174,9 @@ export default function ChildForm({ child }: ChildFormProps) {
         >
           {GRADE_OPTIONS.map((option) => (
             <option key={option} value={option}>
-              {option}
+              {(AVAILABLE_GRADES as readonly string[]).includes(option)
+                ? option
+                : `${option} (coming soon)`}
             </option>
           ))}
         </select>
@@ -199,6 +202,9 @@ export default function ChildForm({ child }: ChildFormProps) {
                 }
               >
                 {curriculum}
+                {(AVAILABLE_CURRICULA as readonly string[]).includes(curriculum) ? null : (
+                  <span className="ml-1.5 text-xs opacity-70">soon</span>
+                )}
               </button>
             );
           })}
@@ -206,6 +212,10 @@ export default function ChildForm({ child }: ChildFormProps) {
         {curriculaHint ? (
           <p className="mt-1.5 text-xs text-ink-soft">{curriculaHint}</p>
         ) : null}
+        <p className="mt-1.5 text-xs text-ink-soft">
+          Practice is available today for IB and Nasional, Grades 5 and 6.
+          You can still choose another option; we&apos;ll add it step by step.
+        </p>
       </fieldset>
 
       <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">

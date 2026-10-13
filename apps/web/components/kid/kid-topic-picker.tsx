@@ -289,7 +289,7 @@ export default function KidTopicPicker({
 
           {topicLoadState === "ready" && learningObjectives.length === 0 ? (
             <p className="mt-4 rounded-2xl border border-line bg-card px-4 py-4 text-sm leading-6 text-ink-soft">
-              There aren&apos;t any {subject} topics with questions for {curriculum} at {practiceGrade} yet. Try another path, subject, or grade.
+              Atlas is still getting {subject} ready for {curriculum} {practiceGrade}. It&apos;s coming soon! For now, try another subject or ask a grown-up to check back later.
             </p>
           ) : null}
 

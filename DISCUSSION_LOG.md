@@ -6,6 +6,14 @@ This is distinct from `daily-update.md` (a diary of what was *done*) and `QA_NOT
 
 ---
 
+## 2026-10-13
+
+**Resolved: the IB grade topic gap and the shallow explanations.** 220 new audited IB questions: Ratio & Proportion for Grade 5; Ratio & Proportion, Negative Numbers, Algebra and Data & Probability for Grade 6 (`scripts/seed-ib-new-topics.ts`). IB Grade 5 now shows 19 learning objectives and Grade 6 shows 26. 1,650 of 1,680 explanations were rewritten and audited (`scripts/enrich-explanations.ts`; the 30 that kept failing the audit keep their old text). Both are live on staging. The 3 wrong-answer questions logged on 2026-10-03 were re-checked: their stored answers are correct, and the leaked reasoning is gone after the rewrite.
+
+**Open: True/False answers are about 70% "True"** in both the old IB bank (311 to 143) and the new questions. Future generation asks for at least half False. Rebalancing the existing bank is a separate decision.
+
+**Open: the founder still needs to confirm the honest FAQ lines** ("kelas 5 dan 6", "IB atau Kurikulum Nasional"). They follow the content guide but override his earlier instruction not to name grades. The child form and the parent dashboard now say the same ("coming soon" for other grades and curricula), driven by `apps/web/lib/content-availability.ts`, which must be updated whenever content is added.
+
 ## 2026-10-12
 
 **Found: IB Math Grade 5 and Grade 6 share the exact same 17 learning objectives, and Ratio is missing from both.**

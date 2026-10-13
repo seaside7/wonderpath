@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { hasContent } from "@/lib/content-availability";
 import { useEffect, useState } from "react";
 import {
   ChildProfile,
@@ -91,6 +92,11 @@ export default function ChildSummaryCard({
           <p className="mt-0.5 text-sm text-ink-soft">
             {child.grade} · {child.curricula.join(" + ")}
           </p>
+          {child.curricula.some((curriculum) => hasContent(curriculum, child.grade)) ? null : (
+            <p className="mt-1.5 inline-block rounded-full bg-waypoint/25 px-2.5 py-0.5 text-xs font-semibold text-ink">
+              Practice for this grade and curriculum is coming soon
+            </p>
+          )}
         </div>
         {data && data.pendingRequests > 0 ? (
           <Link

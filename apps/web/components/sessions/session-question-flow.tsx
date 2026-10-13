@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import QuestionText from "@/components/questions/question-text";
 import { useRouter } from "next/navigation";
 import {
   ApiError,
@@ -237,9 +238,7 @@ export default function SessionQuestionFlow({ sessionId }: { sessionId: string }
         </span>
       </div>
 
-      <h2 className="mt-3 text-xl font-semibold text-zinc-900">
-        {question.questionText}
-      </h2>
+      <QuestionText text={question.questionText} className="mt-3 text-xl font-semibold text-zinc-900" />
 
       {!revealDifficulty ? (
         <fieldset className="mt-6">
