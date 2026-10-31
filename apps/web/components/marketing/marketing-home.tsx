@@ -23,6 +23,7 @@ import { CONTACT, CONTENT, Locale } from "./content";
 import TopBar from "./top-bar";
 import MeetAtlas from "./meet-atlas";
 import HeroAtlas from "./hero-atlas";
+import WhatsAppButton from "./whatsapp-button";
 import FeaturesGrid from "./features-grid";
 import BooksShowcase from "./books-showcase";
 
@@ -590,6 +591,7 @@ export default function MarketingHome({ locale }: { locale: Locale }) {
         <FinalCta locale={locale} />
       </main>
       <Footer locale={locale} />
+      <WhatsAppButton locale={locale} />
     </div>
   );
 }
