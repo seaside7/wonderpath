@@ -10,6 +10,7 @@ import {
   ChevronDownIcon,
   CompassIcon,
   HeartIcon,
+  MessageIcon,
   LockIcon,
   ShieldIcon,
   SparklesIcon,
@@ -18,7 +19,7 @@ import {
   TrendUpIcon,
   UsersIcon,
 } from "@/components/ui/icons";
-import { CONTENT, Locale } from "./content";
+import { CONTACT, CONTENT, Locale } from "./content";
 import TopBar from "./top-bar";
 import MeetAtlas from "./meet-atlas";
 import HeroAtlas from "./hero-atlas";
@@ -479,7 +480,7 @@ function Footer({ locale }: { locale: Locale }) {
   const t = CONTENT[locale];
   return (
     <footer className="bg-[#221e47] text-white/75">
-      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-2">
+      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-3">
         <div>
           <p className="flex items-center gap-2.5 font-display text-xl font-semibold text-white">
             <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-full bg-waypoint text-base font-bold text-ink">
@@ -500,6 +501,21 @@ function Footer({ locale }: { locale: Locale }) {
             <li><Link href={authHref("/login", locale)} className="hover:text-white">{t.nav.login}</Link></li>
           </ul>
         </nav>
+        <div>
+          <p className="text-sm font-bold uppercase tracking-wider text-white">{t.footer.contact}</p>
+          <a
+            href={CONTACT.whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 hover:text-white"
+          >
+            <MessageIcon width={16} height={16} />
+            <span>
+              {t.footer.whatsapp}
+              <span className="block text-sm tabular-nums text-white/60">{CONTACT.whatsapp}</span>
+            </span>
+          </a>
+        </div>
       </div>
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-6xl px-5 py-6 text-sm">© 2026 WonderPath. {t.footer.madeIn}</p>

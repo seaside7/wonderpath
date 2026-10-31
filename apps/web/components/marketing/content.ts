@@ -2,6 +2,12 @@ export type Locale = "id" | "en";
 
 export const LOCALE_PATH: Record<Locale, string> = { id: "/", en: "/en" };
 
+// WhatsApp for families (the founder's number, 2026-10-31).
+export const CONTACT = {
+  whatsapp: "+62 812-9999-8014",
+  whatsappLink: "https://wa.me/6281299998014",
+};
+
 export type BookTheme = "space" | "tree" | "ocean" | "flag" | "letter" | "plane";
 
 const id = {
@@ -288,6 +294,7 @@ const id = {
     tagline: "Latihan Matematika dan Bahasa Inggris yang menyesuaikan kemampuan anakmu.",
     explore: "Jelajahi",
     contact: "Kontak",
+    whatsapp: "Chat lewat WhatsApp",
     madeIn: "Dibuat dengan ❤️ di Indonesia.",
   },
 };
@@ -578,6 +585,7 @@ const en: MarketingCopy = {
     tagline: "Math and English practice that adapts to your child's level.",
     explore: "Explore",
     contact: "Contact",
+    whatsapp: "Chat on WhatsApp",
     madeIn: "Made with ❤️ in Indonesia.",
   },
 };
