@@ -56,55 +56,6 @@ export function avatarColor(name: string): string {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
-const KID_REASON_PRIORITY: Array<{ code: string; line: string }> = [
-  {
-    code: "EXAM_TOMORROW",
-    line: "There's an exam coming up \u2014 let's get ready together.",
-  },
-  {
-    code: "LOW_MASTERY",
-    line: "This one is still a bit tricky \u2014 let's practice it together.",
-  },
-  {
-    code: "LONG_TIME_NO_PRACTICE",
-    line: "It's been a while \u2014 let's warm this one back up.",
-  },
-  {
-    code: "HIGH_MASTERY",
-    line: "You're strong here \u2014 let's stretch a little further.",
-  },
-  {
-    code: "NEW_OBJECTIVE",
-    line: "Something brand new to explore today.",
-  },
-  {
-    code: "LOW_CONFIDENCE",
-    line: "Let's build your confidence on this one.",
-  },
-  {
-    code: "REVIEW_RECOMMENDED",
-    line: "A quick review will keep this fresh.",
-  },
-  {
-    code: "QUICK_SESSION",
-    line: "A nice quick practice for today.",
-  },
-  {
-    code: "CONTINUE",
-    line: "You're on a roll \u2014 let's keep going.",
-  },
-];
-
-export function kidReasonLine(reasonCodes: string[]): string {
-  const codes = new Set(reasonCodes);
-  for (const entry of KID_REASON_PRIORITY) {
-    if (codes.has(entry.code)) {
-      return entry.line;
-    }
-  }
-  return "Atlas picked this one for you today.";
-}
-
 const MISCONCEPTION_SENTENCES: Record<string, string> = {
   REPEATED_MISTAKE: "has made the same kind of mistake a few times in a row.",
   STORY_PROBLEM: "finds story problems trickier than plain number questions.",

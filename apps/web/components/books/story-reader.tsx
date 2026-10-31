@@ -17,44 +17,71 @@ import { useAtlasSpeech } from "@/components/mascot/atlas-speech";
 import BookArt from "./book-art";
 import BookSpread, { PageFlip, TEXT_SIZE_COUNT, useWideBook } from "./book-spread";
 import { playPageFlip } from "@/lib/sound";
+import { useKidCopy } from "@/components/kid/kid-locale";
 
 type Phase = "intro" | "read" | "quiz" | "result";
 type Narration = "idle" | "loading" | "ready" | "unavailable";
 
 const AUTO_TURN_DELAY_MS = 900;
 
-const LABELS = {
-  id: {
-    all: "Semua cerita",
-    listen: "Dengarkan",
-    pause: "Jeda",
-    preparing: "Atlas bersiap…",
-    unavailable: "Atlas belum bisa membacakan halaman ini.",
-    size: "Ukuran teks",
-    save: "Simpan",
-    saved: "Tersimpan",
-    prev: "Halaman sebelumnya",
-    next: "Halaman berikutnya",
-    quiz: "Lanjut ke kuis",
-    pages: (from: number, to: number, total: number) =>
-      `Halaman ${from}${to > from ? `–${to}` : ""} dari ${total}`,
-  },
-  en: {
-    all: "All stories",
-    listen: "Listen",
-    pause: "Pause",
-    preparing: "Atlas is getting ready…",
-    unavailable: "Atlas can't read this page aloud right now.",
-    size: "Text size",
-    save: "Bookmark",
-    saved: "Bookmarked",
-    prev: "Previous page",
-    next: "Next page",
-    quiz: "Go to the quiz",
-    pages: (from: number, to: number, total: number) =>
-      `Page${to > from ? "s" : ""} ${from}${to > from ? `–${to}` : ""} of ${total}`,
-  },
+const EN_LABELS = {
+  all: "All stories",
+  listen: "Listen",
+  pause: "Pause",
+  preparing: "Atlas is getting ready…",
+  unavailable: "Atlas can't read this page aloud right now.",
+  size: "Text size",
+  save: "Bookmark",
+  saved: "Bookmarked",
+  prev: "Previous page",
+  next: "Next page",
+  quiz: "Go to the quiz",
+  pages: (from: number, to: number, total: number) =>
+    `Page${to > from ? "s" : ""} ${from}${to > from ? `–${to}` : ""} of ${total}`,
+  level: (n: number) => `Level ${n}`,
+  resume: (page: number) => `You stopped on page ${page}. We'll pick up there.`,
+  listenWithAtlas: "Listen with Atlas",
+  readMyself: "Read by myself",
+  quizProgress: (n: number, total: number) => `Story quiz · ${n} of ${total}`,
+  checkError: "Could not check your answers. Please try again.",
+  finished: "Story finished!",
+  allCorrect: "You got every answer right.",
+  someWrong: "You finished the story. Have a look at the answers below.",
+  answer: (answer: string) => `Answer: ${answer}`,
+  moreStories: "Pick another story",
+  readAgain: "Read again",
 };
+
+// Same keys as EN_LABELS; a missing key is a compile error.
+const ID_LABELS: typeof EN_LABELS = {
+  all: "Semua cerita",
+  listen: "Dengarkan",
+  pause: "Jeda",
+  preparing: "Atlas bersiap…",
+  unavailable: "Atlas belum bisa membacakan halaman ini.",
+  size: "Ukuran teks",
+  save: "Simpan",
+  saved: "Tersimpan",
+  prev: "Halaman sebelumnya",
+  next: "Halaman berikutnya",
+  quiz: "Lanjut ke kuis",
+  pages: (from, to, total) =>
+    `Halaman ${from}${to > from ? `–${to}` : ""} dari ${total}`,
+  level: (n) => `Level ${n}`,
+  resume: (page) => `Kamu berhenti di halaman ${page}. Ceritanya lanjut dari situ.`,
+  listenWithAtlas: "Dengarkan bersama Atlas",
+  readMyself: "Baca sendiri",
+  quizProgress: (n, total) => `Kuis cerita · ${n} dari ${total}`,
+  checkError: "Jawabanmu belum bisa diperiksa. Coba lagi.",
+  finished: "Cerita selesai!",
+  allCorrect: "Semua jawabanmu benar.",
+  someWrong: "Kamu sudah selesai membaca. Yuk, lihat jawabannya di bawah.",
+  answer: (answer) => `Jawaban: ${answer}`,
+  moreStories: "Pilih cerita lain",
+  readAgain: "Baca lagi",
+};
+
+const LABELS = { id: ID_LABELS, en: EN_LABELS };
 
 const SIZE_KEY = "wonderpath:reader-size";
 const bookmarkKey = (childId: string, bookId: string) =>
@@ -93,13 +120,13 @@ function estimateTimings(text: string, duration: number): BookWordTiming[] {
   });
 }
 
-function BackToStories({ childId }: { childId: string }) {
+function BackToStories({ childId, label }: { childId: string; label: string }) {
   return (
     <Link
       href={`/learn/${childId}/books`}
       className="btn-tactile inline-flex items-center gap-2 rounded-full border-2 border-line bg-card px-4 py-2 text-sm font-semibold text-ink shadow-[0_3px_0_rgba(46,42,92,0.1)]"
     >
-      <span aria-hidden="true">←</span> All stories
+      <span aria-hidden="true">←</span> {label}
     </Link>
   );
 }
@@ -112,8 +139,11 @@ export default function StoryReader({
   bookId: string;
 }) {
   const speech = useAtlasSpeech();
+  // Before the book loads its language is unknown, so these few states use
+  // the child's language; everything after uses the book's own language.
+  const kidCopy = useKidCopy();
   const [book, setBook] = useState<BookDetail | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<"open" | "check" | null>(null);
   const [phase, setPhase] = useState<Phase>("intro");
   const [mode, setMode] = useState<BookReadingMode>("READ");
   const [pageIdx, setPageIdx] = useState(0);
@@ -165,7 +195,7 @@ export default function StoryReader({
         }
       })
       .catch(() => {
-        if (!cancelled) setError("Could not open this book.");
+        if (!cancelled) setError("open");
       });
     return () => {
       cancelled = true;
@@ -395,7 +425,7 @@ export default function StoryReader({
       setResult(data);
       setPhase("result");
     } catch {
-      setError("Could not check your answers. Please try again.");
+      setError("check");
     } finally {
       setSubmitting(false);
     }
@@ -438,31 +468,33 @@ export default function StoryReader({
   if (error && !book) {
     return (
       <div className="flex w-full flex-1 flex-col gap-4">
-        <BackToStories childId={childId} />
-        <p className="rounded-2xl bg-coral/10 px-4 py-3 text-base text-coral-deep">{error}</p>
+        <BackToStories childId={childId} label={kidCopy.allStories} />
+        <p className="rounded-2xl bg-coral/10 px-4 py-3 text-base text-coral-deep">{kidCopy.bookOpenError}</p>
       </div>
     );
   }
-  if (!book) return <p className="text-base text-ink-soft">Loading…</p>;
+  if (!book) return <p className="text-base text-ink-soft">{kidCopy.loading}</p>;
+
+  const t = book.language === "BAHASA_INDONESIA" ? LABELS.id : LABELS.en;
 
   if (phase === "intro") {
     const resuming = book.reading && !book.reading.completedAt && pageIdx > 0;
     return (
       <div className="flex w-full flex-1 flex-col">
         <div className="mb-5">
-          <BackToStories childId={childId} />
+          <BackToStories childId={childId} label={t.all} />
         </div>
         <div className="overflow-hidden rounded-3xl bg-card shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
           <div className="relative aspect-[10/7]">
             <BookArt book={book} />
           </div>
           <div className="px-7 py-7">
-            <p className="text-sm font-semibold text-waypoint">Level {book.trailStop}</p>
+            <p className="text-sm font-semibold text-waypoint">{t.level(book.trailStop)}</p>
             <h1 className="mt-1 font-display text-3xl text-ink">{book.title}</h1>
             <p className="mt-2 text-base leading-7 text-ink-soft">{book.summary}</p>
             {resuming ? (
               <p className="mt-3 text-sm font-semibold text-ink">
-                You stopped on page {pageIdx + 1}. We&apos;ll pick up there.
+                {t.resume(pageIdx + 1)}
               </p>
             ) : null}
             <div className="mt-6 flex flex-col gap-3">
@@ -471,14 +503,14 @@ export default function StoryReader({
                 onClick={() => start("LISTEN")}
                 className="btn-tactile btn-primary w-full rounded-2xl px-4 py-4 font-display text-xl font-semibold"
               >
-                🔊 Listen with Atlas
+                {t.listenWithAtlas}
               </button>
               <button
                 type="button"
                 onClick={() => start("READ")}
                 className="btn-tactile w-full rounded-2xl border-2 border-line bg-card px-4 py-3.5 text-base font-semibold text-ink"
               >
-                📖 Read by myself
+                {t.readMyself}
               </button>
             </div>
           </div>
@@ -492,11 +524,11 @@ export default function StoryReader({
     return (
       <div className="flex w-full flex-1 flex-col">
         <div className="mb-5">
-          <BackToStories childId={childId} />
+          <BackToStories childId={childId} label={t.all} />
         </div>
         <div className="rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
           <p className="text-sm font-semibold text-waypoint">
-            Story quiz · {quizIdx + 1} of {book.quizQuestions.length}
+            {t.quizProgress(quizIdx + 1, book.quizQuestions.length)}
           </p>
           <div className="mt-2 flex gap-1.5" aria-hidden="true">
             {book.quizQuestions.map((item, i) => (
@@ -508,7 +540,7 @@ export default function StoryReader({
           </div>
           <h1 className="mt-5 font-display text-2xl leading-snug text-ink">{question.prompt}</h1>
           {error ? (
-            <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">{error}</p>
+            <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">{error === "open" ? kidCopy.bookOpenError : t.checkError}</p>
           ) : null}
           <div className="mt-5 flex flex-col gap-3">
             {question.options.map((option) => (
@@ -532,14 +564,14 @@ export default function StoryReader({
     return (
       <div className="flex w-full flex-1 flex-col">
         <div className="rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
-          <p className="text-sm font-semibold text-waypoint">Story finished!</p>
+          <p className="text-sm font-semibold text-waypoint">{t.finished}</p>
           <h1 className="mt-1 font-display text-4xl text-ink">
             {result.score} / {result.total} ⭐
           </h1>
           <p className="mt-2 text-base text-ink-soft">
             {result.score === result.total
-              ? "Perfect! You understood the whole story."
-              : "Nice reading! Have a look at the answers below."}
+              ? t.allCorrect
+              : t.someWrong}
           </p>
           <ul className="mt-6 flex flex-col gap-3">
             {result.results.map((item, i) => (
@@ -551,7 +583,7 @@ export default function StoryReader({
                   {item.correct ? "✓" : "✗"} {book.quizQuestions[i]?.prompt}
                 </p>
                 {!item.correct ? (
-                  <p className="mt-1 text-sm text-ink">Answer: {item.correctAnswer}</p>
+                  <p className="mt-1 text-sm text-ink">{t.answer(item.correctAnswer)}</p>
                 ) : null}
                 <p className="mt-1 text-sm text-ink-soft">{item.explanation}</p>
               </li>
@@ -562,14 +594,14 @@ export default function StoryReader({
               href={`/learn/${childId}/books`}
               className="btn-tactile btn-primary block w-full rounded-2xl px-4 py-4 text-center font-display text-xl font-semibold"
             >
-              More stories
+              {t.moreStories}
             </Link>
             <button
               type="button"
               onClick={readAgain}
               className="btn-tactile w-full rounded-2xl border-2 border-line bg-card px-4 py-3.5 text-base font-semibold text-ink"
             >
-              Read again
+              {t.readAgain}
             </button>
           </div>
         </div>
@@ -578,7 +610,6 @@ export default function StoryReader({
   }
 
   // phase === "read"
-  const t = book.language === "BAHASA_INDONESIA" ? LABELS.id : LABELS.en;
   const spreadFrom = wide ? pageIdx - (pageIdx % 2) : pageIdx;
   const spreadTo = wide ? Math.min(spreadFrom + 1, lastPageIdx) : pageIdx;
   const onLastSpread = spreadTo >= lastPageIdx;

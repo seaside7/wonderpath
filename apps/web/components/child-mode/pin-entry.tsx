@@ -7,6 +7,7 @@ interface PinEntryProps {
   error: string | null;
   label?: string;
   submitting?: boolean;
+  digitLabel?: (position: number) => string;
 }
 
 export default function PinEntry({
@@ -14,6 +15,7 @@ export default function PinEntry({
   error,
   label = "Enter your 4-digit PIN",
   submitting = false,
+  digitLabel = (position) => `PIN digit ${position}`,
 }: PinEntryProps) {
   const [digits, setDigits] = useState<string[]>(["", "", "", ""]);
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
@@ -81,7 +83,7 @@ export default function PinEntry({
             onChange={(event) => handleChange(index, event.target.value)}
             onKeyDown={(event) => handleKeyDown(index, event)}
             onPaste={handlePaste}
-            aria-label={`PIN digit ${index + 1}`}
+            aria-label={digitLabel(index + 1)}
             className="field-glow h-14 w-12 text-center font-display text-2xl text-ink disabled:opacity-60"
           />
         ))}

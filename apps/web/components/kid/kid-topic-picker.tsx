@@ -9,6 +9,7 @@ import {
   fetchChildTopics,
   startLearningSession,
 } from "@/lib/api";
+import { kidCopy, kidLocale } from "@/lib/kid-copy";
 
 const SUBJECT_OPTIONS = ["Mathematics", "English"];
 const GRADES = [
@@ -58,7 +59,6 @@ type TopicResult = {
   key: string;
   state: "ready" | "error";
   learningObjectives: AvailableLearningObjective[];
-  error?: string;
 };
 
 export default function KidTopicPicker({
@@ -69,13 +69,15 @@ export default function KidTopicPicker({
   session?: TopicPickerSession | null;
 }) {
   const router = useRouter();
+  // Chrome follows the child's first curriculum, like the rest of the kid UI.
+  const copy = kidCopy(kidLocale(child.curricula[0]));
   const [curriculum, setCurriculum] = useState(
     session?.curriculum ?? child.curricula[0] ?? "",
   );
   const [subject, setSubject] = useState("");
   const [practiceAhead, setPracticeAhead] = useState(false);
   const [topicResult, setTopicResult] = useState<TopicResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
   const [startingObjectiveId, setStartingObjectiveId] = useState<string | null>(
     null,
   );
@@ -131,7 +133,6 @@ export default function KidTopicPicker({
           key: queryKey,
           state: "error",
           learningObjectives: [],
-          error: "Could not load topics. Please try again.",
         });
       });
 
@@ -144,7 +145,7 @@ export default function KidTopicPicker({
     if (!curriculum || !subject || startingObjectiveId) return;
 
     setStartingObjectiveId(objective.id);
-    setError(null);
+    setError(false);
     try {
       const canReuseSession =
         session?.curriculum === curriculum && session.subject === subject;
@@ -161,7 +162,7 @@ export default function KidTopicPicker({
       await acceptRecommendation(sessionId, objective.id, practiceGrade);
       router.push(`/learn/${child.id}/session/${sessionId}`);
     } catch {
-      setError("Could not start this topic. Please try again.");
+      setError(true);
       setStartingObjectiveId(null);
     }
   }
@@ -170,7 +171,7 @@ export default function KidTopicPicker({
     <div>
       {child.curricula.length > 1 ? (
         <div>
-          <p className="font-display text-xl text-ink">Pick a path</p>
+          <p className="font-display text-xl text-ink">{copy.chooseCurriculum}</p>
           <div className="mt-3 grid grid-cols-2 gap-3">
             {child.curricula.map((option) => (
               <button
@@ -192,7 +193,7 @@ export default function KidTopicPicker({
       ) : null}
 
       <p className="mt-6 font-display text-xl text-ink">
-        What do you want to practice?
+        {copy.whatToPractice}
       </p>
       <div className="mt-3 grid grid-cols-2 gap-3">
         {SUBJECT_OPTIONS.map((option) => (
@@ -201,7 +202,7 @@ export default function KidTopicPicker({
             type="button"
             onClick={() => {
               setSubject(option);
-              setError(null);
+              setError(false);
             }}
             aria-pressed={subject === option}
             className={`btn-tactile min-h-16 rounded-2xl border-2 px-4 py-4 font-display text-xl ${
@@ -210,7 +211,7 @@ export default function KidTopicPicker({
                 : "border-line bg-card text-ink"
             }`}
           >
-            {option}
+            {copy.subjectName(option)}
           </button>
         ))}
       </div>
@@ -223,10 +224,10 @@ export default function KidTopicPicker({
                 id="topic-list-heading"
                 className="font-display text-xl text-ink"
               >
-                Choose a topic
+                {copy.chooseTopic}
               </h2>
               <p className="mt-1 text-sm text-ink-soft">
-                {curriculum} · {subject} · {practiceGrade}
+                {curriculum} · {copy.subjectName(subject)} · {copy.gradeName(practiceGrade)}
               </p>
             </div>
           </div>
@@ -248,14 +249,14 @@ export default function KidTopicPicker({
             </span>
             <span className="flex-1">
               <span className="block font-display text-lg font-semibold">
-                {practiceAhead ? "Practicing a grade ahead!" : "Practice a grade ahead"}
+                {practiceAhead ? copy.practiceAheadOn : copy.practiceAheadOff}
               </span>
               <span
                 className={`block text-sm ${practiceAhead ? "text-white/85" : "text-violet-700"}`}
               >
                 {practiceAhead
-                  ? `Showing ${practiceGrade} topics · tap to go back`
-                  : "Try harder topics from the next grade"}
+                  ? copy.practiceAheadOnHint(copy.gradeName(practiceGrade))
+                  : copy.practiceAheadOffHint}
               </span>
             </span>
             <span
@@ -273,23 +274,27 @@ export default function KidTopicPicker({
           </button>
           {!canPracticeAhead ? (
             <p className="mt-2 text-sm text-ink-soft">
-              Grade 6 is the highest grade with topics available right now.
+              {copy.highestGrade}
             </p>
           ) : null}
 
           {topicLoadState === "loading" ? (
-            <p className="mt-4 text-sm text-ink-soft">Finding topics…</p>
+            <p className="mt-4 text-sm text-ink-soft">{copy.findingTopics}</p>
           ) : null}
 
           {topicLoadState === "error" ? (
             <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
-              {currentTopicResult?.error}
+              {copy.topicsLoadError}
             </p>
           ) : null}
 
           {topicLoadState === "ready" && learningObjectives.length === 0 ? (
             <p className="mt-4 rounded-2xl border border-line bg-card px-4 py-4 text-sm leading-6 text-ink-soft">
-              Atlas is still getting {subject} ready for {curriculum} {practiceGrade}. It&apos;s coming soon! For now, try another subject or ask a grown-up to check back later.
+              {copy.noTopics(
+                copy.subjectName(subject),
+                curriculum,
+                copy.gradeName(practiceGrade),
+              )}
             </p>
           ) : null}
 
@@ -309,7 +314,10 @@ export default function KidTopicPicker({
                     type="button"
                     onClick={() => void handleChooseTopic(objective)}
                     disabled={startingObjectiveId !== null}
-                    aria-label={`Practice ${objective.hierarchy.subtopic.name}: ${objective.name}`}
+                    aria-label={copy.practiceTopic(
+                      objective.hierarchy.subtopic.name,
+                      objective.name,
+                    )}
                     aria-pressed={isStarting}
                     className={`btn-tactile flex min-h-28 flex-col rounded-2xl border-2 px-4 py-3.5 text-left text-ink transition-colors disabled:opacity-60 ${
                       isStarting ? "border-coral bg-coral/10" : palette.card
@@ -335,7 +343,7 @@ export default function KidTopicPicker({
                     <span className="mt-auto pt-3">
                       {isStarting ? (
                         <span className="text-xs font-semibold text-coral-deep">
-                          Starting…
+                          {copy.starting}
                         </span>
                       ) : practiced ? (
                         <span className="flex items-center gap-2">
@@ -351,7 +359,7 @@ export default function KidTopicPicker({
                         </span>
                       ) : (
                         <span className="inline-block rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-ink-soft">
-                          ✨ New topic
+                          {copy.newTopic}
                         </span>
                       )}
                     </span>
@@ -365,7 +373,7 @@ export default function KidTopicPicker({
 
       {error ? (
         <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
-          {error}
+          {copy.startTopicError}
         </p>
       ) : null}
     </div>

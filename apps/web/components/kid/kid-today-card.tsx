@@ -13,13 +13,12 @@ import {
   RecommendationData,
   RecommendationItem,
 } from "@/lib/api";
-import {
-  formatEstimatedSession,
-  kidReasonLine,
-} from "@/lib/format";
+import { kidCopy, kidLocale, kidReasonLine } from "@/lib/kid-copy";
 import KidTopicPicker from "./kid-topic-picker";
+import { useKidLocale } from "./kid-locale";
 
 type Status = "loading" | "ready" | "fallback" | "error";
+type TodayError = "loadPage" | "start" | "openPractice";
 
 function displayName(child: ChildProfile): string {
   if (child.nickname?.trim()) return child.nickname.trim();
@@ -36,9 +35,19 @@ export default function KidTodayCard({ childId }: { childId: string }) {
   );
   const [showPicker, setShowPicker] = useState(false);
   const [confirming, setConfirming] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<TodayError | null>(null);
   const [starting, setStarting] = useState(false);
   const [points, setPoints] = useState<Awaited<ReturnType<typeof fetchPoints>> | null>(null);
+  // Language follows the child's first curriculum; before the profile loads,
+  // the kid layout's value is used.
+  const childLocale = useKidLocale();
+  const copy = kidCopy(child ? kidLocale(child.curricula[0]) : childLocale);
+  const errorText = (code: TodayError) =>
+    code === "loadPage"
+      ? copy.loadPageError
+      : code === "start"
+        ? copy.startError
+        : copy.openPracticeError;
 
   useEffect(() => {
     let cancelled = false;
@@ -67,12 +76,12 @@ export default function KidTodayCard({ childId }: { childId: string }) {
             setStatus("fallback");
           } catch {
             if (cancelled) return;
-            setError("Could not load your page. Please try again.");
+            setError("loadPage");
             setStatus("error");
           }
           return;
         }
-        setError("Could not load your page. Please try again.");
+        setError("loadPage");
         setStatus("error");
       }
     }
@@ -91,7 +100,7 @@ export default function KidTodayCard({ childId }: { childId: string }) {
     try {
       await acceptRecommendation(session.id, top.learningObjective.id);
     } catch {
-      setError("Could not start. Please try again.");
+      setError("start");
       return;
     }
     setConfirming(true);
@@ -104,19 +113,19 @@ export default function KidTodayCard({ childId }: { childId: string }) {
     try {
       router.push(`/learn/${childId}/session/${session.id}`);
     } catch {
-      setError("Could not navigate. Please try again.");
+      setError("openPractice");
       setStarting(false);
     }
   }
 
   if (status === "loading") {
-    return <p className="text-base text-ink-soft">Loading…</p>;
+    return <p className="text-base text-ink-soft">{copy.loading}</p>;
   }
 
   if (status === "error" || !child) {
     return (
       <p className="rounded-2xl bg-coral/10 px-4 py-3 text-base text-coral-deep">
-        {error ?? "Something went wrong."}
+        {error ? errorText(error) : copy.somethingWrong}
       </p>
     );
   }
@@ -133,14 +142,12 @@ export default function KidTodayCard({ childId }: { childId: string }) {
             className="btn-tactile mb-5 inline-flex items-center gap-2 self-start rounded-full border-2 border-line bg-card px-4 py-2 text-sm font-semibold text-ink shadow-[0_3px_0_rgba(46,42,92,0.1)] hover:border-ink-soft"
           >
             <span aria-hidden="true">←</span>
-            Back to today&apos;s pick
+            {copy.backToTodaysPick}
           </button>
         ) : null}
-        <h1 className="font-display text-4xl text-ink">Hi {name}!</h1>
+        <h1 className="font-display text-4xl text-ink">{copy.greeting(name)}</h1>
         <p className="mb-7 mt-2 text-base text-ink-soft">
-          {showPicker
-            ? "No problem — pick what sounds fun."
-            : "Let's pick what to practice today."}
+          {showPicker ? copy.pickerIntroAfterSkip : copy.pickerIntro}
         </p>
         <KidTopicPicker child={child} session={session} />
       </div>
@@ -154,23 +161,23 @@ export default function KidTodayCard({ childId }: { childId: string }) {
       <div className="flex w-full flex-1 flex-col justify-center">
         <div className="rounded-3xl bg-card px-7 py-7 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
           <p className="text-sm font-medium uppercase tracking-widest text-ink-soft">
-            Ready to start
+            {copy.readyToStart}
           </p>
           <p className="mt-3 font-display text-3xl text-ink">
             {top.learningObjective.name}
           </p>
           <p className="mt-2 text-base text-ink-soft">
             {child?.curricula[0]
-              ? `${child.curricula[0]} · ${top.learningObjective.hierarchy.subject.name}`
-              : top.learningObjective.hierarchy.subject.name}
+              ? `${child.curricula[0]} · ${copy.subjectName(top.learningObjective.hierarchy.subject.name)}`
+              : copy.subjectName(top.learningObjective.hierarchy.subject.name)}
           </p>
           <p className="mt-4 text-base leading-7 text-ink-soft">
-            {kidReasonLine(top.reasonCodes)}
+            {kidReasonLine(top.reasonCodes, copy)}
           </p>
 
           {error ? (
             <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
-              {error}
+              {errorText(error)}
             </p>
           ) : null}
 
@@ -181,7 +188,7 @@ export default function KidTodayCard({ childId }: { childId: string }) {
               disabled={starting}
               className="btn-tactile btn-primary w-full rounded-2xl px-4 py-4 font-display text-xl font-semibold disabled:opacity-60"
             >
-              Yes, let&apos;s go!
+              {copy.startPractice}
             </button>
             <button
               type="button"
@@ -191,7 +198,7 @@ export default function KidTodayCard({ childId }: { childId: string }) {
               }}
               className="btn-tactile w-full rounded-2xl border border-line bg-card px-4 py-3 text-base font-medium text-ink"
             >
-              Change topic
+              {copy.changeTopic}
             </button>
           </div>
         </div>
@@ -201,15 +208,15 @@ export default function KidTodayCard({ childId }: { childId: string }) {
 
   return (
     <div className="flex w-full flex-1 flex-col justify-center">
-      <h1 className="font-display text-4xl text-ink">Hi {name}!</h1>
+      <h1 className="font-display text-4xl text-ink">{copy.greeting(name)}</h1>
 
       {points?.goal ? (
         <div className="mb-5 rounded-2xl bg-card px-5 py-4 shadow-[0_8px_28px_rgba(46,42,92,0.06)]">
           <div className="flex items-center justify-between text-sm font-semibold text-ink">
             <span>
-              {points.goal.progress} / {points.goal.target} ⭐ this {points.goal.period.toLowerCase()}
+              {copy.goalProgress(points.goal.progress, points.goal.target, points.goal.period)}
             </span>
-            <span>{points.balance} ⭐ saved</span>
+            <span>{copy.pointsSaved(points.balance)}</span>
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-line">
             <div
@@ -232,15 +239,13 @@ export default function KidTodayCard({ childId }: { childId: string }) {
           </p>
           {top ? (
             <p className="mt-3 text-base leading-7 text-ink-soft">
-              {kidReasonLine(top.reasonCodes)}
+              {kidReasonLine(top.reasonCodes, copy)}
               {top.learningObjective.estimatedMasteryTime > 0 ? (
                 <>
                   {" "}
-                  About{" "}
-                  {formatEstimatedSession(
-                    top.learningObjective.estimatedMasteryTime,
+                  {copy.about(
+                    copy.duration(top.learningObjective.estimatedMasteryTime),
                   )}
-                  .
                 </>
               ) : null}
             </p>
@@ -248,7 +253,7 @@ export default function KidTodayCard({ childId }: { childId: string }) {
 
           {error ? (
             <p className="mt-4 rounded-xl bg-coral/10 px-3.5 py-2.5 text-sm text-coral-deep">
-              {error}
+              {errorText(error)}
             </p>
           ) : null}
 
@@ -259,21 +264,21 @@ export default function KidTodayCard({ childId }: { childId: string }) {
               disabled={starting}
               className="btn-tactile btn-primary w-full rounded-2xl px-4 py-4 font-display text-xl font-semibold disabled:opacity-60"
             >
-              {starting ? "Starting…" : "Start Learning"}
+              {starting ? copy.starting : copy.startLearning}
             </button>
             <button
               type="button"
               onClick={() => setShowPicker(true)}
               className="btn-tactile w-full rounded-2xl border border-line bg-card px-4 py-3.5 text-base font-medium text-ink"
             >
-              Choose Something Else
+              {copy.chooseSomethingElse}
             </button>
             <Link
               href={`/learn/${childId}/books`}
               className="btn-tactile flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-waypoint bg-waypoint/20 px-4 py-3.5 text-base font-bold text-ink"
             >
-              <span aria-hidden="true">📚</span> Story Trail
-              <span className="text-sm font-semibold text-ink-soft">· read &amp; listen</span>
+              <span aria-hidden="true">📚</span> {copy.storyTrail}
+              <span className="text-sm font-semibold text-ink-soft">· {copy.storyTrailHint}</span>
             </Link>
           </div>
       </div>

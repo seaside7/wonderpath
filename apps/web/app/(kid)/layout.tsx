@@ -12,8 +12,12 @@ import PinEntry from "@/components/child-mode/pin-entry";
 import TrailBackdrop from "@/components/ui/trail-backdrop";
 import IdleAtlasWidget from "@/components/mascot/idle-atlas-widget";
 import { AtlasSpeechProvider } from "@/components/mascot/atlas-speech";
+import { KidLocaleProvider, useKidCopy } from "@/components/kid/kid-locale";
+
+type PinError = "mismatch" | "checkFailed";
 
 function KidHeader({ onLock }: { onLock: () => void }) {
+  const copy = useKidCopy();
   const [childId] = useState<string | null>(() => getChildModeChildId());
   const [balance, setBalance] = useState<number | null>(null);
 
@@ -56,7 +60,7 @@ function KidHeader({ onLock }: { onLock: () => void }) {
               className="btn-tactile rounded-lg border border-white/25 px-3 py-1.5 text-sm font-semibold text-white"
             >
               <span aria-hidden="true">📚</span>
-              <span className="sr-only sm:not-sr-only sm:ml-1">Stories</span>
+              <span className="sr-only sm:not-sr-only sm:ml-1">{copy.stories}</span>
             </a>
           ) : null}
           {childId ? (
@@ -70,7 +74,7 @@ function KidHeader({ onLock }: { onLock: () => void }) {
           <button
             type="button"
             onClick={onLock}
-            aria-label="Parent lock"
+            aria-label={copy.parentLock}
             className="btn-tactile flex items-center gap-1.5 rounded-lg border border-white/25 px-3 py-1.5 text-sm font-medium text-white"
           >
           <svg
@@ -87,11 +91,59 @@ function KidHeader({ onLock }: { onLock: () => void }) {
             <rect x="3" y="11" width="18" height="11" rx="2" />
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
-            <span className="sr-only sm:not-sr-only">Parent</span>
+            <span className="sr-only sm:not-sr-only">{copy.parent}</span>
           </button>
         </span>
       </div>
     </header>
+  );
+}
+
+function KidPinDialog({
+  attempt,
+  error,
+  submitting,
+  onComplete,
+  onCancel,
+}: {
+  attempt: number;
+  error: PinError | null;
+  submitting: boolean;
+  onComplete: (pin: string) => void;
+  onCancel: () => void;
+}) {
+  const copy = useKidCopy();
+  const message =
+    error === "mismatch"
+      ? copy.pinMismatch
+      : error === "checkFailed"
+        ? copy.pinCheckFailed
+        : null;
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={copy.parentPin}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 px-6"
+    >
+      <div className="w-full max-w-sm bg-card px-6 py-6">
+        <PinEntry
+          key={attempt}
+          onComplete={onComplete}
+          error={message}
+          submitting={submitting}
+          label={copy.pinLabel}
+          digitLabel={copy.pinDigit}
+        />
+        <button
+          type="button"
+          onClick={onCancel}
+          className="btn-tactile mt-4 rounded-lg px-3 py-2 text-sm font-medium text-ink-soft"
+        >
+          {copy.cancel}
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -101,7 +153,7 @@ export default function KidLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [hasPin, setHasPin] = useState<boolean | null>(null);
   const [showPin, setShowPin] = useState(false);
-  const [pinError, setPinError] = useState<string | null>(null);
+  const [pinError, setPinError] = useState<PinError | null>(null);
   const [pinAttempt, setPinAttempt] = useState(0);
   const [verifying, setVerifying] = useState(false);
 
@@ -153,7 +205,7 @@ export default function KidLayout({ children }: { children: ReactNode }) {
     try {
       const result = await verifyParentPin(pin);
       if (!result.valid) {
-        setPinError("That PIN didn't match. Try again.");
+        setPinError("mismatch");
         setPinAttempt((attempt) => attempt + 1);
         setVerifying(false);
         return;
@@ -161,7 +213,7 @@ export default function KidLayout({ children }: { children: ReactNode }) {
       clearChildModeChildId();
       router.push("/dashboard");
     } catch {
-      setPinError("Could not check the PIN. Please try again.");
+      setPinError("checkFailed");
       setPinAttempt((attempt) => attempt + 1);
       setVerifying(false);
     }
@@ -180,6 +232,7 @@ export default function KidLayout({ children }: { children: ReactNode }) {
   }
 
   return (
+    <KidLocaleProvider>
     <AtlasSpeechProvider>
     <div className="relative isolate flex min-h-dvh flex-col bg-fog">
       <TrailBackdrop variant="playful" />
@@ -190,30 +243,16 @@ export default function KidLayout({ children }: { children: ReactNode }) {
       {/* Story Trail has its own reading UI; the corner Atlas would cover the book. */}
       {pathname.includes("/books") ? null : <IdleAtlasWidget />}
       {showPin ? (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Parent PIN"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 px-6"
-        >
-          <div className="w-full max-w-sm bg-card px-6 py-6">
-            <PinEntry
-              key={pinAttempt}
-              onComplete={(pin) => void handlePinComplete(pin)}
-              error={pinError}
-              submitting={verifying}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPin(false)}
-              className="btn-tactile mt-4 rounded-lg px-3 py-2 text-sm font-medium text-ink-soft"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
+        <KidPinDialog
+          attempt={pinAttempt}
+          error={pinError}
+          submitting={verifying}
+          onComplete={(pin) => void handlePinComplete(pin)}
+          onCancel={() => setShowPin(false)}
+        />
       ) : null}
     </div>
     </AtlasSpeechProvider>
+    </KidLocaleProvider>
   );
 }

@@ -11,15 +11,19 @@ import {
   RedemptionData,
   RewardData,
 } from "@/lib/api";
+import { useKidCopy } from "@/components/kid/kid-locale";
+
+type RewardsError = "load" | "request";
 
 export default function KidRewardsPage() {
   const params = useParams<{ childId: string }>();
   const childId = params.childId;
+  const copy = useKidCopy();
   const [points, setPoints] = useState<PointsData | null>(null);
   const [rewards, setRewards] = useState<RewardData[]>([]);
   const [redemptions, setRedemptions] = useState<RedemptionData[]>([]);
   const [confirming, setConfirming] = useState<RewardData | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<RewardsError | null>(null);
 
   async function load() {
     try {
@@ -32,7 +36,7 @@ export default function KidRewardsPage() {
       setRewards(rewardData);
       setRedemptions(redemptionData);
     } catch {
-      setError("Could not load rewards right now.");
+      setError("load");
     }
   }
 
@@ -48,7 +52,7 @@ export default function KidRewardsPage() {
       setConfirming(null);
       await load();
     } catch {
-      setError("That reward could not be requested.");
+      setError("request");
     }
   }
 
@@ -56,14 +60,14 @@ export default function KidRewardsPage() {
     <main className="flex w-full flex-1 flex-col justify-center">
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-waypoint">Your rewards</p>
-          <h1 className="mt-1 font-display text-4xl text-ink">Save for something great</h1>
+          <p className="text-sm font-semibold text-waypoint">{copy.rewardsEyebrow}</p>
+          <h1 className="mt-1 font-display text-4xl text-ink">{copy.rewardsTitle}</h1>
         </div>
         <p className="font-display text-2xl text-ink">⭐ {points?.balance ?? "—"}</p>
       </div>
-      {error ? <p className="mb-4 rounded-xl bg-coral/10 px-4 py-3 text-sm text-coral-deep">{error}</p> : null}
+      {error ? <p className="mb-4 rounded-xl bg-coral/10 px-4 py-3 text-sm text-coral-deep">{error === "load" ? copy.rewardsLoadError : copy.rewardRequestError}</p> : null}
       {rewards.length === 0 ? (
-        <div className="rounded-3xl bg-card px-6 py-8 text-ink-soft">Your parent has not added a reward yet.</div>
+        <div className="rounded-3xl bg-card px-6 py-8 text-ink-soft">{copy.noRewards}</div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {rewards.map((reward) => {
@@ -80,7 +84,7 @@ export default function KidRewardsPage() {
                   onClick={() => setConfirming(reward)}
                   className="btn-tactile btn-primary mt-4 w-full rounded-xl px-4 py-3 text-sm font-semibold disabled:opacity-50"
                 >
-                  {pending ? "Waiting for parent…" : affordable ? "Ask for it" : `Need ${reward.cost - (points?.balance ?? 0)} more ⭐`}
+                  {pending ? copy.waitingForParent : affordable ? copy.askForIt : copy.needMore(reward.cost - (points?.balance ?? 0))}
                 </button>
               </article>
             );
@@ -90,11 +94,11 @@ export default function KidRewardsPage() {
       {confirming ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 px-6">
           <div className="w-full max-w-sm rounded-3xl bg-card px-6 py-6">
-            <p className="font-display text-2xl text-ink">Use {confirming.cost} ⭐ for {confirming.name}?</p>
-            <p className="mt-2 text-sm leading-6 text-ink-soft">Your parent will be asked to approve it.</p>
+            <p className="font-display text-2xl text-ink">{copy.confirmReward(confirming.cost, confirming.name)}</p>
+            <p className="mt-2 text-sm leading-6 text-ink-soft">{copy.confirmRewardNote}</p>
             <div className="mt-6 flex gap-3">
-              <button type="button" onClick={() => setConfirming(null)} className="btn-tactile flex-1 rounded-xl border border-line px-4 py-3 text-sm font-semibold text-ink">Not yet</button>
-              <button type="button" onClick={() => void handleRedeem()} className="btn-tactile btn-primary flex-1 rounded-xl px-4 py-3 text-sm font-semibold">Ask for it</button>
+              <button type="button" onClick={() => setConfirming(null)} className="btn-tactile flex-1 rounded-xl border border-line px-4 py-3 text-sm font-semibold text-ink">{copy.notYet}</button>
+              <button type="button" onClick={() => void handleRedeem()} className="btn-tactile btn-primary flex-1 rounded-xl px-4 py-3 text-sm font-semibold">{copy.askForIt}</button>
             </div>
           </div>
         </div>
