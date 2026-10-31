@@ -212,12 +212,12 @@ function HowItWorks({ locale }: { locale: Locale }) {
           <Eyebrow tone="light">{t.eyebrow}</Eyebrow>
           <h2 className="mt-3 font-display text-4xl leading-tight md:text-5xl">{t.title}</h2>
           <Image
-            src="/mascot/poses/atlas-magnifier.png"
+            src="/mascot/poses/atlas-trail.webp"
             alt=""
-            width={1248}
-            height={832}
-            sizes="(min-width: 1024px) 480px, 80vw"
-            className="mk-float mk-no-floor-pose mt-8 w-4/5 max-w-md drop-shadow-[0_24px_30px_rgba(0,0,0,0.35)]"
+            width={624}
+            height={695}
+            sizes="(min-width: 1024px) 380px, 70vw"
+            className="mk-float mt-8 w-3/5 max-w-sm drop-shadow-[0_24px_30px_rgba(0,0,0,0.35)]"
           />
         </div>
 
@@ -455,12 +455,12 @@ function FinalCta({ locale }: { locale: Locale }) {
       />
       <div className="relative mx-auto flex max-w-4xl flex-col items-center px-5 py-20 text-center md:py-24">
         <Image
-          src="/mascot/poses/atlas-celebrate.png"
+          src="/mascot/poses/atlas-celebrate.webp"
           alt=""
-          width={1248}
-          height={832}
-          sizes="320px"
-          className="mk-float mk-no-floor-pose w-72 drop-shadow-[0_24px_30px_rgba(0,0,0,0.35)]"
+          width={900}
+          height={715}
+          sizes="340px"
+          className="mk-float w-80 drop-shadow-[0_24px_30px_rgba(0,0,0,0.35)]"
         />
         <h2 className="mt-4 font-display text-4xl leading-tight md:text-6xl">{t.title}</h2>
         <p className="mt-4 text-lg text-white/85">{t.text}</p>
