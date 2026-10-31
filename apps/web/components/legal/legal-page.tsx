@@ -7,7 +7,6 @@ export default function LegalPage({ doc, locale }: { doc: Doc; locale: LegalLoca
   return (
     <main lang={locale} className="min-h-dvh bg-fog px-5 py-12">
       <article className="mx-auto max-w-2xl rounded-3xl bg-card px-7 py-9 shadow-[0_8px_28px_rgba(46,42,92,0.09)]">
-        <p className="mb-6 rounded-xl bg-waypoint/25 px-4 py-2.5 text-sm font-semibold text-ink">{doc.draftNote}</p>
         <Link href={locale === "en" ? "/en" : "/"} className="text-sm font-semibold text-coral-deep">
           ← WonderPath
         </Link>

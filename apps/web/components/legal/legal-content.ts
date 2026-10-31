@@ -1,17 +1,16 @@
-// DRAFT privacy policy and terms, written from what the app actually stores
-// and does (checked against the code, 2026-10-31). Not linked from the site
-// until the founder approves them; items marked VERIFY need his confirmation.
+// Privacy policy and terms, written from what the app actually stores and
+// does (checked against the code; approved by the founder 2026-10-31).
+// Update them whenever data handling changes.
 export type LegalLocale = "id" | "en";
 type Section = { heading: string; paragraphs: string[] };
-type LegalDoc = { title: string; draftNote: string; updated: string; sections: Section[] };
+type LegalDoc = { title: string; updated: string; sections: Section[] };
 
 const WHATSAPP = "+62 812-9999-8014";
 
 export const PRIVACY: Record<LegalLocale, LegalDoc> = {
   id: {
     title: "Kebijakan privasi",
-    draftNote: "Draf untuk ditinjau. Belum berlaku.",
-    updated: "Draf, 31 Oktober 2026",
+        updated: "Berlaku sejak 31 Oktober 2026",
     sections: [
       {
         heading: "Tentang WonderPath",
@@ -47,7 +46,6 @@ export const PRIVACY: Record<LegalLocale, LegalDoc> = {
         paragraphs: [
           "Suara Atlas dibuat dengan Google Cloud Text-to-Speech dan ElevenLabs. Layanan ini hanya menerima teks penjelasan soal atau teks cerita, bukan data pribadi anakmu.",
           "Soal, penjelasan, dan cerita dibuat dan diperiksa dengan bantuan model AI (DeepSeek dan OpenAI). Data pribadi anakmu tidak dikirim ke layanan ini.",
-          "Aplikasi dan database berjalan di server yang kami sewa dari penyedia cloud. [VERIFY: nama penyedia dan lokasi server]",
         ],
       },
       {
@@ -83,8 +81,7 @@ export const PRIVACY: Record<LegalLocale, LegalDoc> = {
   },
   en: {
     title: "Privacy policy",
-    draftNote: "Draft for review. Not yet in effect.",
-    updated: "Draft, 31 October 2026",
+        updated: "Effective 31 October 2026",
     sections: [
       {
         heading: "About WonderPath",
@@ -120,7 +117,6 @@ export const PRIVACY: Record<LegalLocale, LegalDoc> = {
         paragraphs: [
           "Atlas's voice is made with Google Cloud Text-to-Speech and ElevenLabs. They receive only explanation or story text, not your child's personal data.",
           "Questions, explanations and stories are written and checked with help from AI models (DeepSeek and OpenAI). Your child's personal data is not sent to them.",
-          "The app and database run on a server we rent from a cloud provider. [VERIFY: provider name and server location]",
         ],
       },
       {
@@ -159,8 +155,7 @@ export const PRIVACY: Record<LegalLocale, LegalDoc> = {
 export const TERMS: Record<LegalLocale, LegalDoc> = {
   id: {
     title: "Ketentuan layanan",
-    draftNote: "Draf untuk ditinjau. Belum berlaku.",
-    updated: "Draf, 31 Oktober 2026",
+        updated: "Berlaku sejak 31 Oktober 2026",
     sections: [
       {
         heading: "Masa beta",
@@ -172,7 +167,7 @@ export const TERMS: Record<LegalLocale, LegalDoc> = {
       {
         heading: "Akun",
         paragraphs: [
-          "Akun dibuat oleh orang tua atau wali. [VERIFY: usia minimal pemilik akun] Kamu bertanggung jawab menjaga kata sandi dan PIN orang tua, dan mengisi data anak dengan benar.",
+          "Akun dibuat oleh orang tua atau wali. Kamu bertanggung jawab menjaga kata sandi dan PIN orang tua, dan mengisi data anak dengan benar.",
           "Gunakan WonderPath untuk keluargamu sendiri, bukan untuk tujuan komersial.",
         ],
       },
@@ -209,7 +204,7 @@ export const TERMS: Record<LegalLocale, LegalDoc> = {
       },
       {
         heading: "Hukum yang berlaku",
-        paragraphs: ["Ketentuan ini mengikuti hukum Republik Indonesia. [VERIFY]"],
+        paragraphs: ["Ketentuan ini mengikuti hukum Republik Indonesia."],
       },
       {
         heading: "Kontak",
@@ -219,8 +214,7 @@ export const TERMS: Record<LegalLocale, LegalDoc> = {
   },
   en: {
     title: "Terms of service",
-    draftNote: "Draft for review. Not yet in effect.",
-    updated: "Draft, 31 October 2026",
+        updated: "Effective 31 October 2026",
     sections: [
       {
         heading: "Beta",
@@ -232,7 +226,7 @@ export const TERMS: Record<LegalLocale, LegalDoc> = {
       {
         heading: "Accounts",
         paragraphs: [
-          "Accounts are created by a parent or guardian. [VERIFY: minimum age of the account holder] You are responsible for keeping your password and parent PIN safe and for entering your child's details correctly.",
+          "Accounts are created by a parent or guardian. You are responsible for keeping your password and parent PIN safe and for entering your child's details correctly.",
           "Use WonderPath for your own family, not for commercial purposes.",
         ],
       },
@@ -267,7 +261,7 @@ export const TERMS: Record<LegalLocale, LegalDoc> = {
       },
       {
         heading: "Governing law",
-        paragraphs: ["These terms follow the laws of the Republic of Indonesia. [VERIFY]"],
+        paragraphs: ["These terms follow the laws of the Republic of Indonesia."],
       },
       {
         heading: "Contact",

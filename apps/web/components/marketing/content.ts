@@ -295,6 +295,8 @@ const id = {
     explore: "Jelajahi",
     contact: "Kontak",
     whatsapp: "Chat lewat WhatsApp",
+    privacy: "Kebijakan privasi",
+    terms: "Ketentuan layanan",
     madeIn: "Dibuat dengan ❤️ di Indonesia.",
   },
 };
@@ -586,6 +588,8 @@ const en: MarketingCopy = {
     explore: "Explore",
     contact: "Contact",
     whatsapp: "Chat on WhatsApp",
+    privacy: "Privacy policy",
+    terms: "Terms of service",
     madeIn: "Made with ❤️ in Indonesia.",
   },
 };

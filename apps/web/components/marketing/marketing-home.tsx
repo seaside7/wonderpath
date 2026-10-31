@@ -518,7 +518,13 @@ function Footer({ locale }: { locale: Locale }) {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <p className="mx-auto max-w-6xl px-5 py-6 text-sm">© 2026 WonderPath. {t.footer.madeIn}</p>
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-6 text-sm">
+          <p>© 2026 WonderPath. {t.footer.madeIn}</p>
+          <p className="flex gap-5">
+            <Link href={locale === "en" ? "/privacy?lang=en" : "/privacy"} className="hover:text-white">{t.footer.privacy}</Link>
+            <Link href={locale === "en" ? "/terms?lang=en" : "/terms"} className="hover:text-white">{t.footer.terms}</Link>
+          </p>
+        </div>
       </div>
     </footer>
   );
